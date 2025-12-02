@@ -1,12 +1,15 @@
-import { useEffect, useRef } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useRef, useState } from 'react';
 // import * as maptilersdk from '@maptiler/sdk';
+import { Popup } from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
+import { Select } from 'antd';
 import './map.css';
 import { Weather } from './weather';
 
 export default function Map() {
   const weather = useRef(null as any);
-
+  const [markers, setMarkers] = useState<any[]>([]);
   // const onClickWeatherItem = (type: string) => {
   //     console.log('onClickWeatherItem', type);
   //     weather?.current?.onLayerChange(type);
@@ -15,10 +18,43 @@ export default function Map() {
   useEffect(() => {
     const _weather = new Weather();
     weather.current = _weather;
+
+    fetch('marker.json')
+      .then((res) => res.json())
+      .then((data) => {
+        const features = data.features;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const options = features.map((item: any) => ({
+          label: item.properties.wfname,
+          value: item.properties.wfname,
+          coordinates: item.geometry.coordinates,
+        }));
+        setMarkers(options);
+      });
     return () => {
       _weather?.map?.remove();
     };
   }, []);
+
+  const onSelectChange = (value: any) => {
+    const marker = markers.find((item: any) => item.value === value);
+    if (marker) {
+      weather.current?.map.flyTo({
+        center: marker.coordinates,
+        zoom: 9, // 放大到合适的级别
+        essential: true,
+        maxDuration: 300,
+      });
+
+      new Popup()
+        .setLngLat(marker.coordinates)
+        .setHTML(`找到结果：<strong>${marker.label}</strong>`)
+        .addTo(weather.current?.map);
+
+      console.log(`已找到 1 个匹配项，定位到：${marker.label}`);
+      return marker;
+    }
+  };
   return (
     <div className="map-wrap">
       {/* <div id="time-info">
@@ -28,6 +64,18 @@ export default function Map() {
             </div>
             <div id="variable-name">Wind</div>
             <div id="pointer-data"></div> */}
+
+      <div className="search-point">
+        <Select
+          style={{ width: 160 }}
+          options={markers}
+          showSearch={{
+            filterOption: (inputValue, option: any) =>
+              option?.label?.indexOf(inputValue) !== -1,
+          }}
+          onChange={onSelectChange}
+        ></Select>
+      </div>
       <div id="map"></div>
 
       {/* <div className='weather-items'>

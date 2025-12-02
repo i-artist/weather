@@ -1,4 +1,4 @@
-import { Map, MapStyle, Marker, Popup, config } from '@maptiler/sdk';
+import { Map, MapStyle, config } from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { WindLayer, TemperatureLayer, RadarLayer, PrecipitationLayer, ColorRamp } from '@maptiler/weather';
 import { MarkerLayout } from '@maptiler/marker-layout';
@@ -218,7 +218,7 @@ export class Weather {
                     updateMarkerDiv(abstractMarker, markerDiv);
                 })
             }
-
+            console.log(softUpdateMarkers, updateMarkers)
             // While moving the map, this event is triggered many times per seconds
             // so we only perform a soft update (that could be debounced)
             // map.on("move", softUpdateMarkers);

@@ -130,7 +130,7 @@ export default function Dashboard() {
         <div style={{ flex: 8, display: 'flex' }}>
           <div
             style={{
-              flex: '0 0 160px',
+              flex: '0 0 170px',
               display: 'flex',
               flexDirection: 'column',
               padding: '0 16px 0 16px',
@@ -145,7 +145,7 @@ export default function Dashboard() {
           </div>
           <div
             style={{
-              flex: '0 0 160px',
+              flex: '0 0 170px',
               display: 'flex',
               flexDirection: 'column',
               padding: '0px 16px 0 16px',
@@ -187,7 +187,7 @@ export default function Dashboard() {
             </div>
             <div
               style={{
-                flex: '0 0 128px',
+                flex: '0 0 138px',
                 width: 160,
                 display: 'flex',
                 flexDirection: 'column',

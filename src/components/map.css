@@ -148,3 +148,24 @@
 .fade-in-animation {
     animation: fadeIn 0.5s ease forwards;
 }
+
+.search-point {
+    position: absolute;
+    top: 10px;
+    right: 90px;
+    z-index: 100;
+    opacity: 0.9;
+}
+
+/* .search-point:hover {
+    opacity: 1;
+} */
+
+.ant-select-dropdown {
+    opacity: 0.9;
+}
+
+.maplibregl-popup-content {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
