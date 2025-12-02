@@ -1,0 +1,1242 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "临港海上二期",
+        "wfinvestname": "上海新能源",
+        "wtcount": 28,
+        "wfdalias": "上海",
+        "wfadress": "上海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.991365,
+          30.913935
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "外三火储项目",
+        "wfinvestname": "上海",
+        "wtcount": 0,
+        "wfdalias": "上海",
+        "wfadress": "上海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.604499,
+          31.346793
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "金寨光伏",
+        "wfinvestname": "上海新能源",
+        "wtcount": 648,
+        "wfdalias": "安徽",
+        "wfadress": "安徽"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          115.760193,
+          31.745175
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "青草沙风电",
+        "wfinvestname": "上海新能源",
+        "wtcount": 24,
+        "wfdalias": "上海",
+        "wfadress": "上海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.615,
+          31.442222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "关岭申阳",
+        "wfinvestname": "青海新能源",
+        "wtcount": 697,
+        "wfdalias": "贵州",
+        "wfadress": "贵州"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.460278,
+          25.781389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "东田风电",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 24,
+        "wfdalias": "湖南",
+        "wfadress": "湖南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.553611,
+          25.103889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "木垒华光",
+        "wfinvestname": "青海新能源",
+        "wtcount": 20,
+        "wfdalias": "新疆",
+        "wfadress": "新疆"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.19,
+          44
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "乌兰润晟",
+        "wfinvestname": "上海区域",
+        "wtcount": 37,
+        "wfdalias": "青海",
+        "wfadress": "青海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.365845,
+          36.70058
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "格尔木东恒",
+        "wfinvestname": "青海新能源",
+        "wtcount": 22,
+        "wfdalias": "青海",
+        "wfadress": "青海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.5,
+          37.3754
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "天风风电",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 20,
+        "wfdalias": "内蒙",
+        "wfadress": "内蒙"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          98.348889,
+          42.417222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "木垒新科",
+        "wfinvestname": "青海新能源",
+        "wtcount": 33,
+        "wfdalias": "新疆",
+        "wfadress": "新疆"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.09,
+          44.55
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "华港一期",
+        "wfinvestname": "上海新能源",
+        "wtcount": 0,
+        "wfdalias": "上海",
+        "wfadress": "上海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.865278,
+          31.0425
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "耳林光伏",
+        "wfinvestname": "申能集控",
+        "wtcount": 29,
+        "wfdalias": "陕西",
+        "wfadress": "陕西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.62494,
+          38.712913
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "岢岚新能",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 50,
+        "wfdalias": "山西",
+        "wfadress": "山西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.624954,
+          38.682281
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "平泉仁辉",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 36,
+        "wfdalias": "河北",
+        "wfadress": "河北"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.9675,
+          41.2299
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "格尔木瑞鑫达",
+        "wfinvestname": "青海新能源",
+        "wtcount": 22,
+        "wfdalias": "青海",
+        "wfadress": "青海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.7,
+          37.3954
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "乌兰华扬",
+        "wfinvestname": "青海新能源",
+        "wtcount": 91,
+        "wfdalias": "青海",
+        "wfadress": "青海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.208,
+          36.4033
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "海南鑫源",
+        "wfinvestname": "青海新能源",
+        "wtcount": 22,
+        "wfdalias": "青海",
+        "wfadress": "青海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.764167,
+          36.325278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宜城谭湾",
+        "wfinvestname": "湖北区域",
+        "wtcount": 218,
+        "wfdalias": "湖北",
+        "wfadress": "湖北"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.017084,
+          31.783122
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "尚义海润",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 32,
+        "wfdalias": "河北",
+        "wfadress": "河北"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.29,
+          40.96
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宋家沟二期",
+        "wfinvestname": "山西",
+        "wtcount": 0,
+        "wfdalias": "山西",
+        "wfadress": "山西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.677853,
+          38.635517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "华港二期",
+        "wfinvestname": "上海新能源",
+        "wtcount": 0,
+        "wfdalias": "上海",
+        "wfadress": "上海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.893611,
+          31.031944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "平泉丰合",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 36,
+        "wfdalias": "河北",
+        "wfadress": "河北"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.381876,
+          40.531863
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "克拉玛依新特",
+        "wfinvestname": "青海新能源",
+        "wtcount": 20,
+        "wfdalias": "新疆",
+        "wfadress": "新疆"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.2,
+          45.54
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "吐鲁番新科",
+        "wfinvestname": "青海新能源",
+        "wtcount": 20,
+        "wfdalias": "新疆",
+        "wfadress": "新疆"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.54,
+          43.4
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "哈密华光",
+        "wfinvestname": "青海新能源",
+        "wtcount": 100,
+        "wfdalias": "新疆",
+        "wfadress": "新疆"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.42,
+          41.57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "灌云永贯",
+        "wfinvestname": "上海新能源",
+        "wtcount": 540,
+        "wfdalias": "江苏",
+        "wfadress": "江苏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.168872,
+          34.271661
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "格尔木清脉",
+        "wfinvestname": "青海新能源",
+        "wtcount": 22,
+        "wfdalias": "青海",
+        "wfadress": "青海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.6,
+          37.3854
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "哈密新特",
+        "wfinvestname": "青海新能源",
+        "wtcount": 40,
+        "wfdalias": "新疆",
+        "wfadress": "新疆"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.934,
+          43.138
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "长兴风电",
+        "wfinvestname": "上海新能源",
+        "wtcount": 10,
+        "wfdalias": "上海",
+        "wfadress": "上海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.758889,
+          31.391111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "如东智鑫",
+        "wfinvestname": "上海新能源",
+        "wtcount": 30,
+        "wfdalias": "江苏",
+        "wfadress": "江苏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.005478,
+          32.565623
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宣城亭洋",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 52,
+        "wfdalias": "安徽",
+        "wfadress": "安徽"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.550892,
+          30.917864
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "榆林申榆",
+        "wfinvestname": "青海新能源",
+        "wtcount": 5,
+        "wfdalias": "陕西",
+        "wfadress": "陕西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.126667,
+          38.261944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "达茂一期+二期",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 48,
+        "wfdalias": "内蒙",
+        "wfadress": "内蒙"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.134499,
+          41.873198
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "抚州科电+旭阳",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 13,
+        "wfdalias": "江西",
+        "wfadress": "江西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.429444,
+          27.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宣城洪永一期",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 11,
+        "wfdalias": "安徽",
+        "wfadress": "安徽"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.97712,
+          30.968314
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "淮北绿金",
+        "wfinvestname": "上海区域",
+        "wtcount": 5,
+        "wfdalias": "安徽",
+        "wfadress": "安徽"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.593158,
+          33.802072
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "榆林协合一期+二期",
+        "wfinvestname": "青海新能源",
+        "wtcount": 50,
+        "wfdalias": "陕西",
+        "wfadress": "陕西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.897517,
+          39.443833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "汝州风电",
+        "wfinvestname": "河南区域",
+        "wtcount": 10,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.680395,
+          34.314973
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "濉溪鑫风",
+        "wfinvestname": "安徽区域",
+        "wtcount": 0,
+        "wfdalias": "安徽",
+        "wfadress": "安徽"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.845715,
+          33.341401
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宜城申宜",
+        "wfinvestname": "申能集控",
+        "wtcount": 28,
+        "wfdalias": "湖北",
+        "wfadress": "湖北"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.56506,
+          31.576369
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "如东协鑫",
+        "wfinvestname": "上海新能源",
+        "wtcount": 40,
+        "wfdalias": "江苏",
+        "wfadress": "江苏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.108046,
+          32.5297
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "南召冷风岈",
+        "wfinvestname": "上海新能源",
+        "wtcount": 39,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.724233,
+          33.541234
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "临港海上一期+6MW",
+        "wfinvestname": "上海新能源",
+        "wtcount": 27,
+        "wfdalias": "上海",
+        "wfadress": "上海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.981298,
+          30.903203
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "大漠布朗",
+        "wfinvestname": "上海区域",
+        "wtcount": 12,
+        "wfdalias": "内蒙",
+        "wfadress": "内蒙"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.477904,
+          41.375118
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "灵宝湾驿",
+        "wfinvestname": "上海新能源",
+        "wtcount": 24,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.814092,
+          34.606323
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "含山林阳",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 26,
+        "wfdalias": "安徽",
+        "wfadress": "安徽"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.991,
+          31.473
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "淮阳清风",
+        "wfinvestname": "上海区域",
+        "wtcount": 9,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.859099,
+          33.780039
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "含山陶阳",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 13,
+        "wfdalias": "安徽",
+        "wfadress": "安徽"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.108333,
+          31.604722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "申欣风电",
+        "wfinvestname": "青海新能源",
+        "wtcount": 0,
+        "wfdalias": "上海",
+        "wfadress": "上海"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.8975,
+          30.853889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "关岭卓阳+卓申",
+        "wfinvestname": "青海新能源",
+        "wtcount": 1102,
+        "wfdalias": "贵州",
+        "wfadress": "贵州"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.321111,
+          25.945278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "武川白山一期+二期",
+        "wfinvestname": "内蒙区域",
+        "wtcount": 10,
+        "wfdalias": "内蒙",
+        "wfadress": "内蒙"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.190352,
+          41.186494
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "西华平安",
+        "wfinvestname": "上海区域",
+        "wtcount": 9,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.367375,
+          33.749999
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "曹河申周",
+        "wfinvestname": "上海区域",
+        "wtcount": 10,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.717822,
+          33.734066
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "枣庄峄光",
+        "wfinvestname": "申能集控",
+        "wtcount": 54,
+        "wfdalias": "山东",
+        "wfadress": "山东"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          117.804294,
+          34.663817
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宁东申创",
+        "wfinvestname": "申能集控",
+        "wtcount": 143,
+        "wfdalias": "宁夏",
+        "wfadress": "宁夏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.811528,
+          38.064235
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "枞阳申华",
+        "wfinvestname": "上海新能源",
+        "wtcount": 22,
+        "wfdalias": "安徽",
+        "wfadress": "安徽"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          117.483333,
+          30.85
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "洪善光伏",
+        "wfinvestname": "申能集控",
+        "wtcount": 28,
+        "wfdalias": "陕西",
+        "wfadress": "陕西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.858003,
+          34.670188
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "米康风电场一期+二期",
+        "wfinvestname": "上海区域",
+        "wtcount": 0,
+        "wfdalias": "广西",
+        "wfadress": "广西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.512824,
+          21.706681
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "海南CZ2",
+        "wtcount": 0,
+        "wfdalias": "海南",
+        "wfadress": "1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.31374,
+          19.902531
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "天门光伏",
+        "wfinvestname": "湖北",
+        "wtcount": 0,
+        "wfdalias": "湖北",
+        "wfadress": "湖北"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          113.24241,
+          30.540869
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "恒丰光伏",
+        "wfinvestname": "上海新能源",
+        "wtcount": 28,
+        "wfdalias": "广西",
+        "wfadress": "广西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.368175,
+          21.976728
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "沙洋楚伏兴业+雨霖",
+        "wfinvestname": "内蒙古新能源",
+        "wtcount": 36,
+        "wfdalias": "湖北",
+        "wfadress": "湖北"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.274444,
+          30.610833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "榆林协鑫",
+        "wfinvestname": "青海新能源",
+        "wtcount": 19,
+        "wfdalias": "陕西",
+        "wfadress": "陕西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.026667,
+          38.271944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "漯河恒桥",
+        "wfinvestname": "河南区域",
+        "wtcount": 19,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          113.683949,
+          33.484395
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宋家沟一期",
+        "wfinvestname": "山西",
+        "wtcount": 0,
+        "wfdalias": "山西",
+        "wfadress": "山西"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.677853,
+          38.645517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "独山上司",
+        "wfinvestname": "青海新能源",
+        "wtcount": 697,
+        "wfdalias": "贵州",
+        "wfadress": "贵州"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.590833,
+          25.630278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宝丰风电",
+        "wfinvestname": "上海区域",
+        "wtcount": 5,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.763114,
+          33.94975
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "独山盖寨",
+        "wtcount": 0,
+        "wfdalias": "贵州",
+        "wfadress": "1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.790833,
+          25.630278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "独山墨寨",
+        "wtcount": 0,
+        "wfdalias": "贵州",
+        "wfadress": "1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.690833,
+          25.630278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "四通沪周",
+        "wfinvestname": "上海区域",
+        "wtcount": 10,
+        "wfdalias": "河南",
+        "wfadress": "河南"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          115.027885,
+          33.873729
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "天门风电",
+        "wfinvestname": "湖北",
+        "wtcount": 0,
+        "wfdalias": "湖北",
+        "wfadress": "湖北"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          113.24241,
+          30.340869
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "wfname": "宋家沟三期",
+        "wtcount": 270,
+        "wfdalias": "山西",
+        "wfadress": "1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.677853,
+          38.625517
+        ]
+      }
+    }
+  ]
+}

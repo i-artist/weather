@@ -1,4 +1,4 @@
-import { Map, MapStyle, config } from '@maptiler/sdk';
+import { Map, MapStyle, Marker, Popup, config } from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { WindLayer, TemperatureLayer, RadarLayer, PrecipitationLayer, ColorRamp } from '@maptiler/weather';
 import { MarkerLayout } from '@maptiler/marker-layout';
@@ -39,11 +39,11 @@ export class Weather {
         config.apiKey = 'lUrJ4YNOW1rB4GnQJ7GJ';
         const map = ((window as any).map = new Map({
             container: 'map', // container's id or the HTML element to render the map
-            style: MapStyle.BASIC,
+            style: MapStyle.BASE_V4,
             zoom: 5,
             center: [113.5, 34.4],
-            // projection: 'globe',
-            // projectionControl: true,
+            projection: 'globe',
+            projectionControl: true,
             geolocate: true,
             geolocateControl: true,
             language: 'zh',
@@ -55,160 +55,78 @@ export class Weather {
         // let pointerLngLat: any = null;
         this.map = map;
         const windLayer = new WindLayer({ id: "Wind" });
-        const temperatureLayer = new TemperatureLayer();
-        const radarLayer = new RadarLayer({ id: 'Radar' });
-        const precipitationLayer = new PrecipitationLayer({ id: 'Precipitation' });
 
         map.on('load', function () {
             map.setPaintProperty("Water", 'fill-color', "rgba(0, 0, 0, 0.4)");
             map.addLayer(windLayer, 'Water');
-
-
-            map.addLayer(temperatureLayer, 'Temperature');
-            map.addLayer(radarLayer, 'Radar');
-            map.addLayer(precipitationLayer, 'Precipitation');
-        });
-
-        // timeSlider.addEventListener("input", (evt) => {
-        //     weatherLayer.setAnimationTime(parseInt((timeSlider.value / 1000).toString()))
-        // });
-
-        // Event called when all the datasource for the next days are added and ready.
-        // From now on, the layer nows the start and end dates.
-        // weatherLayer.on("sourceReady", event => {
-        //     const startDate = weatherLayer.getAnimationStartDate();
-        //     const endDate = weatherLayer.getAnimationEndDate();
-        //     const currentDate = weatherLayer.getAnimationTimeDate();
-        //     refreshTime()
-
-        //     timeSlider.min = +startDate;
-        //     timeSlider.max = +endDate;
-        //     timeSlider.value = +currentDate;
-        // });
-
-        // // Called when the animation is progressing
-        // weatherLayer.on("tick", event => {
-        //     refreshTime();
-        //     updatePointerValue(pointerLngLat);
-        // });
-
-        // // Called when the time is manually set
-        // weatherLayer.on("animationTimeSet", event => {
-        //     refreshTime()
-        // });
-
-        // When clicking on the play/pause
-        // let isPlaying = false;
-        // playPauseButton.addEventListener("click", () => {
-        //     if (isPlaying) {
-        //         weatherLayer.animateByFactor(0);
-        //         playPauseButton.innerText = "Play 3600x";
-        //     } else {
-        //         weatherLayer.animateByFactor(3600);
-        //         playPauseButton.innerText = "Pause";
-        //     }
-
-        //     isPlaying = !isPlaying;
-        // });
-
-        // Update the date time display
-        // function refreshTime() {
-        //     const d = weatherLayer.getAnimationTimeDate();
-        //     timeTextDiv.innerText = d.toString();
-        //     timeSlider.value = +d;
-        // }
-
-        // map.on('mouseout', function (evt) {
-        //     if (!evt.originalEvent.relatedTarget) {
-        //         pointerDataDiv.innerText = "";
-        //         pointerLngLat = null;
-        //     }
-        // });
-
-        // function updatePointerValue(lngLat: any) {
-        //     if (!lngLat) return;
-        //     pointerLngLat = lngLat;
-        //     const value = weatherLayer.pickAt(lngLat.lng, lngLat.lat);
-        //     if (!value) {
-        //         pointerDataDiv.innerText = "";
-        //         return;
-        //     }
-        //     pointerDataDiv.innerText = `${value.speedMetersPerSecond.toFixed(1)} m/s`
-        // }
-
-        // map.on('mousemove', (e: any) => {
-        // updatePointerValue(e.lngLat);
-        // });
-        map.on("style.load", () => {
-            console.log("style loaded, modify labels");
-            map.setLayoutProperty("country-label", "text-field", [
-                "case",
-                ["==", ["get", "iso_3166_1"], "TW"],
-                "台湾",
-                ["get", "name"]
-            ]);
         });
         map.on('load', async () => {
+
+            // const coordinatesA = [113.564, 34.4]; // [经度, 纬度]
+            // const markerEl = document.createElement('div');
+            // markerEl.className = 'custom-marker'; // 用于 CSS 样式
+            // markerEl.style.backgroundColor = 'blue';
+            // markerEl.style.width = '20px';
+            // markerEl.style.height = '20px';
+            // markerEl.style.borderRadius = '50%';
+            // markerEl.style.cursor = 'pointer';
+            // // 创建 Marker
+            // const markerA = new Marker({
+            //     element: markerEl, // 传入自定义的 HTML 元素
+            //     anchor: 'bottom'   // 锚点设置在底部
+            // })
+            //     .setLngLat(coordinatesA as any)
+            //     .setPopup(
+            //         // 添加一个弹窗
+            //         new Popup({ offset: 25 })
+            //             .setHTML('<h3>地标A</h3><p>这是一个HTML Marker</p>')
+            //     )
+            //     .addTo(map);
             // 示例：假设 MapTiler 样式中包含名为 "Boundary line" 的图层
             // 您需要根据您使用的具体样式来确定图层ID
-            const boundaryLayerIds = ["Boundary line", "Country border"]; // 示例图层ID
+            // const boundaryLayerIds = ["Boundary line", "Country border"]; // 示例图层ID
 
-            boundaryLayerIds.forEach(id => {
+            // boundaryLayerIds.forEach(id => {
 
-                if (map.getLayer(id)) {
-                    map.setLayoutProperty(id, 'visibility', 'none');
-                }
-            });
+            //     if (map.getLayer(id)) {
+            //         map.setLayoutProperty(id, 'visibility', 'none');
+            //     }
+            // });
 
-            const data = await fetch('https://geojson.cn/api/china/1.6.2/china.json').then(res => res.json());
-            console.log('data', data);
+            const chinaJSON = await fetch('https://geojson.cn/api/china/1.6.2/china.json').then(res => res.json());
+            const data = await fetch('/marker.json').then(res => res.json());
+            console.log('data', data, chinaJSON);
 
-            map.addSource('custom-china-boundary', {
+            map.addSource('custom-points-data', {
                 type: 'geojson',
                 data: data // 您的自定义数据
             });
 
-            const labelLayerId = 'Place labels'; // 示例图层 ID，您可能需要替换
-            console.log('map.getLayer(labelLayerId)', map.getLayer(labelLayerId))
+            map.addLayer({
+                'id': 'custom-points-layer',
+                'type': 'symbol', // 关键类型：Symbol
+                'source': 'custom-points-data',
+                'layout': {
+                    // 图标设置 (Symbol)
+                    'icon-image': 'building-icon',      // 使用上面加载的图标ID
+                    'icon-size': 0.8,                   // 缩放大小
+                    'icon-allow-overlap': true,         // 允许图标重叠
 
-            if (map.getLayer(labelLayerId)) {
-                // 构建新的 'text-field' 表达式
-                // 表达式逻辑：如果 'name' 属性是 '中華民國' (或 'Republic of China' / 'Taiwan, Province of China' 等), 则显示 '臺灣' (或 '台湾')，否则保持原样。
+                    // 文本设置 (Label)
+                    'text-field': ['get', 'wfname'],      // 显示 GeoJSON properties 中的 'name' 字段
+                    'text-font': ['Noto Sans Regular'], // 字体，确保地图样式支持
+                    'text-size': 14,
+                    'text-offset': [0, 1.5],            // 文本相对于图标的位置 [X, Y]
+                    'text-anchor': 'top',                // 文本锚点
 
-                const originalTextField = map.getLayoutProperty(labelLayerId, 'text-field');
+                },
+                'paint': {
+                    'text-color': '#000000',            // 文本颜色
+                    'text-halo-color': '#ffffff',       // 文本描边颜色
+                    'text-halo-width': 1.5,              // 文本描边宽度
 
-                // 使用 'case' 表达式进行替换
-                const newTextField = [
-                    'case',
-                    // 检查原始属性（这里假设是 'name' 属性）
-                    ['==', ['get', 'name'], '中華民國'], '臺灣',
-                    ['==', ['get', 'name'], 'Republic of China'], 'Taiwan',
-                    ['==', ['get', 'name'], 'Taiwan, Province of China'], 'Taiwan',
-
-                    // 默认值：使用原始的 text-field 设置
-                    originalTextField || ['get', 'name']
-                ];
-
-                // 应用新的表达式到图层
-                map.setLayoutProperty(labelLayerId, 'text-field', newTextField);
-
-                console.log("地图标签已修改：中華民國 -> 臺灣");
-            } else {
-                console.error(`无法找到标签图层: ${labelLayerId}`);
-            }
-
-            // 3. 添加 Layer 来渲染边界线
-            // map.addLayer({
-            //     id: 'custom-china-line',
-            //     type: 'line',
-            //     source: 'custom-china-boundary',
-            //     paint: {
-            //         'line-color': '#003CFF', // 边界线颜色
-            //         'line-width': 2         // 边界线宽度
-            //     }
-            // }, 'water');
-
-            // ... 继续步骤三：添加您的自定义 GeoJSON
+                }
+            });
         });
         const appContainer = map.getContainer();
         const markerContainer = document.createElement("div");
@@ -303,13 +221,13 @@ export class Weather {
 
             // While moving the map, this event is triggered many times per seconds
             // so we only perform a soft update (that could be debounced)
-            map.on("move", softUpdateMarkers);
+            // map.on("move", softUpdateMarkers);
 
             // When done moving, we perform a full update
-            map.on("moveend", updateMarkers)
+            // map.on("moveend", updateMarkers)
 
             // Full update at init
-            updateMarkers();
+            // updateMarkers();
         })()
 
 
