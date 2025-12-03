@@ -61,7 +61,6 @@ export function Windy() {
       iconAnchor: [12, 12],
       popupAnchor: [0, 0],
     });
-    console.log(leaflet, 'lllll');
     initializedRef.current = true;
     windyInitFn(options, (windyAPI: WindyAPI) => {
       const { map } = windyAPI;
@@ -69,11 +68,12 @@ export function Windy() {
       for (const item of geoJson.features) {
         const { geometry, properties } = item;
         const { coordinates } = geometry;
-        const { wfname } = properties;
+        const { wfname = '' } = properties;
         const [lon, lat] = coordinates;
+        const icon = wfname?.includes('风') ? windDriven : solarDriven;
         const marker = leaflet
           .marker([lat, lon], {
-            icon: windDriven,
+            icon: icon,
           })
           .addTo(map);
         marker.bindPopup(wfname);
