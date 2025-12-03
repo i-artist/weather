@@ -1,6 +1,6 @@
 import * as echarts from 'echarts';
 import { useEffect, useRef, type ReactNode } from 'react';
-import Map from './components/map.jsx';
+import { Windy } from './components/windy.js';
 
 const LEFT_ITEMS = [
   {
@@ -141,7 +141,8 @@ export default function Dashboard() {
             ))}
           </div>
           <div style={{ flex: 10 }}>
-            <Map />
+            {/* <Map /> */}
+            <Windy></Windy>
           </div>
           <div
             style={{
