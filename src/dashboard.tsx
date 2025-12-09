@@ -1,8 +1,9 @@
+import { useRequest } from 'ahooks';
 import * as echarts from 'echarts';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Windy } from './components/windy.js';
 
-function formatNumber(num, maximumFractionDigits = 2) {
+function formatNumber(num: number, maximumFractionDigits = 2) {
   const number = Number(num);
 
   // 检查是否为有效数字
@@ -136,17 +137,26 @@ export default function Dashboard() {
     }[]
   >(genRightItems([1410.26, 1563.39, 5829.85, 71, 1734]));
 
-  // useRequest(
-  //   async () => {
-  //     const res = await fetch('/dashboard.json');
-  //     const json = await res.json();
-  //     setLeftItems(genLeftItems(json.left));
-  //     setRightItems(genRightItems(json.right));
-  //   },
-  //   {
-  //     pollingInterval: 3000,
-  //   },
-  // );
+  const [pieOption, setPieOption] = useState(PIE_OPTION);
+  const [lineOption, setLineOption] = useState(LINE_OPTION);
+  const [barOption, setBarOption] = useState(Option);
+
+  const [info, setInfo] = useState({ coal: 881323.43, co2: 452756.38 });
+
+  useRequest(
+    async () => {
+      // const res = await fetch('/dashboard.json');
+      const json = await Promise.resolve([
+        4102951.27, 1256.77, 10102.27, 717951.85, 685721.32,
+      ]);
+      // const json = await res.json();
+      setLeftItems(genLeftItems(json));
+      // setRightItems(genRightItems(json));
+    },
+    {
+      pollingInterval: 3000,
+    },
+  );
   return (
     <div style={{ height: '100vh', overflow: 'auto', background: '#010102' }}>
       <div
@@ -222,17 +232,17 @@ export default function Dashboard() {
           >
             <Card
               title="年完成率"
-              value={<Chart option={PIE_OPTION} />}
+              value={<Chart option={pieOption} />}
               unit="发电量"
               style={{ margin: 0, width: '144px' }}
             ></Card>
           </div>
           <div style={{ flex: 11, display: 'flex' }}>
             <div style={{ flex: 5 }}>
-              <Chart option={Option}></Chart>
+              <Chart option={barOption}></Chart>
             </div>
             <div style={{ flex: 5 }}>
-              <Chart option={LINE_OPTION}></Chart>
+              <Chart option={lineOption}></Chart>
             </div>
             <div
               style={{
@@ -257,7 +267,9 @@ export default function Dashboard() {
                 }}
               >
                 <div style={{ color: '#e6f2f3', fontSize: 16 }}>节约标准煤</div>
-                <div style={{ color: '#0ef9f2', fontSize: 24 }}>881,323.43</div>
+                <div style={{ color: '#0ef9f2', fontSize: 24 }}>
+                  {formatNumber(info.coal)}
+                </div>
               </div>
               <div
                 style={{
@@ -268,7 +280,9 @@ export default function Dashboard() {
                 }}
               >
                 <div style={{ color: '#e6f2f3', fontSize: 16 }}>CO2减排量</div>
-                <div style={{ color: '#0ef9f2', fontSize: 24 }}>452,756.63</div>
+                <div style={{ color: '#0ef9f2', fontSize: 24 }}>
+                  {formatNumber(info.co2)}
+                </div>
               </div>
               <div style={{ flex: 1 }}></div>
             </div>
