@@ -1,9 +1,10 @@
 import { useRequest } from 'ahooks';
 import * as echarts from 'echarts';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { baseInfo } from './assets/data.js';
 import { Windy } from './components/windy.js';
 
-function formatNumber(num: number, maximumFractionDigits = 2) {
+function formatNumber(num: string | number, maximumFractionDigits = 2) {
   const number = Number(num);
 
   // 检查是否为有效数字
@@ -16,7 +17,7 @@ function formatNumber(num: number, maximumFractionDigits = 2) {
     maximumFractionDigits: maximumFractionDigits,
   });
 }
-function genLeftItems(arr: number[]) {
+function genLeftItems(arr: number[] | string[]) {
   const LEFT_ITEMS = [
     {
       title: '累计发电量',
@@ -48,7 +49,7 @@ function genLeftItems(arr: number[]) {
   return LEFT_ITEMS;
 }
 
-function genRightItems(arr: number[]) {
+function genRightItems(arr: number[] | string[]) {
   const RIGHT_ITEMS = [
     {
       title: '总有功',
@@ -141,22 +142,53 @@ export default function Dashboard() {
   const [lineOption, setLineOption] = useState(LINE_OPTION);
   const [barOption, setBarOption] = useState(Option);
 
-  const [info, setInfo] = useState({ coal: 881323.43, co2: 452756.38 });
+  const [info, setInfo] = useState({ saveCoal: '881323.43', co2: '452756.38' });
 
   useRequest(
     async () => {
       // const res = await fetch('/dashboard.json');
-      const json = await Promise.resolve([
-        4102951.27, 1256.77, 10102.27, 717951.85, 685721.32,
-      ]);
+      const json = await Promise.resolve(baseInfo);
       // const json = await res.json();
-      setLeftItems(genLeftItems(json));
-      // setRightItems(genRightItems(json));
+      const data = json?.data?.cli?.dps?.ModelData?.['00'];
+      const deviceNum = data.sn_top_DeviceNum; // 设备数量
+      const fieldNum = data?.sn_top_FieldNum; // 场站数量
+      const saveCoal = data.sn_top_SaveCoal; // 节约煤量
+      const co2 = data.sn_top_CO2; // 减少co2
+      const yearPwrRate = data.sn_top_YearPwrRate; // 年发电率
+      const capacity = data.sn_top_Capacity; // 装机容量
+      const equUtilHours = data.sn_top_EquUtilHours; // 等效利用小时
+      const totalPower = data.sn_top_TotalPower; // 等效发电量
+      const annualPower = data.sn_top_AnnualPower; // 年度发电量
+      const yearPwr = data.sn_top_YearPwr; // 年发电量
+      const monthPwr = data.sn_top_MonthPower; // 月发电量
+      const dayPwr = data.sn_top_DayPower; // 日发电量
+      const currentPwr = data.sn_top_CurrentPower; // 当前上网电量
+      setLeftItems(
+        genLeftItems([totalPower, dayPwr, monthPwr, yearPwr, currentPwr]),
+      );
+      setRightItems(
+        genRightItems([
+          totalPower,
+          equUtilHours,
+          capacity,
+          fieldNum,
+          deviceNum,
+        ]),
+      );
+
+      setInfo({ saveCoal: saveCoal, co2 });
+      setPieOption((op) => {
+        const newOption = { ...op };
+        newOption.series[0].data[0].value = Number(yearPwrRate);
+        newOption.series[0].data[1].value = 100 - Number(yearPwrRate);
+        return newOption;
+      });
     },
     {
       pollingInterval: 3000,
     },
   );
+
   return (
     <div style={{ height: '100vh', overflow: 'auto', background: '#010102' }}>
       <div
@@ -188,10 +220,11 @@ export default function Dashboard() {
         <div style={{ flex: 8, display: 'flex' }}>
           <div
             style={{
-              flex: '0 0 170px',
+              flex: '0 0 237px',
               display: 'flex',
               flexDirection: 'column',
               padding: '0 16px 0 16px',
+              width: 260,
             }}
           >
             {leftItems.map((item) => (
@@ -204,10 +237,11 @@ export default function Dashboard() {
           </div>
           <div
             style={{
-              flex: '0 0 170px',
+              flex: '0 0 237px',
               display: 'flex',
               flexDirection: 'column',
               padding: '0px 16px 0 16px',
+              width: 260,
             }}
           >
             {rightItems.map((item) => (
@@ -224,17 +258,17 @@ export default function Dashboard() {
           <div
             style={{
               height: '100%',
-              flex: '0 0 177px',
+              flex: '0 0 238px',
               padding: '0 16px',
               display: 'flex',
-              width: 160,
+              width: 180,
             }}
           >
             <Card
               title="年完成率"
               value={<Chart option={pieOption} />}
               unit="发电量"
-              style={{ margin: 0, width: '144px' }}
+              style={{ margin: 0, width: '180px' }}
             ></Card>
           </div>
           <div style={{ flex: 11, display: 'flex' }}>
@@ -246,8 +280,8 @@ export default function Dashboard() {
             </div>
             <div
               style={{
-                flex: '0 0 138px',
-                width: 160,
+                flex: '0 0 208px',
+                width: 208,
                 display: 'flex',
                 flexDirection: 'column',
                 background: '#041f2b',
@@ -268,7 +302,7 @@ export default function Dashboard() {
               >
                 <div style={{ color: '#e6f2f3', fontSize: 16 }}>节约标准煤</div>
                 <div style={{ color: '#0ef9f2', fontSize: 24 }}>
-                  {formatNumber(info.coal)}
+                  {formatNumber(info.saveCoal)}
                 </div>
               </div>
               <div
