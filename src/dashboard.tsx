@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useRequest } from 'ahooks';
 import * as echarts from 'echarts';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -139,8 +140,8 @@ export default function Dashboard() {
   >(genRightItems([1410.26, 1563.39, 5829.85, 71, 1734]));
 
   const [pieOption, setPieOption] = useState(PIE_OPTION);
-  const [lineOption, setLineOption] = useState(LINE_OPTION);
-  const [barOption, setBarOption] = useState(Option);
+  const [lineOption] = useState(LINE_OPTION);
+  const [barOption] = useState(Option);
 
   const [info, setInfo] = useState({ saveCoal: '881323.43', co2: '452756.38' });
 
@@ -158,7 +159,7 @@ export default function Dashboard() {
       const capacity = data.sn_top_Capacity; // 装机容量
       const equUtilHours = data.sn_top_EquUtilHours; // 等效利用小时
       const totalPower = data.sn_top_TotalPower; // 等效发电量
-      const annualPower = data.sn_top_AnnualPower; // 年度发电量
+      // const annualPower = data.sn_top_AnnualPower; // 年度发电量
       const yearPwr = data.sn_top_YearPwr; // 年发电量
       const monthPwr = data.sn_top_MonthPower; // 月发电量
       const dayPwr = data.sn_top_DayPower; // 日发电量
