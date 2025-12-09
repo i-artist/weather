@@ -4,6 +4,8 @@ import * as echarts from 'echarts';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { baseInfo } from './assets/data.js';
 import { Windy } from './components/windy.js';
+import { electric } from './assets/electric.js';
+import { business } from './assets/business-indicators.js';
 
 function formatNumber(num: string | number, maximumFractionDigits = 2) {
   const number = Number(num);
@@ -140,8 +142,8 @@ export default function Dashboard() {
   >(genRightItems([1410.26, 1563.39, 5829.85, 71, 1734]));
 
   const [pieOption, setPieOption] = useState(PIE_OPTION);
-  const [lineOption] = useState(LINE_OPTION);
-  const [barOption] = useState(Option);
+  const [lineOption, setLineOption] = useState(LINE_OPTION);
+  const [barOption, setBarOption] = useState(Option);
 
   const [info, setInfo] = useState({ saveCoal: '881323.43', co2: '452756.38' });
 
@@ -189,6 +191,55 @@ export default function Dashboard() {
       pollingInterval: 3000,
     },
   );
+
+  useRequest(async () => {
+    const res = await Promise.resolve(electric)
+    const data = res?.data?.cli?.dps?.Model?.data;
+    const dates: string[] = [];
+    const plans: number[] = [];
+    const actuals: number[] = [];
+    const powerRates: number[] = [];
+    for (const item of data) {
+      dates.push(`${item.month}月`);
+      plans.push(item.hg_any_PlannedPower);
+      actuals.push(item.hg_any_ActualPower);
+      powerRates.push(Number(item.hg_any_PowerRate));
+    }
+    setBarOption((op) => {
+      const newOption = { ...op };
+      newOption.xAxis[0].data = dates;
+      newOption.series[0].data = plans;
+      newOption.series[1].data = actuals;
+      newOption.series[2].data = powerRates;
+      return newOption;
+    })
+
+  }, {
+    pollingInterval: 3000,
+  })
+
+  useRequest(async () => {
+    const res = await Promise.resolve(business)
+    const data = res?.cli?.dps?.Model?.data;
+    const dates: string[] = [];
+    const profits: number[] = [];
+    const revenues: number[] = [];
+    for (const item of data) {
+      dates.push(`${item.month}月`);
+      profits.push(item.hg_any_Profit);
+      revenues.push(item.hg_any_Income);
+    }
+    setLineOption((op) => {
+      const newOption = { ...op };
+      newOption.xAxis.data = dates;
+      newOption.series[0].data = profits;
+      newOption.series[1].data = revenues;
+      return newOption;
+    })
+
+  }, {
+    pollingInterval: 3000,
+  });
 
   return (
     <div style={{ height: '100vh', overflow: 'auto', background: '#010102' }}>
