@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Select } from 'antd';
+import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const options = {
@@ -32,55 +33,117 @@ type WindyWindow = Window & {
   L?: LeafletLike;
 };
 
+// function kelvinToCelsius(kelvin: number, decimal = 1) {
+//   return Number((kelvin - 273.15).toFixed(decimal));
+// }
+
 export function Windy() {
   const initializedRef = useRef(false);
   const [markers, setMarkers] = useState<any[]>([]);
   const windyRef = useRef<WindyAPI>(null);
-  const tryInit = useCallback((geoJson: any) => {
-    if (initializedRef.current || typeof window === 'undefined') {
-      return;
-    }
+  const onShowPopup = useCallback((marker: any) => {
+    (window as any).L.popup()
+      .setLatLng([marker.coordinates[1], marker.coordinates[0]])
+      .setContent(`名称：${marker.label} `)
+      .openOn(windyRef.current?.map);
+    axios
+      .post(
+        'https://api-pro-openet.terraqt.com/v1/aifs_surface/point',
+        {
+          lon: marker.coordinates[0],
+          lat: marker.coordinates[1],
+          mete_vars: ['ssrd', 'u10m', 'v10m'],
+          // time: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
+          // time: dayjs().add(1, 'day').format('YYYY-MM-DD') + ' 08:00:00',
+        },
+        {
+          headers: {
+            token: 'jBDMwETZyMzNhBDMwEGMwM2YwkzNzYWN',
+          },
+        },
+      )
+      .then((res) => {
+        console.log(res);
+        const values = res?.data?.data?.data?.[0]?.values?.[0];
+        const ssrd = values?.[0];
+        const u10m = values?.[1];
+        const v10m = values?.[2];
 
-    const windyWindow = window as WindyWindow;
-    const windyInitFn = windyWindow.windyInit;
-    const leaflet = windyWindow.L;
-
-    if (!windyInitFn || !leaflet) {
-      return;
-    }
-
-    const windDriven = leaflet.icon({
-      iconUrl: 'wind.gif',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-      popupAnchor: [0, 0],
-    });
-    const solarDriven = leaflet.icon({
-      iconUrl: 'solar.gif',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-      popupAnchor: [0, 0],
-    });
-    initializedRef.current = true;
-    windyInitFn(options, (windyAPI: WindyAPI) => {
-      const { map } = windyAPI;
-      windyRef.current = windyAPI;
-      for (const item of geoJson.features) {
-        const { geometry, properties } = item;
-        const { coordinates } = geometry;
-        const { wfname = '' } = properties;
-        const [lon, lat] = coordinates;
-        const icon = wfname?.includes('风') ? windDriven : solarDriven;
-        const marker = leaflet
-          .marker([lat, lon], {
-            icon: icon,
-          })
-          .addTo(map);
-        marker.bindPopup(wfname);
-        // leaflet.popup().setLatLng([lat, lon]).setContent(name).openOn(map);
-      }
-    });
+        const content = marker.label?.includes('风')
+          ? `
+                <div>地面10米风U分量：${u10m ? u10m?.toFixed(2) : '0'}m/s</div>
+                <div>地面10米风V分量：${v10m ? v10m?.toFixed(2) : '0'}m/s</div>
+          `
+          : ` <div>平均辐照度：${ssrd ? ssrd.toFixed(2) : '0'}W/m²</div>`;
+        (window as any).L.popup()
+          .setLatLng([marker.coordinates[1], marker.coordinates[0]])
+          .setContent(
+            `名称：${marker.label}
+               ${content}
+               
+            `,
+          )
+          .openOn(windyRef.current?.map);
+      })
+      .catch(() => {
+        (window as any).L.popup()
+          .setLatLng([marker.coordinates[1], marker.coordinates[0]])
+          .setContent(`名称：${marker.label} `)
+          .openOn(windyRef.current?.map);
+      });
   }, []);
+
+  const tryInit = useCallback(
+    (geoJson: any) => {
+      if (initializedRef.current || typeof window === 'undefined') {
+        return;
+      }
+
+      const windyWindow = window as WindyWindow;
+      const windyInitFn = windyWindow.windyInit;
+      const leaflet = windyWindow.L;
+
+      if (!windyInitFn || !leaflet) {
+        return;
+      }
+
+      const windDriven = leaflet.icon({
+        iconUrl: 'wind.gif',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, 0],
+      });
+      const solarDriven = leaflet.icon({
+        iconUrl: 'solar.gif',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, 0],
+      });
+      initializedRef.current = true;
+      windyInitFn(options, (windyAPI: WindyAPI) => {
+        const { map } = windyAPI;
+        windyRef.current = windyAPI;
+        for (const item of geoJson.features) {
+          const { geometry, properties } = item;
+          const { coordinates } = geometry;
+          const { wfname = '' } = properties;
+          const [lon, lat] = coordinates;
+          const icon = wfname?.includes('风') ? windDriven : solarDriven;
+          const marker = leaflet
+            .marker([lat, lon], {
+              icon: icon,
+            })
+            .addTo(map);
+          marker.bindPopup(wfname);
+          marker.on('click', () => {
+            onShowPopup({ label: wfname, coordinates: [lon, lat] });
+          });
+          // leaflet.popup().setLatLng([lat, lon]).setContent(name).openOn(map);
+        }
+      });
+    },
+    [onShowPopup],
+  );
 
   const onSelectChange = (value: any) => {
     const marker = markers.find((item: any) => item.value === value);
@@ -91,10 +154,8 @@ export function Windy() {
         lat: marker.coordinates[1],
         lon: marker.coordinates[0],
       });
-      (window as any).L.popup()
-        .setLatLng([marker.coordinates[1], marker.coordinates[0]])
-        .setContent(marker.label)
-        .openOn(windyRef.current?.map);
+      onShowPopup(marker);
+
       //   (windyRef.current?.map as any).flyTo({
       //     center: marker.coordinates,
       //     zoom: 9, // 放大到合适的级别

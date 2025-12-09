@@ -41,7 +41,7 @@ export default function Map() {
     if (marker) {
       weather.current?.map.flyTo({
         center: marker.coordinates,
-        zoom: 9, // 放大到合适的级别
+        zoom: 1, // 放大到合适的级别
         essential: true,
         maxDuration: 300,
       });

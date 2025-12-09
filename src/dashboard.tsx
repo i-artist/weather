@@ -1,62 +1,83 @@
 import * as echarts from 'echarts';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Windy } from './components/windy.js';
 
-const LEFT_ITEMS = [
-  {
-    title: '累计发电量',
-    unit: '万kWh',
-    value: '4,102,951.27',
-  },
-  {
-    title: '日发电量',
-    unit: '万kWh',
-    value: '1,256.77',
-  },
-  {
-    title: '月发电量',
-    unit: '万kWh',
-    value: '10,102.27',
-  },
-  {
-    title: '年发电量',
-    unit: '万kWh',
-    value: '717,951.85',
-  },
-  {
-    title: '年上网电量',
-    unit: '万kWh',
-    value: '685,721.32',
-  },
-];
+function formatNumber(num, maximumFractionDigits = 2) {
+  const number = Number(num);
 
-const RIGHT_ITEMS = [
-  {
-    title: '总有功',
-    unit: 'MW',
-    value: '1410.26',
-  },
-  {
-    title: '等效利用小时',
-    unit: 'h',
-    value: '1563.39',
-  },
-  {
-    title: '总装机容量',
-    unit: 'MW',
-    value: '5,829.85',
-  },
-  {
-    title: '场站',
-    unit: '个',
-    value: '71',
-  },
-  {
-    title: '设备',
-    unit: '个',
-    value: '1,734',
-  },
-];
+  // 检查是否为有效数字
+  if (isNaN(number)) {
+    return num.toString();
+  }
+
+  return number.toLocaleString('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: maximumFractionDigits,
+  });
+}
+function genLeftItems(arr: number[]) {
+  const LEFT_ITEMS = [
+    {
+      title: '累计发电量',
+      unit: '万kWh',
+      value: formatNumber(arr[0]),
+    },
+    {
+      title: '日发电量',
+      unit: '万kWh',
+      value: formatNumber(arr[1]),
+    },
+    {
+      title: '月发电量',
+      unit: '万kWh',
+      value: formatNumber(arr[2]),
+    },
+    {
+      title: '年发电量',
+      unit: '万kWh',
+      value: formatNumber(arr[3]),
+    },
+    {
+      title: '年上网电量',
+      unit: '万kWh',
+      value: formatNumber(arr[4]),
+    },
+  ];
+
+  return LEFT_ITEMS;
+}
+
+function genRightItems(arr: number[]) {
+  const RIGHT_ITEMS = [
+    {
+      title: '总有功',
+      unit: 'MW',
+      value: formatNumber(arr[0]),
+    },
+    {
+      title: '等效利用小时',
+      unit: 'h',
+      value: formatNumber(arr[1]),
+    },
+    {
+      title: '总装机容量',
+      unit: 'MW',
+      value: formatNumber(arr[2]),
+    },
+    {
+      title: '场站',
+      unit: '个',
+      value: formatNumber(arr[3]),
+    },
+    {
+      title: '设备',
+      unit: '个',
+      value: formatNumber(arr[4]),
+    },
+  ];
+
+  return RIGHT_ITEMS;
+}
 
 const LINE_OPTION = {
   title: {
@@ -99,6 +120,33 @@ const LINE_OPTION = {
 };
 
 export default function Dashboard() {
+  const [leftItems, setLeftItems] = useState<
+    {
+      title: string;
+      unit: string;
+      value: string;
+    }[]
+  >(genLeftItems([4102951.27, 1256.77, 10102.27, 717951.85, 685721.32]));
+
+  const [rightItems, setRightItems] = useState<
+    {
+      title: string;
+      unit: string;
+      value: string;
+    }[]
+  >(genRightItems([1410.26, 1563.39, 5829.85, 71, 1734]));
+
+  // useRequest(
+  //   async () => {
+  //     const res = await fetch('/dashboard.json');
+  //     const json = await res.json();
+  //     setLeftItems(genLeftItems(json.left));
+  //     setRightItems(genRightItems(json.right));
+  //   },
+  //   {
+  //     pollingInterval: 3000,
+  //   },
+  // );
   return (
     <div style={{ height: '100vh', overflow: 'auto', background: '#010102' }}>
       <div
@@ -136,7 +184,7 @@ export default function Dashboard() {
               padding: '0 16px 0 16px',
             }}
           >
-            {LEFT_ITEMS.map((item) => (
+            {leftItems.map((item) => (
               <Card key={item.title} {...item}></Card>
             ))}
           </div>
@@ -152,7 +200,7 @@ export default function Dashboard() {
               padding: '0px 16px 0 16px',
             }}
           >
-            {RIGHT_ITEMS.map((item) => (
+            {rightItems.map((item) => (
               <Card key={item.title} {...item}></Card>
             ))}
           </div>
@@ -208,7 +256,7 @@ export default function Dashboard() {
                   justifyContent: 'center',
                 }}
               >
-                <div style={{ color: '#2f4a58', fontSize: 16 }}>节约标准煤</div>
+                <div style={{ color: '#e6f2f3', fontSize: 16 }}>节约标准煤</div>
                 <div style={{ color: '#0ef9f2', fontSize: 24 }}>881,323.43</div>
               </div>
               <div
@@ -219,7 +267,7 @@ export default function Dashboard() {
                   justifyContent: 'center',
                 }}
               >
-                <div style={{ color: '#2f4a58', fontSize: 16 }}>CO2减排量</div>
+                <div style={{ color: '#e6f2f3', fontSize: 16 }}>CO2减排量</div>
                 <div style={{ color: '#0ef9f2', fontSize: 24 }}>452,756.63</div>
               </div>
               <div style={{ flex: 1 }}></div>
