@@ -167,17 +167,17 @@ export default function Dashboard() {
       const deviceNum = data.sn_top_DeviceNum; // 设备数量
       const fieldNum = data?.sn_top_FieldNum; // 场站数量
       const saveCoal = data.sn_top_SaveCoal; // 节约煤量
-      const co2 = data.sn_top_CO2; // 减少co2
+      const co2 = data.sn_top_CO2 / 1000; // 减少co2
       const yearPwrRate = data.sn_top_YearPwrRate; // 年发电率
-      const capacity = data.sn_top_Capacity; // 装机容量
+      const capacity = data.sn_top_Capacity / 1000; // 装机容量
       const equUtilHours = data.sn_top_EquUtilHours; // 等效利用小时
-      const totalPower = data.sn_top_TotalPower; // 等效发电量
+      const totalPower = data.sn_top_TotalPower / 10000; // 等效发电量
       // const annualPower = data.sn_top_AnnualPower; // 年度发电量
-      const yearPwr = data.sn_top_AnnualPower; // 年发电量
-      const monthPwr = data.sn_top_MonthPower; // 月发电量
-      const dayPwr = data.sn_top_DayPower; // 日发电量
-      const sn_top_YearPwr = data.sn_top_YearPwr; // 年上网电量
-      const sn_top_CurrentPower = data.sn_top_CurrentPower;
+      const yearPwr = data.sn_top_AnnualPower / 10000; // 年发电量
+      const monthPwr = data.sn_top_MonthPower / 10000; // 月发电量
+      const dayPwr = data.sn_top_DayPower / 10000; // 日发电量
+      const sn_top_YearPwr = data.sn_top_YearPwr / 10000; // 年上网电量
+      const sn_top_CurrentPower = data.sn_top_CurrentPower / 1000; // 总有功
       setLeftItems(
         genLeftItems([totalPower, dayPwr, monthPwr, yearPwr, sn_top_YearPwr]),
       );
@@ -191,7 +191,7 @@ export default function Dashboard() {
         ]),
       );
 
-      setInfo({ saveCoal: saveCoal, co2 });
+      setInfo({ saveCoal: saveCoal, co2: co2 as unknown as string });
       setPieOption((op) => {
         const newOption = { ...op };
         newOption.series[0].data[0].value = Number(yearPwrRate);
@@ -292,11 +292,11 @@ export default function Dashboard() {
         <div style={{ flex: 8, display: 'flex' }}>
           <div
             style={{
-              flex: '0 0 237px',
+              flex: '0 0 200px',
               display: 'flex',
               flexDirection: 'column',
               padding: '0 16px 0 16px',
-              width: 260,
+              width: 240,
               overflow: 'hidden',
             }}
           >
@@ -310,12 +310,12 @@ export default function Dashboard() {
           </div>
           <div
             style={{
-              flex: '0 0 237px',
+              flex: '0 0 200px',
               display: 'flex',
               flexDirection: 'column',
               padding: '0px 16px 0 16px',
               overflow: 'hidden',
-              width: 260,
+              width: 240,
             }}
           >
             {rightItems.map((item) => (
@@ -332,7 +332,7 @@ export default function Dashboard() {
           <div
             style={{
               height: '100%',
-              flex: '0 0 238px',
+              flex: '0 0 200px',
               padding: '0 16px',
               display: 'flex',
               width: 180,
@@ -354,8 +354,8 @@ export default function Dashboard() {
             </div>
             <div
               style={{
-                flex: '0 0 208px',
-                width: 208,
+                flex: '0 0 170px',
+                width: 200,
                 display: 'flex',
                 flexDirection: 'column',
                 background: '#041f2b',
