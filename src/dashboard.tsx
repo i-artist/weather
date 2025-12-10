@@ -2,10 +2,7 @@
 import { useRequest } from 'ahooks';
 import * as echarts from 'echarts';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { baseInfo } from './assets/data.js';
 import { Windy } from './components/windy.js';
-import { electric } from './assets/electric.js';
-import { business } from './assets/business-indicators.js';
 
 function formatNumber(num: string | number, maximumFractionDigits = 2) {
   const number = Number(num);
@@ -87,11 +84,18 @@ function genRightItems(arr: number[] | string[]) {
 const LINE_OPTION = {
   title: {
     text: '经营指标（全口径）',
+    left: 'left',
+    textStyle: {
+      color: '#0ef9f2',
+    },
   },
   tooltip: {
     trigger: 'axis',
   },
   legend: {
+    textStyle: {
+      color: '#f9f9fa',
+    },
     data: ['利润', '收入'],
   },
   grid: {
@@ -103,23 +107,29 @@ const LINE_OPTION = {
   xAxis: {
     type: 'category',
     boundaryGap: false,
+    // axisLabel: {
+    //   color: '#f9f9fa',
+    // },
     data: ['5月', '6月', '7月', '8月', '9月', '10月', '11月'],
   },
   yAxis: {
     type: 'value',
+    // axisLabel: {
+    //   color: '#f9f9fa',
+    // },
   },
   series: [
     {
       name: '利润',
       type: 'line',
       stack: 'Total',
-      data: [120, 132, 101, 134, 90, 230, 210],
+      data: [0, 0, 0, 0, 0, 0, 0],
     },
     {
       name: '收入',
       type: 'line',
       stack: 'Total',
-      data: [220, 182, 191, 234, 290, 330, 310],
+      data: [0, 0, 0, 0, 0, 0, 0],
     },
   ],
 };
@@ -131,7 +141,7 @@ export default function Dashboard() {
       unit: string;
       value: string;
     }[]
-  >(genLeftItems([4102951.27, 1256.77, 10102.27, 717951.85, 685721.32]));
+  >(genLeftItems([0, 0, 0, 0, 0]));
 
   const [rightItems, setRightItems] = useState<
     {
@@ -139,20 +149,21 @@ export default function Dashboard() {
       unit: string;
       value: string;
     }[]
-  >(genRightItems([1410.26, 1563.39, 5829.85, 71, 1734]));
+  >(genRightItems([0, 0, 0, 0, 0]));
 
   const [pieOption, setPieOption] = useState(PIE_OPTION);
   const [lineOption, setLineOption] = useState(LINE_OPTION);
   const [barOption, setBarOption] = useState(Option);
 
-  const [info, setInfo] = useState({ saveCoal: '881323.43', co2: '452756.38' });
+  const [info, setInfo] = useState({ saveCoal: '0', co2: '0' });
 
   useRequest(
     async () => {
-      // const res = await fetch('/dashboard.json');
-      const json = await Promise.resolve(baseInfo);
+      const res = await fetch('https://demo.theonly.vip:16666/api/baseinfo');
+      const json = await res.json();
       // const json = await res.json();
       const data = json?.data?.cli?.dps?.ModelData?.['00'];
+      // 年上网电量 sn_top_YearPwr   总有功 sn_top_CurrentPower
       const deviceNum = data.sn_top_DeviceNum; // 设备数量
       const fieldNum = data?.sn_top_FieldNum; // 场站数量
       const saveCoal = data.sn_top_SaveCoal; // 节约煤量
@@ -162,16 +173,17 @@ export default function Dashboard() {
       const equUtilHours = data.sn_top_EquUtilHours; // 等效利用小时
       const totalPower = data.sn_top_TotalPower; // 等效发电量
       // const annualPower = data.sn_top_AnnualPower; // 年度发电量
-      const yearPwr = data.sn_top_YearPwr; // 年发电量
+      const yearPwr = data.sn_top_AnnualPower; // 年发电量
       const monthPwr = data.sn_top_MonthPower; // 月发电量
       const dayPwr = data.sn_top_DayPower; // 日发电量
-      const currentPwr = data.sn_top_CurrentPower; // 当前上网电量
+      const sn_top_YearPwr = data.sn_top_YearPwr; // 年上网电量
+      const sn_top_CurrentPower = data.sn_top_CurrentPower;
       setLeftItems(
-        genLeftItems([totalPower, dayPwr, monthPwr, yearPwr, currentPwr]),
+        genLeftItems([totalPower, dayPwr, monthPwr, yearPwr, sn_top_YearPwr]),
       );
       setRightItems(
         genRightItems([
-          totalPower,
+          sn_top_CurrentPower,
           equUtilHours,
           capacity,
           fieldNum,
@@ -192,57 +204,65 @@ export default function Dashboard() {
     },
   );
 
-  useRequest(async () => {
-    const res = await Promise.resolve(electric)
-    const data = res?.data?.cli?.dps?.Model?.data;
-    const dates: string[] = [];
-    const plans: number[] = [];
-    const actuals: number[] = [];
-    const powerRates: number[] = [];
-    for (const item of data) {
-      dates.push(`${item.month}月`);
-      plans.push(item.hg_any_PlannedPower);
-      actuals.push(item.hg_any_ActualPower);
-      powerRates.push(Number(item.hg_any_PowerRate));
-    }
-    setBarOption((op) => {
-      const newOption = { ...op };
-      newOption.xAxis[0].data = dates;
-      newOption.series[0].data = plans;
-      newOption.series[1].data = actuals;
-      newOption.series[2].data = powerRates;
-      return newOption;
-    })
+  useRequest(
+    async () => {
+      // const res = await Promise.resolve(electric);
+      const res = await fetch('https://demo.theonly.vip:16666/api/electric');
+      const json = await res.json();
+      const data = json?.data?.cli?.dps?.Model?.data;
+      const dates: string[] = [];
+      const plans: number[] = [];
+      const actuals: number[] = [];
+      const powerRates: number[] = [];
+      for (const item of data) {
+        dates.push(`${item.month}月`);
+        plans.push(item.hg_any_PlannedPower);
+        actuals.push(item.hg_any_ActualPower);
+        powerRates.push(Number(item.hg_any_PowerRate));
+      }
+      setBarOption((op) => {
+        const newOption = { ...op };
+        newOption.xAxis[0].data = dates;
+        newOption.series[0].data = plans;
+        newOption.series[1].data = actuals;
+        newOption.series[2].data = powerRates;
+        return newOption;
+      });
+    },
+    {
+      pollingInterval: 3000,
+    },
+  );
 
-  }, {
-    pollingInterval: 3000,
-  })
-
-  useRequest(async () => {
-    const res = await Promise.resolve(business)
-    const data = res?.cli?.dps?.Model?.data;
-    const dates: string[] = [];
-    const profits: number[] = [];
-    const revenues: number[] = [];
-    for (const item of data) {
-      dates.push(`${item.month}月`);
-      profits.push(item.hg_any_Profit);
-      revenues.push(item.hg_any_Income);
-    }
-    setLineOption((op) => {
-      const newOption = { ...op };
-      newOption.xAxis.data = dates;
-      newOption.series[0].data = profits;
-      newOption.series[1].data = revenues;
-      return newOption;
-    })
-
-  }, {
-    pollingInterval: 3000,
-  });
+  useRequest(
+    async () => {
+      // const res = await Promise.resolve(business);
+      const res = await fetch('https://demo.theonly.vip:16666/api/business');
+      const json = await res.json();
+      const data = json?.data?.cli?.dps?.Model?.data;
+      const dates: string[] = [];
+      const profits: number[] = [];
+      const revenues: number[] = [];
+      for (const item of data) {
+        dates.push(`${item.month}月`);
+        profits.push(item.hg_any_Profit);
+        revenues.push(item.hg_any_Income);
+      }
+      setLineOption((op) => {
+        const newOption = { ...op };
+        newOption.xAxis.data = dates;
+        newOption.series[0].data = profits;
+        newOption.series[1].data = revenues;
+        return newOption;
+      });
+    },
+    {
+      pollingInterval: 3000,
+    },
+  );
 
   return (
-    <div style={{ height: '100vh', overflow: 'auto', background: '#010102' }}>
+    <div style={{ height: '100vh', overflow: 'auto', background: '#0a152d' }}>
       <div
         style={{
           height: '100%',
@@ -277,6 +297,7 @@ export default function Dashboard() {
               flexDirection: 'column',
               padding: '0 16px 0 16px',
               width: 260,
+              overflow: 'hidden',
             }}
           >
             {leftItems.map((item) => (
@@ -293,6 +314,7 @@ export default function Dashboard() {
               display: 'flex',
               flexDirection: 'column',
               padding: '0px 16px 0 16px',
+              overflow: 'hidden',
               width: 260,
             }}
           >
@@ -352,7 +374,11 @@ export default function Dashboard() {
                   justifyContent: 'center',
                 }}
               >
-                <div style={{ color: '#e6f2f3', fontSize: 16 }}>节约标准煤</div>
+                <div
+                  style={{ color: '#e6f2f3', fontSize: 16, fontWeight: 'bold' }}
+                >
+                  节约标准煤
+                </div>
                 <div style={{ color: '#0ef9f2', fontSize: 24 }}>
                   {formatNumber(info.saveCoal)}
                 </div>
@@ -365,7 +391,11 @@ export default function Dashboard() {
                   justifyContent: 'center',
                 }}
               >
-                <div style={{ color: '#e6f2f3', fontSize: 16 }}>CO2减排量</div>
+                <div
+                  style={{ color: '#e6f2f3', fontSize: 16, fontWeight: 'bold' }}
+                >
+                  CO2减排量
+                </div>
                 <div style={{ color: '#0ef9f2', fontSize: 24 }}>
                   {formatNumber(info.co2)}
                 </div>
@@ -400,12 +430,13 @@ function Card(props: {
     >
       <div
         style={{
-          fontSize: 18,
+          fontSize: 16,
           padding: '4px 16px',
+          background: '#061d2d',
           borderBottom: '1px solid #0d303a',
         }}
       >
-        <span style={{ color: '#e6f2f3' }}>{title}</span>
+        <span style={{ color: '#f9f9fa', fontWeight: 'bold' }}>{title}</span>
         &nbsp;&nbsp;
         <span style={{ color: '#2f4a58' }}>{unit}</span>
       </div>
@@ -428,6 +459,13 @@ function Card(props: {
 }
 
 const Option = {
+  title: {
+    text: '年发电量',
+    left: 'left',
+    textStyle: {
+      color: '#0ef9f2',
+    },
+  },
   tooltip: {
     trigger: 'axis',
     axisPointer: {
@@ -438,6 +476,9 @@ const Option = {
     },
   },
   legend: {
+    textStyle: {
+      color: '#f9f9fa',
+    },
     data: ['计划发电量', '实际发电量', '完成率'],
   },
   xAxis: [
@@ -447,15 +488,19 @@ const Option = {
       axisPointer: {
         type: 'shadow',
       },
+      axisLabel: {
+        // color: '#f9f9fa',
+      },
     },
   ],
   yAxis: [
     {
       type: 'value',
-      name: '年发电量',
+      name: '',
       min: 0,
       max: 1250,
       axisLabel: {
+        // color: '#f9f9fa',
         formatter: '{value}',
       },
     },
@@ -465,7 +510,14 @@ const Option = {
       min: 60,
       max: 100,
       axisLabel: {
+        // color: '#f9f9fa',
         formatter: '{value} %',
+      },
+      splitLine: {
+        show: false,
+      },
+      nameTextStyle: {
+        color: '#f9f9fa',
       },
     },
   ],
@@ -481,10 +533,7 @@ const Option = {
           return value + ' 万kWh';
         },
       },
-      data: [
-        1112.0, 1224.9, 1117.0, 1123.2, 1025.6, 1176.7, 1135.6, 1162.2, 1132.6,
-        1020.0, 1096.4, 1123.3,
-      ],
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
     {
       name: '实际发电量',
@@ -497,10 +546,7 @@ const Option = {
           return value + ' 万kWh';
         },
       },
-      data: [
-        1232.6, 1225.9, 1219.0, 1226.4, 1228.7, 1270.7, 1235.6, 1282.2, 1248.7,
-        1218.8, 1206.0, 1202.3,
-      ],
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
     {
       name: '完成率',
@@ -511,9 +557,7 @@ const Option = {
           return value + ' %';
         },
       },
-      data: [
-        98.0, 92.2, 93.3, 94.5, 96.3, 90.2, 90.3, 93.4, 93.0, 96.5, 92.0, 96.2,
-      ],
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
   ],
 };
@@ -542,8 +586,8 @@ const PIE_OPTION = {
         show: false,
       },
       data: [
-        { value: 88, name: '完成率', itemStyle: { color: '#13fcfc' } },
-        { value: 12, name: '未完成率', itemStyle: { color: '#057c87' } },
+        { value: 0, name: '完成率', itemStyle: { color: '#13fcfc' } },
+        { value: 0, name: '未完成率', itemStyle: { color: '#057c87' } },
       ],
     },
   ],
