@@ -27,3 +27,15 @@ code {
 #windy #logo-wrapper {
   display: none;
 }
+
+
+
+#legend-mobile > span:first-of-type {
+  font-size: 0;
+}
+
+#legend-mobile > span:first-of-type::after {
+  content:"m/s";
+  font-size: 12px;
+  color: #fff;
+}
