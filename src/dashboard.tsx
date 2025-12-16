@@ -1,5 +1,4 @@
 import { useRequest } from 'ahooks';
-import { Button } from 'antd';
 import type { EChartsOption, SeriesOption } from 'echarts';
 import * as echarts from 'echarts';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -228,7 +227,7 @@ export default function Dashboard() {
   const [clock, setClock] = useState({ time: '', date: '' });
   const logoSrc = themeKey === 'dark' ? '/logo.png' : logoLight;
   const THEME = THEMES[themeKey];
-  const [isWindy, setIsWindy] = useState(false);
+  const [isWindy, setIsWindy] = useState(true);
   const [leftItems, setLeftItems] = useState<
     {
       title: string;
@@ -659,7 +658,7 @@ export default function Dashboard() {
                   'linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(241, 248, 255, 0.9) 60%, rgba(230, 242, 252, 0.84) 100%)',
               }}
             >
-              <Button onClick={() => setIsWindy(!isWindy)}>切换</Button>
+              {/* <Button onClick={() => setIsWindy(!isWindy)}>切换</Button> */}
               {/* 中央地图 */}
 
               {isWindy ? <Windy></Windy> : <WeatherMap></WeatherMap>}

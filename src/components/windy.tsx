@@ -64,7 +64,6 @@ export function Windy() {
         },
       )
       .then((res) => {
-        console.log(res);
         const values = res?.data?.data?.data?.[0]?.values?.[0];
         const ssrd = values?.[0];
         const u10m = values?.[1];
@@ -102,7 +101,7 @@ export function Windy() {
 
       const windyWindow = window as WindyWindow;
       const windyInitFn = windyWindow.windyInit;
-      const leaflet = windyWindow.L;
+      const leaflet = windyWindow.L as any;
 
       if (!windyInitFn || !leaflet) {
         return;
@@ -123,13 +122,40 @@ export function Windy() {
       initializedRef.current = true;
 
       windyInitFn(options, (windyAPI: WindyAPI) => {
-        const { map } = windyAPI;
-        windyRef.current = windyAPI;
+        const { map, picker, utils, broadcast } = windyAPI as any;
+        map.on('click', (e) => {
+          const { lat, lng } = e.latlng;
+          console.log('点击位置：', lat, lng);
+          picker.open({ lat, lon: lng });
+          // broadcast.once('redrawFinished', () => {
+          //   // Opening of a picker (async)
+          // });
+        });
+
+        map.eachLayer((layer) => {
+          console.log(layer, 'layer');
+          // if (layer.options && layer.options.attribution?.includes('Windy')) {
+          map.removeLayer(layer);
+          // }
+        });
 
         leaflet
-          .marker([25.037, 121.563], {})
-          .bindTooltip('中国台湾', { permanent: true, direction: 'top' })
+          .tileLayer(
+            'https://tiles-s.windy.com/tiles/v10.0/darkmap/{z}/{x}/{y}.png',
+          )
           .addTo(map);
+        windyRef.current = windyAPI;
+
+        const imageUrl = './taiwan.png',
+          imageBounds = [
+            [23.812216, 120.22655],
+            [24.173941, 121.72544],
+          ];
+        (leaflet as any).imageOverlay(imageUrl, imageBounds).addTo(map);
+        // leaflet
+        //   .marker([25.037, 121.563], {})
+        //   .bindTooltip('中国台湾', { permanent: true, direction: 'top' })
+        //   .addTo(map);
         leaflet
           .geoJSON(geojson, {
             style: function (feature) {

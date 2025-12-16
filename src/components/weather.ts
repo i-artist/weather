@@ -40,10 +40,10 @@ export class Weather {
         const map = ((window as any).map = new Map({
             container: 'map', // container's id or the HTML element to render the map
             style: MapStyle.BASE_V4,
-            zoom: 5,
+            zoom: 3,
             center: [113.5, 34.4],
             projection: 'globe',
-            projectionControl: true,
+            // projectionControl: true,
             geolocate: true,
             geolocateControl: true,
             language: 'zh',
