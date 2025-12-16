@@ -2,7 +2,7 @@
 import { Select } from 'antd';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
-
+import geojson from '../assets/geojson.json';
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
   verbose: true,
@@ -26,6 +26,7 @@ type LeafletLike = {
   popup: () => LeafletPopup;
   marker: (coords: [number, number], options: any) => any;
   icon: (options: any) => any;
+  geoJSON: any;
 };
 
 type WindyWindow = Window & {
@@ -120,9 +121,23 @@ export function Windy() {
         popupAnchor: [0, 0],
       });
       initializedRef.current = true;
+
       windyInitFn(options, (windyAPI: WindyAPI) => {
         const { map } = windyAPI;
         windyRef.current = windyAPI;
+
+        leaflet
+          .marker([25.037, 121.563], {})
+          .bindTooltip('中国台湾', { permanent: true, direction: 'top' })
+          .addTo(map);
+        leaflet
+          .geoJSON(geojson, {
+            style: function (feature) {
+              return { color: 'rgba(18, 33, 51, 0.92)', weight: 1 };
+            },
+          })
+          .addTo(map);
+
         for (const item of geoJson.features) {
           const { geometry, properties } = item;
           const { coordinates } = geometry;

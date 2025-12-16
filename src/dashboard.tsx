@@ -1,71 +1,73 @@
-import { useRequest } from "ahooks";
-import * as echarts from "echarts";
-import type { EChartsOption, SeriesOption } from "echarts";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Windy } from "./components/windy.js";
-import centerBg from "./assets/center.svg";
-import logoLight from "./assets/black.png";
+import { useRequest } from 'ahooks';
+import { Button } from 'antd';
+import type { EChartsOption, SeriesOption } from 'echarts';
+import * as echarts from 'echarts';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import logoLight from './assets/black.png';
+import centerBg from './assets/center.svg';
+import WeatherMap from './components/map';
+import { Windy } from './components/windy';
 
 const THEMES = {
   mid: {
     pageBg:
-      "radial-gradient(120% 120% at 20% 18%, rgba(99, 167, 229, 0.28) 0%, rgba(220, 238, 250, 0.96) 46%, rgba(236, 245, 251, 0.98) 100%)",
-    cardBg: "rgba(248, 252, 255, 0.9)",
-    panelBg: "rgba(243, 249, 255, 0.94)",
-    cardHeaderBg: "rgba(224, 238, 250, 0.92)",
-    cardBorder: "1px solid rgba(61, 139, 253, 0.2)",
-    accent: "#2e8df4",
-    accentAlt: "#3ac1aa",
-    textPrimary: "#0f172a",
-    textSecondary: "#334155",
-    muted: "#7c8fa6",
+      'radial-gradient(120% 120% at 20% 18%, rgba(99, 167, 229, 0.28) 0%, rgba(220, 238, 250, 0.96) 46%, rgba(236, 245, 251, 0.98) 100%)',
+    cardBg: 'rgba(248, 252, 255, 0.9)',
+    panelBg: 'rgba(243, 249, 255, 0.94)',
+    cardHeaderBg: 'rgba(224, 238, 250, 0.92)',
+    cardBorder: '1px solid rgba(61, 139, 253, 0.2)',
+    accent: '#2e8df4',
+    accentAlt: '#3ac1aa',
+    textPrimary: '#0f172a',
+    textSecondary: '#334155',
+    muted: '#7c8fa6',
     radius: 16,
-    shadow: "0 18px 42px rgba(15, 23, 42, 0.1)",
+    shadow: '0 18px 42px rgba(15, 23, 42, 0.1)',
   },
   light: {
     pageBg:
-      "radial-gradient(120% 120% at 15% 20%, rgba(255, 193, 149, 0.18) 0%, rgba(236, 245, 255, 0.96) 45%, rgba(247, 250, 255, 0.98) 100%)",
-    cardBg: "rgba(255, 255, 255, 0.9)",
-    panelBg: "rgba(255, 255, 255, 0.95)",
-    cardHeaderBg: "rgba(232, 240, 255, 0.9)",
-    cardBorder: "1px solid rgba(59, 130, 246, 0.18)",
-    accent: "#2d7cf8",
-    accentAlt: "#38c4a3",
-    textPrimary: "#0f172a",
-    textSecondary: "#334155",
-    muted: "#94a3b8",
+      'radial-gradient(120% 120% at 15% 20%, rgba(255, 193, 149, 0.18) 0%, rgba(236, 245, 255, 0.96) 45%, rgba(247, 250, 255, 0.98) 100%)',
+    cardBg: 'rgba(255, 255, 255, 0.9)',
+    panelBg: 'rgba(255, 255, 255, 0.95)',
+    cardHeaderBg: 'rgba(232, 240, 255, 0.9)',
+    cardBorder: '1px solid rgba(59, 130, 246, 0.18)',
+    accent: '#2d7cf8',
+    accentAlt: '#38c4a3',
+    textPrimary: '#0f172a',
+    textSecondary: '#334155',
+    muted: '#94a3b8',
     radius: 16,
-    shadow: "0 18px 42px rgba(15, 23, 42, 0.1)",
+    shadow: '0 18px 42px rgba(15, 23, 42, 0.1)',
   },
   sky: {
     pageBg:
-      "radial-gradient(120% 120% at 18% 16%, rgba(122, 187, 255, 0.34) 0%, rgba(225, 242, 255, 0.96) 48%, rgba(240, 247, 255, 0.99) 100%)",
-    cardBg: "rgba(255, 255, 255, 0.88)",
-    panelBg: "rgba(245, 249, 255, 0.92)",
-    cardHeaderBg: "rgba(220, 234, 255, 0.9)",
-    cardBorder: "1px solid rgba(74, 144, 226, 0.22)",
-    accent: "#3d8bfd",
-    accentAlt: "#4ad2c5",
-    textPrimary: "#0f172a",
-    textSecondary: "#3c4f63",
-    muted: "#7f8ea6",
+      'radial-gradient(120% 120% at 18% 16%, rgba(122, 187, 255, 0.34) 0%, rgba(225, 242, 255, 0.96) 48%, rgba(240, 247, 255, 0.99) 100%)',
+    cardBg: 'rgba(255, 255, 255, 0.88)',
+    panelBg: 'rgba(245, 249, 255, 0.92)',
+    cardHeaderBg: 'rgba(220, 234, 255, 0.9)',
+    cardBorder: '1px solid rgba(74, 144, 226, 0.22)',
+    accent: '#3d8bfd',
+    accentAlt: '#4ad2c5',
+    textPrimary: '#0f172a',
+    textSecondary: '#3c4f63',
+    muted: '#7f8ea6',
     radius: 18,
-    shadow: "0 20px 46px rgba(15, 23, 42, 0.12)",
+    shadow: '0 20px 46px rgba(15, 23, 42, 0.12)',
   },
   dark: {
     pageBg:
-      "radial-gradient(120% 120% at 20% 20%, rgba(38, 63, 108, 0.7) 0%, rgba(14, 23, 38, 0.95) 55%, rgba(7, 12, 20, 0.98) 100%)",
-    cardBg: "rgba(74, 148, 214, 0.16)",
-    panelBg: "rgba(58, 121, 186, 0.14)",
-    cardHeaderBg: "rgba(104, 168, 238, 0.2)",
-    cardBorder: "1px solid rgba(108, 184, 255, 0.48)",
-    accent: "#4ec8ff",
-    accentAlt: "#3bd4b8",
-    textPrimary: "#f0f6ff",
-    textSecondary: "#c8d7ed",
-    muted: "#7f92b1",
+      'radial-gradient(120% 120% at 20% 20%, rgba(38, 63, 108, 0.7) 0%, rgba(14, 23, 38, 0.95) 55%, rgba(7, 12, 20, 0.98) 100%)',
+    cardBg: 'rgba(74, 148, 214, 0.16)',
+    panelBg: 'rgba(58, 121, 186, 0.14)',
+    cardHeaderBg: 'rgba(104, 168, 238, 0.2)',
+    cardBorder: '1px solid rgba(108, 184, 255, 0.48)',
+    accent: '#4ec8ff',
+    accentAlt: '#3bd4b8',
+    textPrimary: '#f0f6ff',
+    textSecondary: '#c8d7ed',
+    muted: '#7f92b1',
     radius: 16,
-    shadow: "0 18px 46px rgba(0, 0, 0, 0.45)",
+    shadow: '0 18px 46px rgba(0, 0, 0, 0.45)',
   },
 };
 
@@ -77,7 +79,7 @@ function formatNumber(num: string | number, maximumFractionDigits = 2) {
     return num.toString();
   }
 
-  return number.toLocaleString("en-US", {
+  return number.toLocaleString('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: maximumFractionDigits,
   });
@@ -85,28 +87,28 @@ function formatNumber(num: string | number, maximumFractionDigits = 2) {
 function genLeftItems(arr: number[] | string[]) {
   const LEFT_ITEMS = [
     {
-      title: "累计发电量",
-      unit: "万kWh",
+      title: '累计发电量',
+      unit: '万kWh',
       value: formatNumber(arr[0]),
     },
     {
-      title: "日发电量",
-      unit: "万kWh",
+      title: '日发电量',
+      unit: '万kWh',
       value: formatNumber(arr[1]),
     },
     {
-      title: "月发电量",
-      unit: "万kWh",
+      title: '月发电量',
+      unit: '万kWh',
       value: formatNumber(arr[2]),
     },
     {
-      title: "年发电量",
-      unit: "万kWh",
+      title: '年发电量',
+      unit: '万kWh',
       value: formatNumber(arr[3]),
     },
     {
-      title: "年上网电量",
-      unit: "万kWh",
+      title: '年上网电量',
+      unit: '万kWh',
       value: formatNumber(arr[4]),
     },
   ];
@@ -117,28 +119,28 @@ function genLeftItems(arr: number[] | string[]) {
 function genRightItems(arr: number[] | string[]) {
   const RIGHT_ITEMS = [
     {
-      title: "总有功",
-      unit: "MW",
+      title: '总有功',
+      unit: 'MW',
       value: formatNumber(arr[0]),
     },
     {
-      title: "等效利用小时",
-      unit: "h",
+      title: '等效利用小时',
+      unit: 'h',
       value: formatNumber(arr[1]),
     },
     {
-      title: "总装机容量",
-      unit: "MW",
+      title: '总装机容量',
+      unit: 'MW',
       value: formatNumber(arr[2]),
     },
     {
-      title: "场站",
-      unit: "个",
+      title: '场站',
+      unit: '个',
       value: formatNumber(arr[3]),
     },
     {
-      title: "设备",
-      unit: "个",
+      title: '设备',
+      unit: '个',
       value: formatNumber(arr[4]),
     },
   ];
@@ -148,56 +150,56 @@ function genRightItems(arr: number[] | string[]) {
 
 const createLineOption = (
   theme: (typeof THEMES)[keyof typeof THEMES],
-  prev?: EChartsOption
+  prev?: EChartsOption,
 ) => {
   const option = {
     title: {
-      text: "经营指标（全口径）",
-      left: "left",
+      text: '经营指标（全口径）',
+      left: 'left',
       textStyle: {
         color: theme.accent,
       },
     },
     tooltip: {
-      trigger: "axis",
+      trigger: 'axis',
     },
     legend: {
       textStyle: {
         color: theme.textPrimary,
       },
-      data: ["利润", "收入"],
+      data: ['利润', '收入'],
     },
     grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "18%",
+      left: '3%',
+      right: '4%',
+      bottom: '18%',
       containLabel: true,
     },
     xAxis: {
-      type: "category",
+      type: 'category',
       boundaryGap: false,
       axisLabel: {
         color: theme.textSecondary,
       },
-      data: ["5月", "6月", "7月", "8月", "9月", "10月", "11月"],
+      data: ['5月', '6月', '7月', '8月', '9月', '10月', '11月'],
     },
     yAxis: {
-      type: "value",
+      type: 'value',
       axisLabel: {
         color: theme.textSecondary,
       },
     },
     series: [
       {
-        name: "利润",
-        type: "line",
-        stack: "Total",
+        name: '利润',
+        type: 'line',
+        stack: 'Total',
         data: [0, 0, 0, 0, 0, 0, 0],
       },
       {
-        name: "收入",
-        type: "line",
-        stack: "Total",
+        name: '收入',
+        type: 'line',
+        stack: 'Total',
         data: [0, 0, 0, 0, 0, 0, 0],
       },
     ],
@@ -219,13 +221,14 @@ const createLineOption = (
 };
 
 export default function Dashboard() {
-  const [themeKey, setThemeKey] = useState<"mid" | "light" | "sky" | "dark">(
-    "sky"
+  const [themeKey, setThemeKey] = useState<'mid' | 'light' | 'sky' | 'dark'>(
+    'sky',
   );
   const [themePanelOpen, setThemePanelOpen] = useState(false);
-  const [clock, setClock] = useState({ time: "", date: "" });
-  const logoSrc = themeKey === "dark" ? "/logo.png" : logoLight;
+  const [clock, setClock] = useState({ time: '', date: '' });
+  const logoSrc = themeKey === 'dark' ? '/logo.png' : logoLight;
   const THEME = THEMES[themeKey];
+  const [isWindy, setIsWindy] = useState(false);
   const [leftItems, setLeftItems] = useState<
     {
       title: string;
@@ -246,9 +249,9 @@ export default function Dashboard() {
   const [lineOption, setLineOption] = useState(() => createLineOption(THEME));
   const [barOption, setBarOption] = useState(() => createBarOption(THEME));
 
-  const [info, setInfo] = useState({ saveCoal: "0", co2: "0" });
+  const [info, setInfo] = useState({ saveCoal: '0', co2: '0' });
 
-  const handleThemeChange = (key: "mid" | "light" | "sky" | "dark") => {
+  const handleThemeChange = (key: 'mid' | 'light' | 'sky' | 'dark') => {
     const nextTheme = THEMES[key];
     setThemeKey(key);
     setPieOption((op) => createPieOption(nextTheme, op));
@@ -259,17 +262,17 @@ export default function Dashboard() {
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
-      const time = now.toLocaleTimeString("zh-CN", {
+      const time = now.toLocaleTimeString('zh-CN', {
         hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
       });
-      const date = now.toLocaleDateString("zh-CN", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        weekday: "long",
+      const date = now.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        weekday: 'long',
       });
       setClock({ time, date });
     };
@@ -280,10 +283,10 @@ export default function Dashboard() {
 
   useRequest(
     async () => {
-      const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
+      const res = await fetch('https://demo.theonly.vip:16666/api/baseinfo');
       const json = await res.json();
       // const json = await res.json();
-      const data = json?.data?.cli?.dps?.ModelData?.["00"];
+      const data = json?.data?.cli?.dps?.ModelData?.['00'];
       // 年上网电量 sn_top_YearPwr   总有功 sn_top_CurrentPower
       const deviceNum = data.sn_top_DeviceNum; // 设备数量
       const fieldNum = data?.sn_top_FieldNum; // 场站数量
@@ -300,7 +303,7 @@ export default function Dashboard() {
       const sn_top_YearPwr = data.sn_top_YearPwr / 10000; // 年上网电量
       const sn_top_CurrentPower = data.sn_top_CurrentPower / 1000; // 总有功
       setLeftItems(
-        genLeftItems([totalPower, dayPwr, monthPwr, yearPwr, sn_top_YearPwr])
+        genLeftItems([totalPower, dayPwr, monthPwr, yearPwr, sn_top_YearPwr]),
       );
       setRightItems(
         genRightItems([
@@ -309,7 +312,7 @@ export default function Dashboard() {
           capacity,
           fieldNum,
           deviceNum,
-        ])
+        ]),
       );
 
       setInfo({ saveCoal: saveCoal, co2: co2 as unknown as string });
@@ -325,13 +328,13 @@ export default function Dashboard() {
     },
     {
       pollingInterval: 3000,
-    }
+    },
   );
 
   useRequest(
     async () => {
       // const res = await Promise.resolve(electric);
-      const res = await fetch("https://demo.theonly.vip:16666/api/electric");
+      const res = await fetch('https://demo.theonly.vip:16666/api/electric');
       const json = await res.json();
       const data = json?.data?.cli?.dps?.Model?.data;
       const dates: string[] = [];
@@ -359,13 +362,13 @@ export default function Dashboard() {
     },
     {
       pollingInterval: 3000,
-    }
+    },
   );
 
   useRequest(
     async () => {
       // const res = await Promise.resolve(business);
-      const res = await fetch("https://demo.theonly.vip:16666/api/business");
+      const res = await fetch('https://demo.theonly.vip:16666/api/business');
       const json = await res.json();
       const data = json?.data?.cli?.dps?.Model?.data;
       const dates: string[] = [];
@@ -390,25 +393,25 @@ export default function Dashboard() {
     },
     {
       pollingInterval: 3000,
-    }
+    },
   );
 
   return (
     <div
       style={{
-        height: "100vh",
-        overflow: "auto",
+        height: '100vh',
+        overflow: 'auto',
         background: THEME.pageBg,
       }}
     >
       <div
         style={{
-          height: "100%",
+          height: '100%',
           minHeight: 500,
           minWidth: 1200,
-          display: "flex",
-          flexDirection: "column",
-          textAlign: "left",
+          display: 'flex',
+          flexDirection: 'column',
+          textAlign: 'left',
           gap: 12,
           paddingBottom: 12,
         }}
@@ -416,25 +419,25 @@ export default function Dashboard() {
         {/* 顶部头部区域 */}
         <div
           style={{
-            flex: "0 0 90px",
-            padding: "12px 32px 8px",
-            display: "grid",
-            gridTemplateColumns: "1fr auto 1fr",
-            alignItems: "center",
+            flex: '0 0 90px',
+            padding: '12px 32px 8px',
+            display: 'grid',
+            gridTemplateColumns: '1fr auto 1fr',
+            alignItems: 'center',
             backgroundImage: `url(${centerBg})`,
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "contain",
-            backgroundPosition: "center",
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
           }}
         >
           {/* 左侧天气信息 */}
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
+              display: 'flex',
+              alignItems: 'center',
               gap: 8,
               minWidth: 180,
-              justifySelf: "start",
+              justifySelf: 'start',
               padding: 0,
             }}
           >
@@ -453,31 +456,31 @@ export default function Dashboard() {
           {/* 中间标题 */}
           <div
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              pointerEvents: "none",
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              pointerEvents: 'none',
               minWidth: 0,
             }}
           >
             <div
               style={{
-                position: "relative",
-                padding: "10px 96px",
+                position: 'relative',
+                padding: '10px 96px',
                 borderRadius: 999,
-                background: "none",
-                boxShadow: "none",
-                overflow: "visible",
+                background: 'none',
+                boxShadow: 'none',
+                overflow: 'visible',
               }}
             >
               <span
                 style={{
-                  position: "relative",
+                  position: 'relative',
                   fontSize: 32,
                   fontWeight: 800,
                   letterSpacing: 6,
                   color: THEME.textPrimary,
-                  textAlign: "center",
+                  textAlign: 'center',
                 }}
               >
                 申能股份风光存储信息系统
@@ -488,17 +491,17 @@ export default function Dashboard() {
           {/* 右侧时间 + 折叠主题切换 */}
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
               gap: 16,
               minWidth: 260,
-              justifySelf: "end",
+              justifySelf: 'end',
             }}
           >
             <div
               style={{
-                textAlign: "right",
+                textAlign: 'right',
                 fontSize: 24,
                 color: THEME.textSecondary,
                 lineHeight: 1.4,
@@ -511,13 +514,13 @@ export default function Dashboard() {
                   color: THEME.textPrimary,
                 }}
               >
-                {clock.time || "--:--:--"}
+                {clock.time || '--:--:--'}
               </div>
-              <div>{clock.date || "----/--/--"}</div>
+              <div>{clock.date || '----/--/--'}</div>
             </div>
 
             {/* 折叠主题按钮 */}
-            <div style={{ position: "relative" }}>
+            <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setThemePanelOpen((v) => !v)}
                 style={{
@@ -526,12 +529,12 @@ export default function Dashboard() {
                   borderRadius: 999,
                   border: `1px solid ${THEME.cardBorder}`,
                   background:
-                    "radial-gradient(circle at 30% 20%, rgba(255,255,255,0.22) 0, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 70%)",
+                    'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.22) 0, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 70%)',
                   boxShadow: THEME.shadow,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
                   color: THEME.textPrimary,
                 }}
               >
@@ -540,7 +543,7 @@ export default function Dashboard() {
               {themePanelOpen && (
                 <div
                   style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: 48,
                     right: 0,
                     padding: 8,
@@ -548,18 +551,18 @@ export default function Dashboard() {
                     background: THEME.cardBg,
                     boxShadow: THEME.shadow,
                     border: THEME.cardBorder,
-                    display: "flex",
-                    flexDirection: "column",
+                    display: 'flex',
+                    flexDirection: 'column',
                     gap: 6,
                     minWidth: 120,
                     zIndex: 10,
                   }}
                 >
                   {[
-                    { key: "mid", label: "地图风格" },
-                    { key: "light", label: "浅色风格" },
-                    { key: "sky", label: "蓝白风格" },
-                    { key: "dark", label: "深色风格" },
+                    { key: 'mid', label: '地图风格' },
+                    { key: 'light', label: '浅色风格' },
+                    { key: 'sky', label: '蓝白风格' },
+                    { key: 'dark', label: '深色风格' },
                   ].map((item) => {
                     const active = themeKey === item.key;
                     return (
@@ -567,21 +570,21 @@ export default function Dashboard() {
                         key={item.key}
                         onClick={() =>
                           handleThemeChange(
-                            item.key as "mid" | "light" | "sky" | "dark"
+                            item.key as 'mid' | 'light' | 'sky' | 'dark',
                           )
                         }
                         style={{
-                          padding: "4px 10px",
+                          padding: '4px 10px',
                           borderRadius: 999,
                           border: active
                             ? `1px solid ${THEME.accent}`
                             : `1px solid transparent`,
                           background: active
                             ? THEME.accent
-                            : "rgba(255,255,255,0.04)",
-                          color: active ? "#fff" : THEME.textSecondary,
-                          cursor: "pointer",
-                          textAlign: "left",
+                            : 'rgba(255,255,255,0.04)',
+                          color: active ? '#fff' : THEME.textSecondary,
+                          cursor: 'pointer',
+                          textAlign: 'left',
                           fontSize: 13,
                         }}
                       >
@@ -594,15 +597,15 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <div style={{ flex: 8, display: "flex" }}>
+        <div style={{ flex: 8, display: 'flex' }}>
           <div
             style={{
-              flex: "0 0 240px",
-              display: "flex",
-              flexDirection: "column",
-              padding: "0 16px 0 16px",
+              flex: '0 0 240px',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '0 16px 0 16px',
               width: 260,
-              overflow: "hidden",
+              overflow: 'hidden',
               gap: 12,
             }}
           >
@@ -613,60 +616,62 @@ export default function Dashboard() {
           <div
             style={{
               flex: 14,
-              position: "relative",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "8px 0",
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px 0',
               minHeight: 520,
             }}
           >
             <div
               style={{
-                position: "absolute",
+                position: 'absolute',
                 inset: 12,
                 borderRadius: THEME.radius * 2,
                 background:
-                  "radial-gradient(circle at 50% 45%, rgba(61, 139, 253, 0.12) 0%, rgba(61, 139, 253, 0.06) 45%, rgba(61, 139, 253, 0) 60%), radial-gradient(circle at 50% 50%, rgba(58, 193, 170, 0.12) 0%, rgba(58, 193, 170, 0.02) 55%, rgba(58, 193, 170, 0) 75%)",
+                  'radial-gradient(circle at 50% 45%, rgba(61, 139, 253, 0.12) 0%, rgba(61, 139, 253, 0.06) 45%, rgba(61, 139, 253, 0) 60%), radial-gradient(circle at 50% 50%, rgba(58, 193, 170, 0.12) 0%, rgba(58, 193, 170, 0.02) 55%, rgba(58, 193, 170, 0) 75%)',
                 boxShadow:
-                  "0 30px 68px rgba(15, 23, 42, 0.14), inset 0 0 0 1px rgba(61, 139, 253, 0.16)",
-                pointerEvents: "none",
+                  '0 30px 68px rgba(15, 23, 42, 0.14), inset 0 0 0 1px rgba(61, 139, 253, 0.16)',
+                pointerEvents: 'none',
               }}
             ></div>
             <div
               style={{
-                position: "absolute",
+                position: 'absolute',
                 inset: 12,
-                borderRadius: "50%",
+                borderRadius: '50%',
                 background:
-                  "repeating-radial-gradient(circle at 50% 50%, rgba(61, 139, 253, 0.12) 0, rgba(61, 139, 253, 0.12) 1px, rgba(61, 139, 253, 0) 9px)",
-                pointerEvents: "none",
+                  'repeating-radial-gradient(circle at 50% 50%, rgba(61, 139, 253, 0.12) 0, rgba(61, 139, 253, 0.12) 1px, rgba(61, 139, 253, 0) 9px)',
+                pointerEvents: 'none',
                 opacity: 0.5,
               }}
             ></div>
             <div
               style={{
-                position: "relative",
-                width: "100%",
-                height: "100%",
+                position: 'relative',
+                width: '100%',
+                height: '100%',
                 borderRadius: THEME.radius * 1.4,
-                overflow: "hidden",
+                overflow: 'hidden',
                 boxShadow: THEME.shadow,
                 background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(241, 248, 255, 0.9) 60%, rgba(230, 242, 252, 0.84) 100%)",
+                  'linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(241, 248, 255, 0.9) 60%, rgba(230, 242, 252, 0.84) 100%)',
               }}
             >
+              <Button onClick={() => setIsWindy(!isWindy)}>切换</Button>
               {/* 中央地图 */}
-              <Windy></Windy>
+
+              {isWindy ? <Windy></Windy> : <WeatherMap></WeatherMap>}
             </div>
           </div>
           <div
             style={{
-              flex: "0 0 240px",
-              display: "flex",
-              flexDirection: "column",
-              padding: "0px 16px 0 16px",
-              overflow: "hidden",
+              flex: '0 0 240px',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '0px 16px 0 16px',
+              overflow: 'hidden',
               width: 260,
               gap: 12,
             }}
@@ -678,16 +683,16 @@ export default function Dashboard() {
         </div>
         <div
           style={{
-            flex: "1 0 140px",
-            display: "flex",
+            flex: '1 0 140px',
+            display: 'flex',
           }}
         >
           <div
             style={{
-              height: "100%",
-              flex: "0 0 200px",
-              padding: "0 16px",
-              display: "flex",
+              height: '100%',
+              flex: '0 0 200px',
+              padding: '0 16px',
+              display: 'flex',
               width: 180,
             }}
           >
@@ -696,11 +701,11 @@ export default function Dashboard() {
               title="年完成率"
               value={<Chart theme={THEME} option={pieOption} />}
               unit="发电量"
-              style={{ margin: 0, width: "180px" }}
+              style={{ margin: 0, width: '180px' }}
             ></Card>
           </div>
           <div
-            style={{ flex: 11, display: "flex", gap: 12, padding: "0 12px" }}
+            style={{ flex: 11, display: 'flex', gap: 12, padding: '0 12px' }}
           >
             <div style={{ flex: 5, minWidth: 0 }}>
               <Chart theme={THEME} option={barOption}></Chart>
@@ -710,14 +715,14 @@ export default function Dashboard() {
             </div>
             <div
               style={{
-                flex: "0 0 180px",
+                flex: '0 0 180px',
                 width: 180,
                 minWidth: 180,
-                display: "flex",
-                flexDirection: "column",
+                display: 'flex',
+                flexDirection: 'column',
                 background: THEME.panelBg,
-                padding: "0 16px",
-                textAlign: "left",
+                padding: '0 16px',
+                textAlign: 'left',
                 borderRadius: THEME.radius + 4,
                 boxShadow: THEME.shadow,
               }}
@@ -726,16 +731,16 @@ export default function Dashboard() {
               <div
                 style={{
                   flex: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
                 }}
               >
                 <div
                   style={{
                     color: THEME.textPrimary,
                     fontSize: 16,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                   }}
                 >
                   节约标准煤
@@ -747,16 +752,16 @@ export default function Dashboard() {
               <div
                 style={{
                   flex: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
                 }}
               >
                 <div
                   style={{
                     color: THEME.textPrimary,
                     fontSize: 16,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                   }}
                 >
                   CO2减排量
@@ -786,13 +791,13 @@ function Card(props: {
     <div
       style={{
         background: theme.cardBg,
-        display: "flex",
+        display: 'flex',
         minHeight: 100,
-        flexDirection: "column",
+        flexDirection: 'column',
         marginBottom: 16,
         flex: 1,
         borderRadius: theme.radius,
-        overflow: "hidden",
+        overflow: 'hidden',
         boxShadow: theme.shadow,
         ...style,
       }}
@@ -800,12 +805,12 @@ function Card(props: {
       <div
         style={{
           fontSize: 16,
-          padding: "4px 16px",
+          padding: '4px 16px',
           background: theme.cardHeaderBg,
           borderBottom: theme.cardBorder,
         }}
       >
-        <span style={{ color: theme.textPrimary, fontWeight: "bold" }}>
+        <span style={{ color: theme.textPrimary, fontWeight: 'bold' }}>
           {title}
         </span>
         &nbsp;&nbsp;
@@ -814,11 +819,11 @@ function Card(props: {
       <div
         style={{
           fontSize: 24,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           flex: 1,
-          display: "flex",
-          alignItems: "center",
-          padding: "4px 16px",
+          display: 'flex',
+          alignItems: 'center',
+          padding: '4px 16px',
           color: theme.accent,
           height: 0,
           // background: "rgba(255,255,255,0.6)",
@@ -832,20 +837,20 @@ function Card(props: {
 
 const createBarOption = (
   theme: (typeof THEMES)[keyof typeof THEMES],
-  prev?: EChartsOption
+  prev?: EChartsOption,
 ) => {
   const option = {
     title: {
-      text: "年发电量",
-      left: "left",
+      text: '年发电量',
+      left: 'left',
       textStyle: {
         color: theme.accent,
       },
     },
     tooltip: {
-      trigger: "axis",
+      trigger: 'axis',
       axisPointer: {
-        type: "cross",
+        type: 'cross',
         crossStyle: {
           color: theme.textPrimary,
         },
@@ -855,14 +860,14 @@ const createBarOption = (
       textStyle: {
         color: theme.textPrimary,
       },
-      data: ["计划发电量", "实际发电量", "完成率"],
+      data: ['计划发电量', '实际发电量', '完成率'],
     },
     xAxis: [
       {
-        type: "category",
-        data: ["5月", "6月", "7月", "8月", "9月", "10月", "11月"],
+        type: 'category',
+        data: ['5月', '6月', '7月', '8月', '9月', '10月', '11月'],
         axisPointer: {
-          type: "shadow",
+          type: 'shadow',
         },
         axisLabel: {
           color: theme.textSecondary,
@@ -871,23 +876,23 @@ const createBarOption = (
     ],
     yAxis: [
       {
-        type: "value",
-        name: "",
+        type: 'value',
+        name: '',
         min: 0,
         max: 1250,
         axisLabel: {
           color: theme.textSecondary,
-          formatter: "{value}",
+          formatter: '{value}',
         },
       },
       {
-        type: "value",
-        name: "完成率",
+        type: 'value',
+        name: '完成率',
         min: 60,
         max: 100,
         axisLabel: {
           color: theme.textSecondary,
-          formatter: "{value} %",
+          formatter: '{value} %',
         },
         splitLine: {
           show: false,
@@ -899,38 +904,38 @@ const createBarOption = (
     ],
     series: [
       {
-        name: "计划发电量",
-        type: "bar",
+        name: '计划发电量',
+        type: 'bar',
         itemStyle: {
           color: theme.accent,
         },
         tooltip: {
           valueFormatter: function (value: number) {
-            return value + " 万kWh";
+            return value + ' 万kWh';
           },
         },
         data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       },
       {
-        name: "实际发电量",
-        type: "bar",
+        name: '实际发电量',
+        type: 'bar',
         itemStyle: {
           color: theme.accentAlt,
         },
         tooltip: {
           valueFormatter: function (value: number) {
-            return value + " 万kWh";
+            return value + ' 万kWh';
           },
         },
         data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       },
       {
-        name: "完成率",
-        type: "line",
+        name: '完成率',
+        type: 'line',
         yAxisIndex: 1,
         tooltip: {
           valueFormatter: function (value: number) {
-            return value + " %";
+            return value + ' %';
           },
         },
         data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -956,34 +961,34 @@ const createBarOption = (
 
 const createPieOption = (
   theme: (typeof THEMES)[keyof typeof THEMES],
-  prev?: EChartsOption
+  prev?: EChartsOption,
 ) => {
   const option = {
     tooltip: {
-      trigger: "item",
+      trigger: 'item',
     },
     series: [
       {
-        name: "年完成率",
-        type: "pie",
-        radius: ["60%", "90%"],
+        name: '年完成率',
+        type: 'pie',
+        radius: ['60%', '90%'],
         avoidLabelOverlap: false,
         label: {
           show: true,
-          position: "center",
+          position: 'center',
           fontSize: 24,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           color: theme.accent,
           formatter: function (params: { percent: number }) {
-            return params.percent + "%";
+            return params.percent + '%';
           },
         },
         labelLine: {
           show: false,
         },
         data: [
-          { value: 0, name: "完成率", itemStyle: { color: theme.accent } },
-          { value: 0, name: "未完成率", itemStyle: { color: theme.accentAlt } },
+          { value: 0, name: '完成率', itemStyle: { color: theme.accent } },
+          { value: 0, name: '未完成率', itemStyle: { color: theme.accentAlt } },
         ],
       },
     ],
@@ -1011,7 +1016,6 @@ function Chart(props: {
 }) {
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    console.log(props.option);
     const chart = echarts.init(container.current as HTMLElement);
     chart.setOption(props.option);
   }, [props.option]);
@@ -1020,10 +1024,10 @@ function Chart(props: {
       ref={container}
       style={{
         background: props.theme.cardBg,
-        height: "100%",
-        width: "100%",
+        height: '100%',
+        width: '100%',
         borderRadius: props.theme.radius,
-        overflow: "hidden",
+        overflow: 'hidden',
         boxShadow: props.theme.shadow,
       }}
     ></div>

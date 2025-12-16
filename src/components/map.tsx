@@ -7,7 +7,7 @@ import { Select } from 'antd';
 import './map.css';
 import { Weather } from './weather';
 
-export default function Map() {
+export default function WeatherMap() {
   const weather = useRef(null as any);
   const [markers, setMarkers] = useState<any[]>([]);
   // const onClickWeatherItem = (type: string) => {
