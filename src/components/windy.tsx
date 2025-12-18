@@ -3,6 +3,7 @@ import { Select } from 'antd';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import geojson from '../assets/geojson.json';
+import { DayProgress } from './day-progress';
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
   verbose: true,
@@ -253,6 +254,7 @@ export function Windy() {
           // boxShadow: '0 10px 25px rgba(15, 23, 42, 0.6)',
         }}
       ></div>
+      <DayProgress></DayProgress>
     </div>
   );
 }

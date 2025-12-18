@@ -1,0 +1,24 @@
+.day-container {
+    height: 16px;
+    background: #4d4d4d;
+    display: flex;
+}
+
+.day-wrapper {
+    position: absolute;
+    bottom: 18px;
+    width: calc(100% - 80px);
+    right: 20px;
+}
+
+.day-item {
+    border-right: 1px solid #efefef4d;
+    flex: 1;
+    color: #fff3e1;
+    text-align: center;
+    font-size: 12px;
+}
+
+.day-item:last-child {
+    border-right: none;
+}
