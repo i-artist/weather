@@ -17,3 +17,4 @@ export function DayProgress() {
         </div>
     </div>
 }
+

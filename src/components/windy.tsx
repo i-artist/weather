@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import geojson from '../assets/geojson.json';
 import { DayProgress } from './day-progress';
+import { FutureWeather } from './future-weather';
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
   verbose: true,
@@ -42,6 +43,7 @@ type WindyWindow = Window & {
 export function Windy() {
   const initializedRef = useRef(false);
   const [markers, setMarkers] = useState<any[]>([]);
+  const [location, setLocation] = useState<string>('');
   const windyRef = useRef<WindyAPI>(null);
   const onShowPopup = useCallback((marker: any) => {
     (window as any).L.popup()
@@ -108,14 +110,8 @@ export function Windy() {
         return;
       }
 
-      const windDriven = leaflet.icon({
-        iconUrl: 'wind.gif',
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, 0],
-      });
-      const solarDriven = leaflet.icon({
-        iconUrl: 'solar.gif',
+      const electricIcon = leaflet.icon({
+        iconUrl: 'electric.png',
         iconSize: [24, 24],
         iconAnchor: [12, 12],
         popupAnchor: [0, 0],
@@ -170,7 +166,7 @@ export function Windy() {
           const { coordinates } = geometry;
           const { wfname = '' } = properties;
           const [lon, lat] = coordinates;
-          const icon = wfname?.includes('风') ? windDriven : solarDriven;
+          const icon = electricIcon;
           const marker = leaflet
             .marker([lat, lon], {
               icon: icon,
@@ -179,6 +175,7 @@ export function Windy() {
           marker.bindPopup(wfname);
           marker.on('click', () => {
             onShowPopup({ label: wfname, coordinates: [lon, lat] });
+            setLocation(`${lon},${lat}`);
           });
           // leaflet.popup().setLatLng([lat, lon]).setContent(name).openOn(map);
         }
@@ -255,6 +252,8 @@ export function Windy() {
         }}
       ></div>
       <DayProgress></DayProgress>
+      <FutureWeather location={location} onClose={() => setLocation('')}></FutureWeather>
+
     </div>
   );
 }
