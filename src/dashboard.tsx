@@ -452,7 +452,7 @@ export default function Dashboard() {
                 color: THEME.textPrimary,
               }}
             >
-              申能股份
+              上海申能新能源
             </span>
           </div>
 
@@ -486,7 +486,7 @@ export default function Dashboard() {
                   textAlign: 'center',
                 }}
               >
-                申能股份风光存储信息系统
+                上海申能新能源风光存储信息系统
               </span>
             </div>
           </div>
