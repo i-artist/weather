@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Select } from 'antd';
 import axios from 'axios';
+import 'leaflet.chinatmsproviders';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import geojson from '../assets/geojson.json';
 import { DayProgress } from './day-progress';
 import { FutureWeather } from './future-weather';
+
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
   verbose: true,
@@ -109,7 +110,6 @@ export function Windy() {
       if (!windyInitFn || !leaflet) {
         return;
       }
-
       const windIcon = leaflet.icon({
         iconUrl: 'wind.gif',
         iconSize: [24, 24],
@@ -127,6 +127,12 @@ export function Windy() {
 
       windyInitFn(options, (windyAPI: WindyAPI) => {
         const { map, picker, utils, broadcast } = windyAPI as any;
+        map.eachLayer((layer) => {
+          console.log(layer, 'layer');
+          // if (layer.options && layer.options.attribution?.includes('Windy')) {
+          map.removeLayer(layer);
+          // }
+        });
         map.on('click', (e) => {
           const { lat, lng } = e.latlng;
           console.log('点击位置：', lat, lng);
@@ -135,38 +141,37 @@ export function Windy() {
           //   // Opening of a picker (async)
           // });
         });
-
-        // map.eachLayer((layer) => {
-        //   console.log(layer, 'layer');
-        //   // if (layer.options && layer.options.attribution?.includes('Windy')) {
-        //   map.removeLayer(layer);
-        //   // }
-        // });
-
-        leaflet
-          .tileLayer(
-            'https://tiles-s.windy.com/tiles/v10.0/darkmap/{z}/{x}/{y}.png',
-          )
+        leaflet.tileLayer
+          .chinaProvider('GaoDe.Satellite.Annotion', {
+            maxZoom: 18,
+            minZoom: 5,
+          })
           .addTo(map);
+
+        // leaflet
+        //   .tileLayer(
+        //     'https://tiles-s.windy.com/tiles/v10.0/darkmap/{z}/{x}/{y}.png',
+        //   )
+        //   .addTo(map);
         windyRef.current = windyAPI;
 
-        const imageUrl = './taiwan.png',
-          imageBounds = [
-            [23.812216, 120.22655],
-            [24.173941, 121.72544],
-          ];
-        (leaflet as any).imageOverlay(imageUrl, imageBounds).addTo(map);
+        // const imageUrl = './taiwan.png',
+        //   imageBounds = [
+        //     [23.812216, 120.22655],
+        //     [24.173941, 121.72544],
+        //   ];
+        // (leaflet as any).imageOverlay(imageUrl, imageBounds).addTo(map);
         // leaflet
         //   .marker([25.037, 121.563], {})
         //   .bindTooltip('中国台湾', { permanent: true, direction: 'top' })
         //   .addTo(map);
-        leaflet
-          .geoJSON(geojson, {
-            style: function (feature) {
-              return { color: 'rgba(18, 33, 51, 0.92)', weight: 1 };
-            },
-          })
-          .addTo(map);
+        // leaflet
+        //   .geoJSON(geojson, {
+        //     style: function (feature) {
+        //       return { color: 'rgba(18, 33, 51, 0.92)', weight: 1 };
+        //     },
+        //   })
+        //   .addTo(map);
 
         for (const item of geoJson.features) {
           const { geometry, properties } = item;
