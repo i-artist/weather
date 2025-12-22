@@ -48,6 +48,7 @@
 .future-weather-item-weekday {
     text-align: center;
     border-right: 1px solid #9c9a9a4d;
+    line-height: 22px;
 }
 
 .future-weather-cbody {
@@ -78,4 +79,175 @@
     position: absolute;
     top: -20px;
     left: 4px;
+}
+
+/* 优化后的字段样式 */
+.future-weather-hour {
+    font-weight: 600;
+    color: #333;
+    font-size: 13px;
+}
+
+.future-weather-temp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.temp-value {
+    font-weight: 600;
+    font-size: 15px;
+    transition: color 0.2s ease;
+}
+
+.temp-value.temp-hot {
+    color: #ff4d4f;
+}
+
+.temp-value.temp-warm {
+    color: #ff7a45;
+}
+
+.temp-value.temp-mild {
+    color: #52c41a;
+}
+
+.temp-value.temp-cool {
+    color: #1890ff;
+}
+
+.temp-value.temp-cold {
+    color: #722ed1;
+}
+
+.future-weather-precip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.precip-value {
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.precip-value.has-precip {
+    color: #1890ff;
+}
+
+.precip-value.no-precip {
+    color: #bfbfbf;
+}
+
+.future-weather-wind-speed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wind-speed-value {
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.wind-speed-value.wind-strong {
+    color: #ff4d4f;
+}
+
+.wind-speed-value.wind-moderate {
+    color: #ff7a45;
+}
+
+.wind-speed-value.wind-light {
+    color: #52c41a;
+}
+
+.wind-speed-value.wind-calm {
+    color: #8c8c8c;
+}
+
+.future-weather-wind-level {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wind-level-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #f0f0f0;
+    color: #595959;
+    transition: all 0.2s ease;
+}
+
+.wind-level-badge.level-0,
+.wind-level-badge.level-1,
+.wind-level-badge.level-2 {
+    background: #e6f7ff;
+    color: #1890ff;
+}
+
+.wind-level-badge.level-3,
+.wind-level-badge.level-4 {
+    background: #f6ffed;
+    color: #52c41a;
+}
+
+.wind-level-badge.level-5,
+.wind-level-badge.level-6 {
+    background: #fff7e6;
+    color: #fa8c16;
+}
+
+.wind-level-badge.level-7,
+.wind-level-badge.level-8 {
+    background: #fff1f0;
+    color: #ff4d4f;
+}
+
+.wind-level-badge.level-9,
+.wind-level-badge.level-10,
+.wind-level-badge.level-11,
+.wind-level-badge.level-12 {
+    background: #ff4d4f;
+    color: #fff;
+}
+
+.future-weather-wind-dir {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wind-direction-arrow {
+    font-size: 16px;
+    cursor: help;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.wind-direction-arrow:hover {
+    transform: scale(1.2);
+}
+
+/* 改善列的整体样式 */
+.future-weather-column {
+    transition: background-color 0.2s ease;
+}
+
+.future-weather-column:hover {
+    background-color: #fafafa;
+}
+
+/* 改善行的对齐和间距 */
+.future-weather-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 22px;
 }

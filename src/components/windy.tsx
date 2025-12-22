@@ -110,6 +110,13 @@ export function Windy() {
         return;
       }
 
+      const windIcon = leaflet.icon({
+        iconUrl: 'wind.gif',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, 0],
+      });
+
       const electricIcon = leaflet.icon({
         iconUrl: 'electric.png',
         iconSize: [24, 24],
@@ -129,12 +136,12 @@ export function Windy() {
           // });
         });
 
-        map.eachLayer((layer) => {
-          console.log(layer, 'layer');
-          // if (layer.options && layer.options.attribution?.includes('Windy')) {
-          map.removeLayer(layer);
-          // }
-        });
+        // map.eachLayer((layer) => {
+        //   console.log(layer, 'layer');
+        //   // if (layer.options && layer.options.attribution?.includes('Windy')) {
+        //   map.removeLayer(layer);
+        //   // }
+        // });
 
         leaflet
           .tileLayer(
@@ -166,7 +173,7 @@ export function Windy() {
           const { coordinates } = geometry;
           const { wfname = '' } = properties;
           const [lon, lat] = coordinates;
-          const icon = electricIcon;
+          const icon = wfname?.includes('风') ? windIcon : electricIcon;
           const marker = leaflet
             .marker([lat, lon], {
               icon: icon,
@@ -252,8 +259,10 @@ export function Windy() {
         }}
       ></div>
       <DayProgress></DayProgress>
-      <FutureWeather location={location} onClose={() => setLocation('')}></FutureWeather>
-
+      <FutureWeather
+        location={location}
+        onClose={() => setLocation('')}
+      ></FutureWeather>
     </div>
   );
 }

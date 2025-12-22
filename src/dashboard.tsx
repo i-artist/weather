@@ -1,4 +1,7 @@
+/* eslint-disable no-constant-binary-expression */
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
+import { FloatButton } from 'antd';
 import type { EChartsOption, SeriesOption } from 'echarts';
 import * as echarts from 'echarts';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -6,7 +9,6 @@ import logoLight from './assets/black.png';
 import centerBg from './assets/center.svg';
 import WeatherMap from './components/map';
 import { Windy } from './components/windy';
-import { FutureWeather } from './components/future-weather';
 
 const THEMES = {
   mid: {
@@ -226,6 +228,7 @@ export default function Dashboard() {
   );
   const [themePanelOpen, setThemePanelOpen] = useState(false);
   const [clock, setClock] = useState({ time: '', date: '' });
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const logoSrc = themeKey === 'dark' ? '/logo.png' : logoLight;
   const THEME = THEMES[themeKey];
   const [isWindy, setIsWindy] = useState(true);
@@ -259,6 +262,11 @@ export default function Dashboard() {
     setBarOption((op) => createBarOption(nextTheme, op));
   };
 
+  useEffect(() => {
+    document.addEventListener('fullscreenchange', () => {
+      setIsFullScreen(Boolean(document.fullscreenElement));
+    });
+  }, []);
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
@@ -328,7 +336,7 @@ export default function Dashboard() {
     },
     {
       pollingInterval: 3000,
-      ready: false
+      ready: false,
     },
   );
 
@@ -363,7 +371,7 @@ export default function Dashboard() {
     },
     {
       pollingInterval: 3000,
-      ready: false
+      ready: false,
     },
   );
 
@@ -395,7 +403,7 @@ export default function Dashboard() {
     },
     {
       pollingInterval: 3000,
-      ready: false
+      ready: false,
     },
   );
 
@@ -444,7 +452,7 @@ export default function Dashboard() {
               padding: 0,
             }}
           >
-            <img src={logoSrc} alt="" style={{ height: 32 }} />
+            {/* <img src={logoSrc} alt="" style={{ height: 32 }} />
             <span
               style={{
                 fontSize: 26,
@@ -453,7 +461,7 @@ export default function Dashboard() {
               }}
             >
               上海申能新能源
-            </span>
+            </span> */}
           </div>
 
           {/* 中间标题 */}
@@ -486,7 +494,7 @@ export default function Dashboard() {
                   textAlign: 'center',
                 }}
               >
-                上海申能新能源风光存储信息系统
+                天气预报系统
               </span>
             </div>
           </div>
@@ -601,183 +609,202 @@ export default function Dashboard() {
           </div>
         </div>
         <Windy></Windy>
-        {false && <>
-          <div style={{ flex: 8, display: 'flex' }}>
-            <div
-              style={{
-                flex: '0 0 240px',
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '0 16px 0 16px',
-                width: 260,
-                overflow: 'hidden',
-                gap: 12,
-              }}
-            >
-              {leftItems.map((item) => (
-                <Card key={item.title} theme={THEME} {...item}></Card>
-              ))}
-            </div>
-            <div
-              style={{
-                flex: 14,
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '8px 0',
-                minHeight: 520,
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 12,
-                  borderRadius: THEME.radius * 2,
-                  background:
-                    'radial-gradient(circle at 50% 45%, rgba(61, 139, 253, 0.12) 0%, rgba(61, 139, 253, 0.06) 45%, rgba(61, 139, 253, 0) 60%), radial-gradient(circle at 50% 50%, rgba(58, 193, 170, 0.12) 0%, rgba(58, 193, 170, 0.02) 55%, rgba(58, 193, 170, 0) 75%)',
-                  boxShadow:
-                    '0 30px 68px rgba(15, 23, 42, 0.14), inset 0 0 0 1px rgba(61, 139, 253, 0.16)',
-                  pointerEvents: 'none',
-                }}
-              ></div>
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 12,
-                  borderRadius: '50%',
-                  background:
-                    'repeating-radial-gradient(circle at 50% 50%, rgba(61, 139, 253, 0.12) 0, rgba(61, 139, 253, 0.12) 1px, rgba(61, 139, 253, 0) 9px)',
-                  pointerEvents: 'none',
-                  opacity: 0.5,
-                }}
-              ></div>
-              <div
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: THEME.radius * 1.4,
-                  overflow: 'hidden',
-                  boxShadow: THEME.shadow,
-                  background:
-                    'linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(241, 248, 255, 0.9) 60%, rgba(230, 242, 252, 0.84) 100%)',
-                }}
-              >
 
-                {isWindy ? <Windy></Windy> : <WeatherMap></WeatherMap>}
-              </div>
-            </div>
-            <div
-              style={{
-                flex: '0 0 240px',
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '0px 16px 0 16px',
-                overflow: 'hidden',
-                width: 260,
-                gap: 12,
-              }}
-            >
-              {rightItems.map((item) => (
-                <Card key={item.title} theme={THEME} {...item}></Card>
-              ))}
-            </div>
-          </div>
-          <div
-            style={{
-              flex: '1 0 140px',
-              display: 'flex',
-            }}
-          >
-            <div
-              style={{
-                height: '100%',
-                flex: '0 0 200px',
-                padding: '0 16px',
-                display: 'flex',
-                width: 180,
-              }}
-            >
-              <Card
-                theme={THEME}
-                title="年完成率"
-                value={<Chart theme={THEME} option={pieOption} />}
-                unit="发电量"
-                style={{ margin: 0, width: '180px' }}
-              ></Card>
-            </div>
-            <div
-              style={{ flex: 11, display: 'flex', gap: 12, padding: '0 12px' }}
-            >
-              <div style={{ flex: 5, minWidth: 0 }}>
-                <Chart theme={THEME} option={barOption}></Chart>
-              </div>
-              <div style={{ flex: 5, minWidth: 0 }}>
-                <Chart theme={THEME} option={lineOption}></Chart>
-              </div>
+        <FloatButton
+          icon={
+            isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />
+          }
+          onClick={() => {
+            if (isFullScreen) {
+              document.exitFullscreen();
+            } else {
+              document.body?.requestFullscreen();
+            }
+          }}
+        />
+        {false && (
+          <>
+            <div style={{ flex: 8, display: 'flex' }}>
               <div
                 style={{
-                  flex: '0 0 180px',
-                  width: 180,
-                  minWidth: 180,
+                  flex: '0 0 240px',
                   display: 'flex',
                   flexDirection: 'column',
-                  background: THEME.panelBg,
-                  padding: '0 16px',
-                  textAlign: 'left',
-                  borderRadius: THEME.radius + 4,
-                  boxShadow: THEME.shadow,
+                  padding: '0 16px 0 16px',
+                  width: 260,
+                  overflow: 'hidden',
+                  gap: 12,
                 }}
               >
-                <div style={{ flex: 1 }}></div>
+                {leftItems.map((item) => (
+                  <Card key={item.title} theme={THEME} {...item}></Card>
+                ))}
+              </div>
+              <div
+                style={{
+                  flex: 14,
+                  position: 'relative',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '8px 0',
+                  minHeight: 520,
+                }}
+              >
                 <div
                   style={{
-                    flex: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
+                    position: 'absolute',
+                    inset: 12,
+                    borderRadius: THEME.radius * 2,
+                    background:
+                      'radial-gradient(circle at 50% 45%, rgba(61, 139, 253, 0.12) 0%, rgba(61, 139, 253, 0.06) 45%, rgba(61, 139, 253, 0) 60%), radial-gradient(circle at 50% 50%, rgba(58, 193, 170, 0.12) 0%, rgba(58, 193, 170, 0.02) 55%, rgba(58, 193, 170, 0) 75%)',
+                    boxShadow:
+                      '0 30px 68px rgba(15, 23, 42, 0.14), inset 0 0 0 1px rgba(61, 139, 253, 0.16)',
+                    pointerEvents: 'none',
                   }}
-                >
-                  <div
-                    style={{
-                      color: THEME.textPrimary,
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    节约标准煤
-                  </div>
-                  <div style={{ color: THEME.accent, fontSize: 24 }}>
-                    {formatNumber(info.saveCoal)}
-                  </div>
-                </div>
+                ></div>
                 <div
                   style={{
-                    flex: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
+                    position: 'absolute',
+                    inset: 12,
+                    borderRadius: '50%',
+                    background:
+                      'repeating-radial-gradient(circle at 50% 50%, rgba(61, 139, 253, 0.12) 0, rgba(61, 139, 253, 0.12) 1px, rgba(61, 139, 253, 0) 9px)',
+                    pointerEvents: 'none',
+                    opacity: 0.5,
+                  }}
+                ></div>
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: THEME.radius * 1.4,
+                    overflow: 'hidden',
+                    boxShadow: THEME.shadow,
+                    background:
+                      'linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(241, 248, 255, 0.9) 60%, rgba(230, 242, 252, 0.84) 100%)',
                   }}
                 >
-                  <div
-                    style={{
-                      color: THEME.textPrimary,
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    CO2减排量
-                  </div>
-                  <div style={{ color: THEME.accent, fontSize: 24 }}>
-                    {formatNumber(info.co2)}
-                  </div>
+                  {isWindy ? <Windy></Windy> : <WeatherMap></WeatherMap>}
                 </div>
-                <div style={{ flex: 1 }}></div>
+              </div>
+              <div
+                style={{
+                  flex: '0 0 240px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '0px 16px 0 16px',
+                  overflow: 'hidden',
+                  width: 260,
+                  gap: 12,
+                }}
+              >
+                {rightItems.map((item) => (
+                  <Card key={item.title} theme={THEME} {...item}></Card>
+                ))}
               </div>
             </div>
-          </div>
-        </>}
+            <div
+              style={{
+                flex: '1 0 140px',
+                display: 'flex',
+              }}
+            >
+              <div
+                style={{
+                  height: '100%',
+                  flex: '0 0 200px',
+                  padding: '0 16px',
+                  display: 'flex',
+                  width: 180,
+                }}
+              >
+                <Card
+                  theme={THEME}
+                  title="年完成率"
+                  value={<Chart theme={THEME} option={pieOption} />}
+                  unit="发电量"
+                  style={{ margin: 0, width: '180px' }}
+                ></Card>
+              </div>
+              <div
+                style={{
+                  flex: 11,
+                  display: 'flex',
+                  gap: 12,
+                  padding: '0 12px',
+                }}
+              >
+                <div style={{ flex: 5, minWidth: 0 }}>
+                  <Chart theme={THEME} option={barOption}></Chart>
+                </div>
+                <div style={{ flex: 5, minWidth: 0 }}>
+                  <Chart theme={THEME} option={lineOption}></Chart>
+                </div>
+                <div
+                  style={{
+                    flex: '0 0 180px',
+                    width: 180,
+                    minWidth: 180,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    background: THEME.panelBg,
+                    padding: '0 16px',
+                    textAlign: 'left',
+                    borderRadius: THEME.radius + 4,
+                    boxShadow: THEME.shadow,
+                  }}
+                >
+                  <div style={{ flex: 1 }}></div>
+                  <div
+                    style={{
+                      flex: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <div
+                      style={{
+                        color: THEME.textPrimary,
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      节约标准煤
+                    </div>
+                    <div style={{ color: THEME.accent, fontSize: 24 }}>
+                      {formatNumber(info.saveCoal)}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      flex: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <div
+                      style={{
+                        color: THEME.textPrimary,
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      CO2减排量
+                    </div>
+                    <div style={{ color: THEME.accent, fontSize: 24 }}>
+                      {formatNumber(info.co2)}
+                    </div>
+                  </div>
+                  <div style={{ flex: 1 }}></div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
