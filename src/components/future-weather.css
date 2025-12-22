@@ -10,6 +10,13 @@
     z-index: 999999;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
+.future-weather  .ant-spin-container {
+    flex: 1;
+    width: 100vw;
+    height: 100%;
+    display: flex;
+}
 .future-weather.hidden {
     opacity: 0;
     transform: translateY(20px);
@@ -17,15 +24,17 @@
 }
 
 .future-weather-th {
-    width: 100px;
+    width: 120px;
+    text-align: right;
 }
 
 .future-weather-body {
-    background: #ececec;
+    background: linear-gradient(135deg, #f0f2f5 0%, #e8e8e8 100%);
+    border-radius: 4px;
 }
 
 .future-weather-row {
-    padding: 2px 0px;
+    padding: 4px 0px;
     height: 22px;
 }
 
@@ -39,16 +48,31 @@
     font-size: 12px;
     color: #626060;
     text-align: right;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 1px 0;
+    background: rgba(255, 255, 255, 0.6);
+    transition: background-color 0.2s ease;
+    justify-content: right !important;
+}
+
+.future-weather-item-category:hover {
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .future-weather-content {
    text-align: center;
+   background: #fafafa;
+   border-radius: 4px;
+   /* margin: 2px; */
+   /* padding: 4px 0; */
 }
 
 .future-weather-item-weekday {
     text-align: center;
     border-right: 1px solid #9c9a9a4d;
     line-height: 22px;
+    min-width: 60px;
 }
 
 .future-weather-cbody {
@@ -63,7 +87,7 @@
 }
 .future-weather-column {
     max-width: 60px;
-    padding: 0 8px;
+    /* padding: 0 8px; */
     font-size: 14px;
     border: 1px solid #9c9a9a4d;
     border-left: 0;
@@ -86,92 +110,126 @@
     font-weight: 600;
     color: #333;
     font-size: 13px;
+    /* background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf0 100%); */
+    border-radius: 4px;
+    padding: 4px 4px;
+    margin: 1px 0;
 }
 
 .future-weather-temp {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px;
+    padding: 4px 4px;
+    margin: 1px 0;
+    transition: background-color 0.2s ease;
 }
 
 .temp-value {
     font-weight: 600;
     font-size: 15px;
     transition: color 0.2s ease;
+    padding: 4px 6px;
+    border-radius: 4px;
 }
 
 .temp-value.temp-hot {
     color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.1);
 }
 
 .temp-value.temp-warm {
     color: #ff7a45;
+    background: rgba(255, 122, 69, 0.1);
 }
 
 .temp-value.temp-mild {
     color: #52c41a;
+    background: rgba(82, 196, 26, 0.1);
 }
 
 .temp-value.temp-cool {
     color: #1890ff;
+    background: rgba(24, 144, 255, 0.1);
 }
 
 .temp-value.temp-cold {
     color: #722ed1;
+    background: rgba(114, 46, 209, 0.1);
 }
 
 .future-weather-precip {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px;
+    padding: 4px 4px;
+    margin: 1px 0;
 }
 
 .precip-value {
     font-size: 13px;
     font-weight: 500;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    padding: 2px 6px;
+    border-radius: 4px;
 }
 
 .precip-value.has-precip {
     color: #1890ff;
+    background: rgba(24, 144, 255, 0.15);
 }
 
 .precip-value.no-precip {
     color: #bfbfbf;
+    background: rgba(191, 191, 191, 0.08);
 }
 
 .future-weather-wind-speed {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px;
+    padding: 4px 4px;
+    margin: 1px 0;
 }
 
 .wind-speed-value {
     font-size: 13px;
     font-weight: 500;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    padding: 4px 6px;
+    border-radius: 4px;
 }
 
 .wind-speed-value.wind-strong {
     color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.15);
 }
 
 .wind-speed-value.wind-moderate {
     color: #ff7a45;
+    background: rgba(255, 122, 69, 0.12);
 }
 
 .wind-speed-value.wind-light {
     color: #52c41a;
+    background: rgba(82, 196, 26, 0.12);
 }
 
 .wind-speed-value.wind-calm {
     color: #8c8c8c;
+    background: rgba(140, 140, 140, 0.08);
 }
 
 .future-weather-wind-level {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px;
+    padding: 4px 4px;
+    margin: 1px 0;
 }
 
 .wind-level-badge {
@@ -222,26 +280,34 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px;
+    padding: 4px 4px;
+    margin: 1px 0;
+    /* background: rgba(24, 144, 255, 0.08); */
 }
 
 .wind-direction-arrow {
-    font-size: 16px;
+    font-size: 12px;
     cursor: help;
     display: inline-block;
     transition: transform 0.3s ease;
+    padding: 2px;
+    border-radius: 50%;
 }
 
 .wind-direction-arrow:hover {
-    transform: scale(1.2);
+    transform: scale(1);
 }
 
 /* 改善列的整体样式 */
 .future-weather-column {
     transition: background-color 0.2s ease;
+    background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
 }
 
 .future-weather-column:hover {
-    background-color: #fafafa;
+    background: linear-gradient(to bottom, #f0f7ff 0%, #e6f4ff 100%);
+    box-shadow: inset 0 0 8px rgba(24, 144, 255, 0.1);
 }
 
 /* 改善行的对齐和间距 */
