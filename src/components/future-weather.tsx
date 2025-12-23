@@ -19,8 +19,8 @@ import './future-weather.css';
 //     mete_var: data.data.mete_var,
 // });
 
-const key =
-  'eyJhbGciOiJFZERTQSIsImtpZCI6Iks0V01LOU1VQUYifQ.eyJzdWIiOiI0R0tSRVVOSDU1IiwiaWF0IjoxNzY2MzE1MTQwLCJleHAiOjE3NjY0MDE1NDB9.QWDtbVq_huZZVrhk_VMQfe-Gg_fB-vhVUvIEFw8JKynsSlHGF-7IGJTRbhRzqMLt22tCQdMapFj9j5F-_RzQAg';
+// const key =
+// 'eyJhbGciOiJFZERTQSIsImtpZCI6Iks0V01LOU1VQUYifQ.eyJzdWIiOiI0R0tSRVVOSDU1IiwiaWF0IjoxNzY2MzE1MTQwLCJleHAiOjE3NjY0MDE1NDB9.QWDtbVq_huZZVrhk_VMQfe-Gg_fB-vhVUvIEFw8JKynsSlHGF-7IGJTRbhRzqMLt22tCQdMapFj9j5F-_RzQAg';
 // skt 地表温度
 // ssrd 平均辐照度
 // u10m 地面10米风U分量
@@ -348,7 +348,7 @@ function groupByDateToArray(data: {
   }));
 }
 
-function groupHourlyByDate(hourly: any[]) {
+export function groupHourlyByDate(hourly: any[]) {
   const map = new Map();
 
   for (const item of hourly) {

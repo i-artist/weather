@@ -126,14 +126,13 @@ export function Windy() {
       initializedRef.current = true;
 
       windyInitFn(options, (windyAPI: WindyAPI) => {
-        const { map, picker, utils, broadcast } = windyAPI as any;
-        map.eachLayer((layer) => {
-          console.log(layer, 'layer');
+        const { map, picker } = windyAPI as any;
+        map.eachLayer((layer: any) => {
           // if (layer.options && layer.options.attribution?.includes('Windy')) {
           map.removeLayer(layer);
           // }
         });
-        map.on('click', (e) => {
+        map.on('click', (e: any) => {
           const { lat, lng } = e.latlng;
           console.log('点击位置：', lat, lng);
           picker.open({ lat, lon: lng });

@@ -5,7 +5,6 @@ import { FloatButton } from 'antd';
 import type { EChartsOption, SeriesOption } from 'echarts';
 import * as echarts from 'echarts';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import logoLight from './assets/black.png';
 import centerBg from './assets/center.svg';
 import WeatherMap from './components/map';
 import { Windy } from './components/windy';
@@ -229,9 +228,9 @@ export default function Dashboard() {
   const [themePanelOpen, setThemePanelOpen] = useState(false);
   const [clock, setClock] = useState({ time: '', date: '' });
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const logoSrc = themeKey === 'dark' ? '/logo.png' : logoLight;
+  // const logoSrc = themeKey === 'dark' ? '/logo.png' : logoLight;
   const THEME = THEMES[themeKey];
-  const [isWindy, setIsWindy] = useState(true);
+  const [isWindy] = useState(true);
   const [leftItems, setLeftItems] = useState<
     {
       title: string;
