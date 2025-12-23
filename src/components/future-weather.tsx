@@ -7,7 +7,7 @@ import {
   CloseOutlined,
   CloudOutlined,
 } from '@ant-design/icons';
-import { Button, Spin } from 'antd';
+import { Button, Segmented, Spin } from 'antd';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import 'qweather-icons/font/qweather-icons.css';
@@ -29,13 +29,13 @@ const key =
 // wd10m 地面10米风向
 // tp 一小时内总降水
 
-export function FutureWeather({
-  onClose,
-  location,
-}: {
+interface IProps {
   onClose: () => void;
   location: string;
-}) {
+  datasource?: { name: string; value: number }[];
+  source?: string;
+}
+export function FutureWeather({ location, source = 'aifs_surface' }: IProps) {
   const [weathers, setWeathers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const getData = () => {
@@ -55,13 +55,32 @@ export function FutureWeather({
     setLoading(true);
     const lon = location.split(',')[0];
     const lat = location.split(',')[1];
+    let params = {};
+    if (source === 'aifs_surface') {
+      params = {
+        mete_vars: ['skt', 'ssrd', 'ws100m', 'wd100m', 'tp', 'u10m', 'v10m'],
+      };
+    }
+    if (source === 'gfs_surface') {
+      params = {
+        mete_vars: ['skt', 'ws100m', 'wd100m', 'tp', 'u10m', 'v10m'],
+      };
+    }
+    if (source === 'gdas_surface') {
+      params = {
+        start_time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        end_time: dayjs().add(7, 'day').format('YYYY-MM-DD HH:mm:ss'),
+        mete_vars: ['skt', 'ws100m', 'tp', 'u10m', 'v10m'],
+      };
+    }
     axios
       .post(
-        'https://api-pro-openet.terraqt.com/v1/aifs_surface/point',
+        `https://api-pro-openet.terraqt.com/v1/${source}/point`,
         {
           lon,
           lat,
           mete_vars: ['skt', 'ssrd', 'ws100m', 'wd100m', 'tp', 'u10m', 'v10m'],
+          ...params,
           // time: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
           // time: dayjs().add(1, 'day').format('YYYY-MM-DD') + ' 08:00:00',
         },
@@ -73,6 +92,10 @@ export function FutureWeather({
       )
       .then((res) => {
         console.log('res', res);
+        if (!res.data.data) {
+          setWeathers([]);
+          return;
+        }
         const grouped = groupByDateToArray({
           timestamp: res.data.data.timestamp,
           values: res.data.data.data[0].values,
@@ -85,70 +108,61 @@ export function FutureWeather({
       });
   };
 
-  console.log(weathers, 'weathers');
-
   useEffect(() => {
     if (location === '') {
       setWeathers([]);
       return;
     }
     getData();
-  }, [location]);
+  }, [location, source]);
   return (
-    <div className={`future-weather ${location ? '' : 'hidden'}`}>
-      <Spin spinning={loading} className="future-weather-spin">
-        <Button
-          icon={<CloseOutlined />}
-          shape="circle"
-          className="future-weather-close"
-          onClick={onClose}
-        ></Button>
-        <div className="future-weather-th">
-          <div className="future-weather-row"></div>
-          <div className="future-weather-body">
-            <div
-              className="future-weather-row future-weather-item-category"
-              onClick={getData}
-            >
-              小时
-              <span className="future-weather-row-symbol">
-                <ClockCircleOutlined />
-              </span>
-            </div>
-            {/* <div className="future-weather-row future-weather-item-category"></div> */}
-            <div className="future-weather-row future-weather-item-category">
-              温度 <span className="future-weather-row-symbol">°C</span>
-            </div>
-            <div className="future-weather-row future-weather-item-category">
-              雨 <span className="future-weather-row-symbol">mm</span>
-            </div>
-            <div className="future-weather-row future-weather-item-category">
-              风 <span className="future-weather-row-symbol">m/s</span>
-            </div>
-            <div className="future-weather-row future-weather-item-category">
-              风力等级{' '}
-              <span className="future-weather-row-symbol">
-                <CloudOutlined />
-              </span>
-            </div>
-            <div className="future-weather-row future-weather-item-category">
-              风向
-              <span className="future-weather-row-symbol">
-                <AntCloudOutlined />
-              </span>
-            </div>
+    <Spin spinning={loading} className="future-weather-spin">
+      <div className="future-weather-th">
+        <div className="future-weather-row"></div>
+        <div className="future-weather-body">
+          <div
+            className="future-weather-row future-weather-item-category"
+            onClick={getData}
+          >
+            小时
+            <span className="future-weather-row-symbol">
+              <ClockCircleOutlined />
+            </span>
+          </div>
+          {/* <div className="future-weather-row future-weather-item-category"></div> */}
+          <div className="future-weather-row future-weather-item-category">
+            温度 <span className="future-weather-row-symbol">°C</span>
+          </div>
+          <div className="future-weather-row future-weather-item-category">
+            雨 <span className="future-weather-row-symbol">mm</span>
+          </div>
+          <div className="future-weather-row future-weather-item-category">
+            风 <span className="future-weather-row-symbol">m/s</span>
+          </div>
+          <div className="future-weather-row future-weather-item-category">
+            风力等级{' '}
+            <span className="future-weather-row-symbol">
+              <CloudOutlined />
+            </span>
+          </div>
+          <div className="future-weather-row future-weather-item-category">
+            风向
+            <span className="future-weather-row-symbol">
+              <AntCloudOutlined />
+            </span>
           </div>
         </div>
-        <div className="future-weather-scrollable ">
-          {weathers.map((item) => (
-            <div className="future-weather-content" key={item.date}>
-              <div className="future-weather-row future-weather-item-weekday">
-                {item.week} {item.day}
-              </div>
-              <div className="future-weather-cbody">
-                {item.weather.map((timeItem: any) => (
-                  <div className="future-weather-column" key={timeItem.time}>
-                    {/* <div className="future-weather-row">{timeItem.hour}</div>
+      </div>
+      <div className="future-weather-scrollable ">
+        {weathers.map((item) => (
+          <div className="future-weather-content" key={item.date}>
+            <div className="future-weather-row future-weather-item-weekday">
+              {item.week} {item.day}
+            </div>
+            <div className="future-weather-cbody">
+              {item.weather.map((timeItem: any) => (
+                <div className="future-weather-column" key={timeItem.time}>
+                  {/* <div className="future-weather-row">{timeItem.hour}</div>
                   <div className="future-weather-row">
                     <i className={`qi-${timeItem.icon}`}></i>
                   </div>
@@ -170,62 +184,125 @@ export function FutureWeather({
                     </div>
                   </div> */}
 
-                    <div className="future-weather-row future-weather-hour">
-                      {timeItem.hour.toString().padStart(2, '0')}
-                    </div>
-                    <div className="future-weather-row future-weather-temp">
-                      <span
-                        className={`temp-value ${getTempClass(
-                          timeItem.celsius,
-                        )}`}
-                      >
-                        {timeItem.celsius}°
+                  <div className="future-weather-row future-weather-hour">
+                    {timeItem.hour.toString().padStart(2, '0')}
+                  </div>
+                  <div className="future-weather-row future-weather-temp">
+                    <span
+                      className={`temp-value ${getTempClass(timeItem.celsius)}`}
+                    >
+                      {timeItem.celsius}°
+                    </span>
+                  </div>
+                  <div className="future-weather-row future-weather-precip">
+                    {timeItem.tp && timeItem.tp > 0 ? (
+                      <span className="precip-value has-precip">
+                        {timeItem.tp?.toFixed(1)}
                       </span>
-                    </div>
-                    <div className="future-weather-row future-weather-precip">
-                      {timeItem.tp && timeItem.tp > 0 ? (
-                        <span className="precip-value has-precip">
-                          {timeItem.tp.toFixed(1)}
-                        </span>
-                      ) : (
-                        <span className="precip-value no-precip">-</span>
-                      )}
-                    </div>
-                    <div className="future-weather-row future-weather-wind-speed">
-                      <span
-                        className={`wind-speed-value ${getWindSpeedClass(
-                          timeItem.ws100m,
-                        )}`}
-                      >
-                        {timeItem.ws100m.toFixed(1)}
-                      </span>
-                    </div>
-                    <div className="future-weather-row future-weather-wind-level">
-                      <span
-                        className={`wind-level-badge level-${timeItem.speed}`}
-                      >
-                        {timeItem.speed}
-                      </span>
-                    </div>
-                    <div className="future-weather-row future-weather-wind-dir">
-                      <div
-                        className="wind-direction-arrow"
-                        style={{
-                          transform: `rotate(${timeItem.wd100m - 90}deg)`,
-                          transition: 'transform 0.3s ease',
-                        }}
-                        title={`${Math.round(timeItem.wd100m)}°`}
-                      >
-                        ➡️
-                      </div>
+                    ) : (
+                      <span className="precip-value no-precip">-</span>
+                    )}
+                  </div>
+                  <div className="future-weather-row future-weather-wind-speed">
+                    <span
+                      className={`wind-speed-value ${getWindSpeedClass(
+                        timeItem.ws100m,
+                      )}`}
+                    >
+                      {timeItem.ws100m?.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="future-weather-row future-weather-wind-level">
+                    <span
+                      className={`wind-level-badge level-${timeItem.speed}`}
+                    >
+                      {timeItem.speed}
+                    </span>
+                  </div>
+                  <div className="future-weather-row future-weather-wind-dir">
+                    <div
+                      className="wind-direction-arrow"
+                      style={{
+                        transform: `rotate(${timeItem.wd100m - 90}deg)`,
+                        transition: 'transform 0.3s ease',
+                      }}
+                      title={`${Math.round(timeItem.wd100m)}°`}
+                    >
+                      ➡️
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+    </Spin>
+  );
+}
+
+const WEATHER_OPTIONS = [
+  { label: 'ECMWF', value: 'aifs_surface' },
+  { label: 'GFS', value: 'gfs_surface' },
+];
+
+export function FutureWeatherModal(props: IProps) {
+  const { onClose, location } = props;
+  const [diffVisible, setDiffVisible] = useState(false);
+  const [selectValue, setSelectValue] = useState('aifs_surface');
+  return (
+    <div className={`future-weather ${location ? '' : 'hidden'}`}>
+      <Button
+        icon={<CloseOutlined />}
+        shape="circle"
+        className="future-weather-close"
+        onClick={onClose}
+      ></Button>
+
+      <FutureWeather {...props} source={selectValue}></FutureWeather>
+      <div className="future-weather-segmented">
+        <Segmented<{ label: string; value: string }>
+          size="small"
+          options={WEATHER_OPTIONS}
+          onChange={(value) => {
+            setSelectValue(value as unknown as string);
+          }}
+        />
+
+        <Button
+          onClick={() => setDiffVisible(true)}
+          type="primary"
+          className="future-weather-diff-btn"
+          size="small"
+        >
+          对比
+        </Button>
+      </div>
+      {diffVisible && (
+        <FutureWeatherDiff
+          {...props}
+          onClose={() => setDiffVisible(false)}
+        ></FutureWeatherDiff>
+      )}
+    </div>
+  );
+}
+
+function FutureWeatherDiff(props: IProps) {
+  return (
+    <div className={`future-weather ${location ? '' : 'hidden'}`}>
+      <Button
+        icon={<CloseOutlined />}
+        shape="circle"
+        className="future-weather-close"
+        onClick={props.onClose}
+      ></Button>
+      {WEATHER_OPTIONS.map((item) => (
+        <div key={item.value} className="future-weather-diff">
+          <div className="future-weather-diff-title">{item.label}</div>
+          <FutureWeather {...props} source={item.value}></FutureWeather>
         </div>
-      </Spin>
+      ))}
     </div>
   );
 }
@@ -257,8 +334,8 @@ function groupByDateToArray(data: {
       datetime: ts,
       time,
       hour: dayjs(ts).hour(),
-      speed: windSpeedToLevel(valueObj.ws100m),
-      celsius: Math.round(kelvinToCelsius(valueObj.skt)),
+      speed: windSpeedToLevel(valueObj?.ws100m || valueObj?.ws10m || 0),
+      celsius: Math.round(kelvinToCelsius(valueObj?.skt || valueObj?.t2m || 0)),
       ...valueObj,
     });
   });

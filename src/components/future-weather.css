@@ -2,7 +2,7 @@
     position: fixed;
     bottom: 0px;
     width: 100%;
-    display: flex;
+    /* display: flex; */
     background: #fff;
     left: 0;
      opacity: 1;
@@ -21,6 +21,17 @@
     opacity: 0;
     transform: translateY(20px);
     pointer-events: none;
+}
+
+.future-weather-segmented {
+    padding: 2px 4px;
+}
+
+.future-weather-diff-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-left: 36px;
 }
 
 .future-weather-th {

@@ -4,7 +4,7 @@ import axios from 'axios';
 import 'leaflet.chinatmsproviders';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DayProgress } from './day-progress';
-import { FutureWeather } from './future-weather';
+import { FutureWeatherModal } from './future-weather';
 
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
@@ -189,6 +189,10 @@ export function Windy() {
             onShowPopup({ label: wfname, coordinates: [lon, lat] });
             setLocation(`${lon},${lat}`);
           });
+
+          marker.on('mouseover', () => {
+            onShowPopup({ label: wfname, coordinates: [lon, lat] });
+          });
           // leaflet.popup().setLatLng([lat, lon]).setContent(name).openOn(map);
         }
       });
@@ -264,10 +268,10 @@ export function Windy() {
         }}
       ></div>
       <DayProgress></DayProgress>
-      <FutureWeather
+      <FutureWeatherModal
         location={location}
         onClose={() => setLocation('')}
-      ></FutureWeather>
+      ></FutureWeatherModal>
     </div>
   );
 }
