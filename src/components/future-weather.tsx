@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AntCloudOutlined,
   ClockCircleOutlined,
@@ -11,7 +10,7 @@ import { Button, Segmented, Spin } from 'antd';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import 'qweather-icons/font/qweather-icons.css';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './future-weather.css';
 // const renderData = groupByDateToArray({
 //     timestamp: data.data.timestamp,
@@ -34,26 +33,23 @@ interface IProps {
   location: string;
   datasource?: { name: string; value: number }[];
   source?: string;
+  onScrollRef?: (ref: React.RefObject<HTMLDivElement | null>) => void;
+  syncScroll?: (
+    scrollLeft: number,
+    sourceRef: React.RefObject<HTMLDivElement | null>,
+  ) => void;
 }
 export function FutureWeather({
   location,
   source = 'aifs_surface',
-  onScroll,
+  onScrollRef,
+  syncScroll,
 }: IProps) {
   const [weathers, setWeathers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.addEventListener('scroll', onScroll);
-    }
-    return () => {
-      if (scrollRef.current) {
-        scrollRef.current.removeEventListener('scroll', onScroll);
-      }
-    };
-  }, [onScroll]);
-  const getData = () => {
+
+  const getData = useCallback(() => {
     // axios.get(`https://pb4nmtv3tm.re.qweatherapi.com/v7/weather/72h?location=${location}`, {
     //     headers: {
     //         Authorization: 'Bearer ' + key,
@@ -121,7 +117,7 @@ export function FutureWeather({
       .finally(() => {
         setLoading(false);
       });
-  };
+  }, [location, source]);
 
   useEffect(() => {
     if (location === '') {
@@ -129,7 +125,26 @@ export function FutureWeather({
       return;
     }
     getData();
-  }, [location, source]);
+  }, [location, source, getData]);
+
+  // 注册滚动容器引用
+  useEffect(() => {
+    if (onScrollRef && scrollRef.current) {
+      onScrollRef(scrollRef);
+    }
+  }, [onScrollRef]);
+
+  // 处理滚动同步
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (!syncScroll || !scrollRef.current) return;
+
+    // 如果正在同步滚动，跳过（避免循环）
+    const element = e.currentTarget;
+    if ((element as any).__isScrolling) return;
+
+    const scrollLeft = element.scrollLeft;
+    syncScroll(scrollLeft, scrollRef);
+  };
   return (
     <Spin spinning={loading} className="future-weather-spin">
       <div className="future-weather-th">
@@ -168,7 +183,11 @@ export function FutureWeather({
           </div>
         </div>
       </div>
-      <div className="future-weather-scrollable" ref={scrollRef}>
+      <div
+        className="future-weather-scrollable"
+        ref={scrollRef}
+        onScroll={handleScroll}
+      >
         {weathers.map((item) => (
           <div className="future-weather-content" key={item.date}>
             <div className="future-weather-row future-weather-item-weekday">
@@ -304,8 +323,48 @@ export function FutureWeatherModal(props: IProps) {
 }
 
 function FutureWeatherDiff(props: IProps) {
+  const scrollRefs = useRef<React.RefObject<HTMLDivElement | null>[]>([]);
+
+  // 同步滚动函数
+  const syncScroll = (
+    scrollLeft: number,
+    sourceRef: React.RefObject<HTMLDivElement | null>,
+  ) => {
+    scrollRefs.current.forEach((ref) => {
+      if (
+        ref &&
+        ref.current &&
+        ref !== (sourceRef as React.RefObject<HTMLDivElement | null>)
+      ) {
+        // 标记正在同步，避免触发滚动事件
+        const element = ref.current;
+        const isScrolling = (element as any).__isScrolling;
+        if (!isScrolling) {
+          (element as any).__isScrolling = true;
+          element.scrollLeft = scrollLeft;
+          // 使用 requestAnimationFrame 确保在下一帧重置标志
+          requestAnimationFrame(() => {
+            (element as any).__isScrolling = false;
+          });
+        }
+      }
+    });
+  };
+
+  // 注册滚动容器引用
+  const registerScrollRef = (ref: React.RefObject<HTMLDivElement | null>) => {
+    if (
+      ref &&
+      !scrollRefs.current.includes(
+        ref as React.RefObject<HTMLDivElement | null>,
+      )
+    ) {
+      scrollRefs.current.push(ref as React.RefObject<HTMLDivElement | null>);
+    }
+  };
+
   return (
-    <div className={`future-weather ${location ? '' : 'hidden'}`}>
+    <div className={`future-weather ${props.location ? '' : 'hidden'}`}>
       <Button
         icon={<CloseOutlined />}
         shape="circle"
@@ -315,7 +374,12 @@ function FutureWeatherDiff(props: IProps) {
       {WEATHER_OPTIONS.map((item) => (
         <div key={item.value} className="future-weather-diff">
           <div className="future-weather-diff-title">{item.label}</div>
-          <FutureWeather {...props} source={item.value}></FutureWeather>
+          <FutureWeather
+            {...props}
+            source={item.value}
+            onScrollRef={registerScrollRef}
+            syncScroll={syncScroll}
+          ></FutureWeather>
         </div>
       ))}
     </div>
@@ -355,19 +419,21 @@ function groupByDateToArray(data: {
     });
   });
   let i = 0;
-  return Array.from(map.entries()).map(([date, list]) => {
-    i++;
-    const weather = list.filter((item) => [2, 8, 14, 20].includes(item.hour));
-    if (i === 1 && weather.length === 4) {
-      weather.shift();
-    }
-    return {
-      date,
-      week: dayjs(date).format('ddd'),
-      day: dayjs(date).format('DD'),
-      weather,
-    };
-  });
+  return Array.from(map.entries())
+    .map(([date, list]) => {
+      i++;
+      const weather = list.filter((item) => [2, 8, 14, 20].includes(item.hour));
+      if (i === 1 && weather.length === 4) {
+        weather.shift();
+      }
+      return {
+        date,
+        week: dayjs(date).format('ddd'),
+        day: dayjs(date).format('DD'),
+        weather,
+      };
+    })
+    .slice(0, 14);
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
