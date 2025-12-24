@@ -11,7 +11,7 @@ import { Button, Segmented, Spin } from 'antd';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import 'qweather-icons/font/qweather-icons.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './future-weather.css';
 // const renderData = groupByDateToArray({
 //     timestamp: data.data.timestamp,
@@ -35,9 +35,24 @@ interface IProps {
   datasource?: { name: string; value: number }[];
   source?: string;
 }
-export function FutureWeather({ location, source = 'aifs_surface' }: IProps) {
+export function FutureWeather({
+  location,
+  source = 'aifs_surface',
+  onScroll,
+}: IProps) {
   const [weathers, setWeathers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.addEventListener('scroll', onScroll);
+    }
+    return () => {
+      if (scrollRef.current) {
+        scrollRef.current.removeEventListener('scroll', onScroll);
+      }
+    };
+  }, [onScroll]);
   const getData = () => {
     // axios.get(`https://pb4nmtv3tm.re.qweatherapi.com/v7/weather/72h?location=${location}`, {
     //     headers: {
@@ -153,7 +168,7 @@ export function FutureWeather({ location, source = 'aifs_surface' }: IProps) {
           </div>
         </div>
       </div>
-      <div className="future-weather-scrollable ">
+      <div className="future-weather-scrollable" ref={scrollRef}>
         {weathers.map((item) => (
           <div className="future-weather-content" key={item.date}>
             <div className="future-weather-row future-weather-item-weekday">
@@ -339,15 +354,23 @@ function groupByDateToArray(data: {
       ...valueObj,
     });
   });
-
-  return Array.from(map.entries()).map(([date, list]) => ({
-    date,
-    week: dayjs(date).format('ddd'),
-    day: dayjs(date).format('DD'),
-    weather: list,
-  }));
+  let i = 0;
+  return Array.from(map.entries()).map(([date, list]) => {
+    i++;
+    const weather = list.filter((item) => [2, 8, 14, 20].includes(item.hour));
+    if (i === 1 && weather.length === 4) {
+      weather.shift();
+    }
+    return {
+      date,
+      week: dayjs(date).format('ddd'),
+      day: dayjs(date).format('DD'),
+      weather,
+    };
+  });
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function groupHourlyByDate(hourly: any[]) {
   const map = new Map();
 

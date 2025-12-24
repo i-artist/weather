@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Select } from 'antd';
 import axios from 'axios';
-import 'leaflet.chinatmsproviders';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import geojson from '../assets/geojson.json';
 import { DayProgress } from './day-progress';
 import { FutureWeatherModal } from './future-weather';
+import './leaflet.ChineseTmsProviders';
 
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
@@ -112,14 +113,14 @@ export function Windy() {
       }
       const windIcon = leaflet.icon({
         iconUrl: 'wind.gif',
-        iconSize: [24, 24],
+        iconSize: [36, 36],
         iconAnchor: [12, 12],
         popupAnchor: [0, 0],
       });
 
       const electricIcon = leaflet.icon({
         iconUrl: 'electric.png',
-        iconSize: [24, 24],
+        iconSize: [36, 36],
         iconAnchor: [12, 12],
         popupAnchor: [0, 0],
       });
@@ -140,12 +141,26 @@ export function Windy() {
           //   // Opening of a picker (async)
           // });
         });
+        // leaflet.tileLayer
+        //   .chinaProvider('MapBox.Normal.Map2', {
+        //     maxZoom: 24,
+        //     minZoom: 3,
+        //   })
+        //   .addTo(map);
+
         leaflet.tileLayer
-          .chinaProvider('GaoDe.Satellite.Annotion', {
-            maxZoom: 18,
-            minZoom: 5,
+          .chinaProvider('TianDiTu.Normal.Annotion', {
+            maxZoom: 24,
+            minZoom: 3,
           })
           .addTo(map);
+
+        // leaflet.tileLayer
+        //   .chinaProvider('GaoDe.Satellite.Annotion', {
+        //     maxZoom: 24,
+        //     minZoom: 3,
+        //   })
+        //   .addTo(map);
 
         // leaflet
         //   .tileLayer(
@@ -164,13 +179,17 @@ export function Windy() {
         //   .marker([25.037, 121.563], {})
         //   .bindTooltip('中国台湾', { permanent: true, direction: 'top' })
         //   .addTo(map);
-        // leaflet
-        //   .geoJSON(geojson, {
-        //     style: function (feature) {
-        //       return { color: 'rgba(18, 33, 51, 0.92)', weight: 1 };
-        //     },
-        //   })
-        //   .addTo(map);
+        leaflet
+          .geoJSON(geojson, {
+            style: function (feature) {
+              const name = feature.properties?.name || '';
+              if (name === '十段线' || name === '南海诸岛') {
+                return { color: 'rgba(227, 51, 51, 0.92)', weight: 1 };
+              }
+              return { color: 'rgba(32, 77, 84, 0.92)', weight: 1 };
+            },
+          })
+          .addTo(map);
 
         for (const item of geoJson.features) {
           const { geometry, properties } = item;
