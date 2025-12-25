@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import 'qweather-icons/font/qweather-icons.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './future-weather.css';
+import ArrowsIcon from '../assets/arrows.svg';
 // const renderData = groupByDateToArray({
 //     timestamp: data.data.timestamp,
 //     values: data.data.data[0].values,
@@ -257,12 +258,12 @@ export function FutureWeather({
                     <div
                       className="wind-direction-arrow"
                       style={{
-                        transform: `rotate(${timeItem.wd100m - 90}deg)`,
+                        transform: `rotate(${timeItem.wd100m}deg)`,
                         transition: 'transform 0.3s ease',
                       }}
                       title={`${Math.round(timeItem.wd100m)}°`}
                     >
-                      ➡️
+                      <img style={{ width: '20px', height: '20px' }} src={ArrowsIcon} alt="arrow" />
                     </div>
                   </div>
                 </div>
