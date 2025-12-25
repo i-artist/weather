@@ -8,7 +8,8 @@
         "wfinvestname": "上海新能源",
         "wtcount": 28,
         "wfdalias": "上海",
-        "wfadress": "上海"
+        "wfadress": "上海",
+        "id":"310123"
       },
       "geometry": {
         "type": "Point",

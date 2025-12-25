@@ -1,0 +1,1070 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "101084",
+        "name": "宋家沟三期",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.677853,
+          38.625517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "130734",
+        "name": "尚义海润",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.29,
+          40.96
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "130809",
+        "name": "含山林阳",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.991,
+          31.473
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "130837",
+        "name": "平泉丰合",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.381876,
+          40.531863
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "130838",
+        "name": "平泉仁辉",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.9675,
+          41.2299
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "140929",
+        "name": "汉源风电场",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.624954,
+          38.682281
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "140938",
+        "name": "宋家沟一期",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.677853,
+          38.645517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "140939",
+        "name": "宋家沟二期",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.677853,
+          38.635517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "150133",
+        "name": "武川白山一期+二期",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.190352,
+          41.186494
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "150213",
+        "name": "达茂一期+二期",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.134499,
+          41.873198
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "150842",
+        "name": "大漠布朗",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.477904,
+          41.375118
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "152202",
+        "name": "乌兰华扬",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.208,
+          36.4033
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "152541",
+        "name": "乌兰润晟",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.365845,
+          36.70058
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "152925",
+        "name": "天风风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          98.348889,
+          42.417222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "310115",
+        "name": "申欣风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.8975,
+          30.853889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "310116",
+        "name": "华港一期",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.865278,
+          31.0425
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "310117",
+        "name": "华港二期",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.893611,
+          31.031944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "310118",
+        "name": "长兴风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.758889,
+          31.391111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "310119",
+        "name": "青草沙风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.615,
+          31.442222
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "310122",
+        "name": "临港海上一期+6MW",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.981298,
+          30.903203
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "310123",
+        "name": "临港海上二期",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.991365,
+          30.913935
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "320645",
+        "name": "如东智鑫",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.005478,
+          32.565623
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "320646",
+        "name": "如东协鑫",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.108046,
+          32.5297
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "320707",
+        "name": "灌云永贯",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.168872,
+          34.271661
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "340602",
+        "name": "濉溪鑫风",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.845715,
+          33.341401
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "341525",
+        "name": "金寨光伏",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          115.760193,
+          31.745175
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "341606",
+        "name": "淮北绿金",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.593158,
+          33.802072
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "341823",
+        "name": "宣城洪永一期",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.97712,
+          30.968314
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "361002",
+        "name": "抚州科电+旭阳",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.429444,
+          27.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "370325",
+        "name": "枞阳申华",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          117.483333,
+          30.85
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "370404",
+        "name": "枣庄峄光",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          117.804294,
+          34.663817
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "410410",
+        "name": "宝丰风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.763114,
+          33.94975
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "410486",
+        "name": "汝州风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.680395,
+          34.314973
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "411121",
+        "name": "漯河恒洁",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          113.683949,
+          33.484395
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "411208",
+        "name": "灵宝湾驿",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.814092,
+          34.606323
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "411209",
+        "name": "宣城亭洋",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.550892,
+          30.917864
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "411312",
+        "name": "南召冷风岈",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.724233,
+          33.541234
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "411623",
+        "name": "西华平安",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.367375,
+          33.749999
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "411626",
+        "name": "淮阳清风",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.859099,
+          33.780039
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "411648",
+        "name": "四通沪周",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          115.027885,
+          33.873729
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "411649",
+        "name": "曹河申周",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.717822,
+          33.734066
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "420602",
+        "name": "宜城申宜",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.56506,
+          31.576369
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "420603",
+        "name": "宜城谭湾",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.017084,
+          31.783122
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "420807",
+        "name": "沙洋楚伏兴业+雨霖",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.274444,
+          30.610833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "429008",
+        "name": "天门光伏",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          113.24241,
+          30.540869
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "429009",
+        "name": "天门风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          113.24241,
+          30.340869
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "431103",
+        "name": "东田风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.553611,
+          25.103889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "450704",
+        "name": "申丰光伏",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.368175,
+          21.976728
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "451422",
+        "name": "米康风电场一期+二期",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.512824,
+          21.706681
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "520309",
+        "name": "独山上司",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.590833,
+          25.630278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "520425",
+        "name": "关岭卓阳+卓申",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.321111,
+          25.945278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "520428",
+        "name": "关岭申阳",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.460278,
+          25.781389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "522726",
+        "name": "独山盖寨",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.790833,
+          25.630278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "522727",
+        "name": "独山墨寨",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.690833,
+          25.630278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "610000",
+        "name": "榆林申榆",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.126667,
+          38.261944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "610809",
+        "name": "榆林协合一期+二期",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.897517,
+          39.443833
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "610860",
+        "name": "含山陶阳",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.108333,
+          31.604722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "610886",
+        "name": "榆林协鑫",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.026667,
+          38.271944
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "612202",
+        "name": "耳林光伏",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.62494,
+          38.712913
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "612247",
+        "name": "洪善光伏",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.858003,
+          34.670188
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "632548",
+        "name": "海南鑫源",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.764167,
+          36.325278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "632897",
+        "name": "格尔木东恒",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.5,
+          37.3754
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "632898",
+        "name": "格尔木清脉",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.6,
+          37.3854
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "632900",
+        "name": "格尔木瑞鑫达",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.7,
+          37.3954
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "640127",
+        "name": "宁东申创",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.811528,
+          38.064235
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "652307",
+        "name": "木垒新科",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          91.09,
+          44.55
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "653189",
+        "name": "吐鲁番新科",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          88.54,
+          43.4
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "653203",
+        "name": "木垒华光",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.19,
+          44
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "653205",
+        "name": "哈密新特",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.934,
+          43.138
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "653221",
+        "name": "哈密华光",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          94.42,
+          41.57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "653223",
+        "name": "克拉玛依新特",
+        "type": "光伏"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.2,
+          45.54
+        ]
+      }
+    }
+  ]
+}

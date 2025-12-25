@@ -6,6 +6,7 @@ import geojson from '../assets/geojson.json';
 import { DayProgress } from './day-progress';
 import { FutureWeatherModal } from './future-weather';
 import './leaflet.ChineseTmsProviders';
+import { useRequest } from 'ahooks';
 
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
@@ -47,59 +48,63 @@ export function Windy() {
   const [markers, setMarkers] = useState<any[]>([]);
   const [location, setLocation] = useState<string>('');
   const windyRef = useRef<WindyAPI>(null);
+  const [baseInfo, setBaseInfo] = useState<any>({});
+  const [currentPopup, setCurrentPopup] = useState<any>(null);
+  useRequest(
+    async () => {
+      const res = await fetch('https://demo.theonly.vip:16666/api/baseinfo');
+      const json = await res.json();
+      console.log('获取基础信息：', json, json?.data?.cli?.dps?.ModelData || {});
+      setBaseInfo(json?.data?.cli?.dps?.ModelData || {});
+    },
+    {
+      pollingInterval: 3000,
+      // ready: false,
+    },
+  );
+
   const onShowPopup = useCallback((marker: any) => {
     (window as any).L.popup()
       .setLatLng([marker.coordinates[1], marker.coordinates[0]])
       .setContent(`名称：${marker.label} `)
       .openOn(windyRef.current?.map);
-    axios
-      .post(
-        'https://api-pro-openet.terraqt.com/v1/aifs_surface/point',
-        {
-          lon: marker.coordinates[0],
-          lat: marker.coordinates[1],
-          mete_vars: ['ssrd', 'u10m', 'v10m'],
-          // time: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
-          // time: dayjs().add(1, 'day').format('YYYY-MM-DD') + ' 08:00:00',
-        },
-        {
-          headers: {
-            token: 'jBDMwETZyMzNhBDMwEGMwM2YwkzNzYWN',
-          },
-        },
-      )
-      .then((res) => {
-        const values = res?.data?.data?.data?.[0]?.values?.[0];
-        const ssrd = values?.[0];
-        const u10m = values?.[1];
-        const v10m = values?.[2];
-
-        const content = marker.label?.includes('风')
-          ? `
-                <div>地面10米风U分量：${u10m ? u10m?.toFixed(2) : '0'}m/s</div>
-                <div>地面10米风V分量：${v10m ? v10m?.toFixed(2) : '0'}m/s</div>
-          `
-          : ` <div>平均辐照度：${ssrd ? ssrd.toFixed(2) : '0'}W/m²</div>`;
-        (window as any).L.popup()
-          .setLatLng([marker.coordinates[1], marker.coordinates[0]])
-          .setContent(
-            `名称：${marker.label}
+    console.log('显示弹窗：', baseInfo, marker, baseInfo[marker.id]);
+    const item = baseInfo[marker.id] || {}
+    // const content = marker.label?.includes('风')
+    //   ? `
+    //             <div>地面10米风U分量：${u10m ? u10m?.toFixed(2) : '0'}m/s</div>
+    //             <div>地面10米风V分量：${v10m ? v10m?.toFixed(2) : '0'}m/s</div>
+    //       `
+    //   : ` <div>平均辐照度：${ssrd ? ssrd.toFixed(2) : '0'}W/m²</div>`;
+    const content = marker.type === '风电'
+      ? `
+              <div>平均风速: <span class="popup-content">${item?.sn_top_TrendWindSpeed_wf || '0'}m/s</span></div>
+              <div>有功功率: <span class="popup-content">${item?.sn_top_ActivePower_wf || '0'}MW</span></div>
+         `
+      : ` 
+               <div>平均辐照度: <span class="popup-content">${item?.sn_top_TrendAvgIrradiance_pvf || '0'}W/m²</span></div>
+               <div>有功功率: <span class="popup-content">${item?.sn_top_ActivePower_pvf || '0'}MW</span></div>
+         ` ;
+    const popup = (window as any).L.popup()
+      .setLatLng([marker.coordinates[1], marker.coordinates[0]])
+      .setContent(
+        `名称：${marker.label}
                ${content}
                
             `,
-          )
-          .openOn(windyRef.current?.map);
-      })
-      .catch(() => {
-        (window as any).L.popup()
-          .setLatLng([marker.coordinates[1], marker.coordinates[0]])
-          .setContent(`名称：${marker.label} `)
-          .openOn(windyRef.current?.map);
-      });
-  }, []);
+      )
+      .openOn(windyRef.current?.map);
+    popup._marker = marker;
+  }, [baseInfo]);
+  console.log('currentPopup:', currentPopup);
+  useEffect(() => {
+    if (currentPopup && baseInfo && windyRef.current) {
+      onShowPopup(currentPopup);
+    }
+  }, [baseInfo, currentPopup])
 
   const tryInit = useCallback(
-    (geoJson: any) => {
+    (json: any) => {
       if (initializedRef.current || typeof window === 'undefined') {
         return;
       }
@@ -132,6 +137,18 @@ export function Windy() {
           // if (layer.options && layer.options.attribution?.includes('Windy')) {
           map.removeLayer(layer);
           // }
+        });
+
+        map.on('popupclose', (e: any) => {
+          setCurrentPopup(null);
+          console.log('弹窗关闭了');
+        })
+        map.on('popupopen', (e: any) => {
+          setTimeout(() => {
+            setCurrentPopup(e.popup._marker);
+            console.log('弹窗打开了：', e, e.popup._marker);
+          }, 0)
+
         });
         map.on('click', (e: any) => {
           const { lat, lng } = e.latlng;
@@ -191,12 +208,12 @@ export function Windy() {
           })
           .addTo(map);
 
-        for (const item of geoJson.features) {
+        for (const item of json.features) {
           const { geometry, properties } = item;
           const { coordinates } = geometry;
-          const { wfname = '' } = properties;
+          const { name: wfname = '', id, type } = properties;
           const [lon, lat] = coordinates;
-          const icon = wfname?.includes('风') ? windIcon : electricIcon;
+          const icon = type === '风电' ? windIcon : electricIcon;
           const marker = leaflet
             .marker([lat, lon], {
               icon: icon,
@@ -204,12 +221,18 @@ export function Windy() {
             .addTo(map);
           marker.bindPopup(wfname);
           marker.on('click', () => {
-            onShowPopup({ label: wfname, coordinates: [lon, lat] });
+            // onShowPopup({ label: wfname,id, coordinates: [lon, lat] });
             setLocation(`${lon},${lat}`);
           });
 
           marker.on('mouseover', () => {
-            onShowPopup({ label: wfname, coordinates: [lon, lat] });
+            onShowPopup({ label: wfname, id, type, coordinates: [lon, lat] });
+            setTimeout(() => {
+              console.log('鼠标移上去了：', wfname)
+              setCurrentPopup(() => ({ label: wfname, id, type, coordinates: [lon, lat] }));
+            }, 0)
+
+
           });
           // leaflet.popup().setLatLng([lat, lon]).setContent(name).openOn(map);
         }
@@ -247,13 +270,13 @@ export function Windy() {
   };
 
   useEffect(() => {
-    fetch('/marker.json')
+    fetch('/marker2.json')
       .then((res) => res.json())
       .then((json) => {
         const features = json.features;
         const options = features.map((item: any) => ({
-          label: item.properties.wfname,
-          value: item.properties.wfname,
+          label: item.properties.name,
+          value: item.properties.id,
           coordinates: item.geometry.coordinates,
         }));
         setMarkers(options);
