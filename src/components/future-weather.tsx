@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AntCloudOutlined,
   ClockCircleOutlined,
@@ -11,8 +10,9 @@ import { Button, Segmented, Spin } from 'antd';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import 'qweather-icons/font/qweather-icons.css';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './future-weather.css';
+import ArrowsIcon from '../assets/arrows.svg';
 // const renderData = groupByDateToArray({
 //     timestamp: data.data.timestamp,
 //     values: data.data.data[0].values,
@@ -34,11 +34,23 @@ interface IProps {
   location: string;
   datasource?: { name: string; value: number }[];
   source?: string;
+  onScrollRef?: (ref: React.RefObject<HTMLDivElement | null>) => void;
+  syncScroll?: (
+    scrollLeft: number,
+    sourceRef: React.RefObject<HTMLDivElement | null>,
+  ) => void;
 }
-export function FutureWeather({ location, source = 'aifs_surface' }: IProps) {
+export function FutureWeather({
+  location,
+  source = 'aifs_surface',
+  onScrollRef,
+  syncScroll,
+}: IProps) {
   const [weathers, setWeathers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const getData = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const getData = useCallback(() => {
     // axios.get(`https://pb4nmtv3tm.re.qweatherapi.com/v7/weather/72h?location=${location}`, {
     //     headers: {
     //         Authorization: 'Bearer ' + key,
@@ -106,7 +118,7 @@ export function FutureWeather({ location, source = 'aifs_surface' }: IProps) {
       .finally(() => {
         setLoading(false);
       });
-  };
+  }, [location, source]);
 
   useEffect(() => {
     if (location === '') {
@@ -114,7 +126,26 @@ export function FutureWeather({ location, source = 'aifs_surface' }: IProps) {
       return;
     }
     getData();
-  }, [location, source]);
+  }, [location, source, getData]);
+
+  // 注册滚动容器引用
+  useEffect(() => {
+    if (onScrollRef && scrollRef.current) {
+      onScrollRef(scrollRef);
+    }
+  }, [onScrollRef]);
+
+  // 处理滚动同步
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (!syncScroll || !scrollRef.current) return;
+
+    // 如果正在同步滚动，跳过（避免循环）
+    const element = e.currentTarget;
+    if ((element as any).__isScrolling) return;
+
+    const scrollLeft = element.scrollLeft;
+    syncScroll(scrollLeft, scrollRef);
+  };
   return (
     <Spin spinning={loading} className="future-weather-spin">
       <div className="future-weather-th">
@@ -153,7 +184,11 @@ export function FutureWeather({ location, source = 'aifs_surface' }: IProps) {
           </div>
         </div>
       </div>
-      <div className="future-weather-scrollable ">
+      <div
+        className="future-weather-scrollable"
+        ref={scrollRef}
+        onScroll={handleScroll}
+      >
         {weathers.map((item) => (
           <div className="future-weather-content" key={item.date}>
             <div className="future-weather-row future-weather-item-weekday">
@@ -223,12 +258,12 @@ export function FutureWeather({ location, source = 'aifs_surface' }: IProps) {
                     <div
                       className="wind-direction-arrow"
                       style={{
-                        transform: `rotate(${timeItem.wd100m - 90}deg)`,
+                        transform: `rotate(${timeItem.wd100m}deg)`,
                         transition: 'transform 0.3s ease',
                       }}
                       title={`${Math.round(timeItem.wd100m)}°`}
                     >
-                      ➡️
+                      <img style={{ width: '20px', height: '20px' }} src={ArrowsIcon} alt="arrow" />
                     </div>
                   </div>
                 </div>
@@ -289,8 +324,48 @@ export function FutureWeatherModal(props: IProps) {
 }
 
 function FutureWeatherDiff(props: IProps) {
+  const scrollRefs = useRef<React.RefObject<HTMLDivElement | null>[]>([]);
+
+  // 同步滚动函数
+  const syncScroll = (
+    scrollLeft: number,
+    sourceRef: React.RefObject<HTMLDivElement | null>,
+  ) => {
+    scrollRefs.current.forEach((ref) => {
+      if (
+        ref &&
+        ref.current &&
+        ref !== (sourceRef as React.RefObject<HTMLDivElement | null>)
+      ) {
+        // 标记正在同步，避免触发滚动事件
+        const element = ref.current;
+        const isScrolling = (element as any).__isScrolling;
+        if (!isScrolling) {
+          (element as any).__isScrolling = true;
+          element.scrollLeft = scrollLeft;
+          // 使用 requestAnimationFrame 确保在下一帧重置标志
+          requestAnimationFrame(() => {
+            (element as any).__isScrolling = false;
+          });
+        }
+      }
+    });
+  };
+
+  // 注册滚动容器引用
+  const registerScrollRef = (ref: React.RefObject<HTMLDivElement | null>) => {
+    if (
+      ref &&
+      !scrollRefs.current.includes(
+        ref as React.RefObject<HTMLDivElement | null>,
+      )
+    ) {
+      scrollRefs.current.push(ref as React.RefObject<HTMLDivElement | null>);
+    }
+  };
+
   return (
-    <div className={`future-weather ${location ? '' : 'hidden'}`}>
+    <div className={`future-weather ${props.location ? '' : 'hidden'}`}>
       <Button
         icon={<CloseOutlined />}
         shape="circle"
@@ -300,7 +375,12 @@ function FutureWeatherDiff(props: IProps) {
       {WEATHER_OPTIONS.map((item) => (
         <div key={item.value} className="future-weather-diff">
           <div className="future-weather-diff-title">{item.label}</div>
-          <FutureWeather {...props} source={item.value}></FutureWeather>
+          <FutureWeather
+            {...props}
+            source={item.value}
+            onScrollRef={registerScrollRef}
+            syncScroll={syncScroll}
+          ></FutureWeather>
         </div>
       ))}
     </div>
@@ -339,15 +419,25 @@ function groupByDateToArray(data: {
       ...valueObj,
     });
   });
-
-  return Array.from(map.entries()).map(([date, list]) => ({
-    date,
-    week: dayjs(date).format('ddd'),
-    day: dayjs(date).format('DD'),
-    weather: list,
-  }));
+  let i = 0;
+  return Array.from(map.entries())
+    .map(([date, list]) => {
+      i++;
+      const weather = list.filter((item) => [2, 8, 14, 20].includes(item.hour));
+      if (i === 1 && weather.length === 4) {
+        weather.shift();
+      }
+      return {
+        date,
+        week: dayjs(date).format('ddd'),
+        day: dayjs(date).format('DD'),
+        weather,
+      };
+    })
+    .slice(0, 14);
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function groupHourlyByDate(hourly: any[]) {
   const map = new Map();
 

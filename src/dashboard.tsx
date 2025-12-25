@@ -430,13 +430,13 @@ export default function Dashboard() {
         <div
           style={{
             flex: '0 0 90px',
-            padding: '12px 32px 8px',
+            padding: '6px 32px 0px',
             display: 'grid',
             gridTemplateColumns: '1fr auto 1fr',
             alignItems: 'center',
             backgroundImage: `url(${centerBg})`,
             backgroundRepeat: 'no-repeat',
-            backgroundSize: 'contain',
+            backgroundSize: 'initial',
             backgroundPosition: 'center',
           }}
         >
@@ -481,6 +481,7 @@ export default function Dashboard() {
                 background: 'none',
                 boxShadow: 'none',
                 overflow: 'visible',
+                top: -10
               }}
             >
               <span
