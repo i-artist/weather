@@ -335,7 +335,7 @@ export default function Dashboard() {
     },
     {
       pollingInterval: 3000,
-      ready: false,
+      // ready: false,
     },
   );
 
@@ -369,7 +369,7 @@ export default function Dashboard() {
       });
     },
     {
-      pollingInterval: 3000,
+      // pollingInterval: 3000,
       ready: false,
     },
   );
@@ -401,7 +401,7 @@ export default function Dashboard() {
       });
     },
     {
-      pollingInterval: 3000,
+      // pollingInterval: 3000,
       ready: false,
     },
   );
@@ -422,21 +422,21 @@ export default function Dashboard() {
           display: 'flex',
           flexDirection: 'column',
           textAlign: 'left',
-          gap: 12,
+          gap: 0,
           paddingBottom: 12,
         }}
       >
         {/* 顶部头部区域 */}
         <div
           style={{
-            flex: '0 0 90px',
-            padding: '6px 32px 0px',
+            flex: '0 0 80px',
+            padding: '0px 32px 0px',
             display: 'grid',
             gridTemplateColumns: '1fr auto 1fr',
             alignItems: 'center',
             backgroundImage: `url(${centerBg})`,
             backgroundRepeat: 'no-repeat',
-            backgroundSize: 'initial',
+            backgroundSize: '700px',
             backgroundPosition: 'center',
           }}
         >
@@ -494,7 +494,7 @@ export default function Dashboard() {
                   textAlign: 'center',
                 }}
               >
-                天气预报系统
+                天气资源预报系统
               </span>
             </div>
           </div>
