@@ -79,11 +79,11 @@ export function Windy() {
     const content = marker.type === '风电'
       ? `
               <div>平均风速: <span class="popup-content">${item?.sn_top_TrendWindSpeed_wf || '0'}m/s</span></div>
-              <div>有功功率: <span class="popup-content">${item?.sn_top_ActivePower_wf || '0'}MW</span></div>
+              <div>有功功率: <span class="popup-content">${toRealNumber(item?.sn_top_ActivePower_wf) || '0'}MW</span></div>
          `
       : ` 
                <div>平均辐照度: <span class="popup-content">${item?.sn_top_TrendAvgIrradiance_pvf || '0'}W/m²</span></div>
-               <div>有功功率: <span class="popup-content">${item?.sn_top_ActivePower_pvf || '0'}MW</span></div>
+               <div>有功功率: <span class="popup-content">${toRealNumber(item?.sn_top_ActivePower_pvf) || '0'}MW</span></div>
          ` ;
     const popup = (window as any).L.popup()
       .setLatLng([marker.coordinates[1], marker.coordinates[0]])
@@ -221,7 +221,7 @@ export function Windy() {
             .addTo(map);
           marker.bindPopup(wfname);
           marker.on('click', () => {
-            // onShowPopup({ label: wfname,id, coordinates: [lon, lat] });
+            onShowPopup({ label: wfname, id, type, coordinates: [lon, lat] });
             setLocation(`${lon},${lat}`);
           });
 
@@ -315,4 +315,16 @@ export function Windy() {
       ></FutureWeatherModal>
     </div>
   );
+}
+
+
+const toRealNumber = (value: any) => {
+  const val = Number(value);
+  if (isNaN(val)) {
+    return 0;
+  }
+  if (val < 0) {
+    return 0;
+  }
+  return (val / 1000).toFixed(2);
 }
