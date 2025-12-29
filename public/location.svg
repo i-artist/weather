@@ -1,0 +1,53 @@
+<svg
+  width="48"
+  height="48"
+  viewBox="0 0 48 48"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <!-- 主体渐变（不含黑） -->
+    <linearGradient id="pinGradientClean" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4da1ff"/>
+      <stop offset="100%" stop-color="#1f6fe5"/>
+    </linearGradient>
+
+    <!-- 高光（只白） -->
+    <radialGradient id="highlightClean" cx="30%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 扩散波纹 -->
+  <circle cx="24" cy="30" r="3" stroke="#4da1ff" stroke-width="2">
+    <animate attributeName="r" from="3" to="20" dur="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" from="0.35" to="0" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+
+  <circle cx="24" cy="30" r="3" stroke="#4da1ff" stroke-width="2">
+    <animate attributeName="r" from="3" to="20" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" from="0.35" to="0" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 定位主体 -->
+  <path
+    d="M24 13
+       C20.5 13 18 15.7 18 19
+       C18 24 24 31 24 31
+       C24 31 30 24 30 19
+       C30 15.7 27.5 13 24 13Z"
+    fill="url(#pinGradientClean)"
+  />
+
+  <!-- 高光 -->
+  <ellipse
+    cx="23"
+    cy="18"
+    rx="4"
+    ry="6"
+    fill="url(#highlightClean)"
+  />
+
+  <!-- 定位孔（干净版） -->
+  <circle cx="24" cy="19" r="2.2" fill="#ffffff" opacity="0.9"/>
+</svg>

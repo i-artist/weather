@@ -13,6 +13,7 @@ import 'qweather-icons/font/qweather-icons.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ArrowsIcon from '../assets/arrows.svg';
 import './future-weather.css';
+import TemperatureChart from './temperature-chart';
 // const renderData = groupByDateToArray({
 //     timestamp: data.data.timestamp,
 //     values: data.data.data[0].values,
@@ -49,6 +50,7 @@ export function FutureWeather({
   const [weathers, setWeathers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollWidth, setScrollWidth] = useState<number>(0);
 
   const getData = useCallback(() => {
     // axios.get(`https://pb4nmtv3tm.re.qweatherapi.com/v7/weather/72h?location=${location}`, {
@@ -146,6 +148,11 @@ export function FutureWeather({
     const scrollLeft = element.scrollLeft;
     syncScroll(scrollLeft, scrollRef);
   };
+
+  useEffect(() => {
+    const width = scrollRef.current?.scrollWidth;
+    setScrollWidth(width || 0);
+  }, [weathers]);
   return (
     <Spin spinning={loading} className="future-weather-spin">
       <div className="future-weather-th">
@@ -189,6 +196,14 @@ export function FutureWeather({
         ref={scrollRef}
         onScroll={handleScroll}
       >
+        <div className="future-weather-chart" style={{ width: scrollWidth }}>
+          <TemperatureChart
+            data={weathers
+              .map((item) => item.weather)
+              .flat()
+              .map((item) => item.celsius)}
+          ></TemperatureChart>
+        </div>
         {weathers.map((item) => (
           <div className="future-weather-content" key={item.date}>
             <div className="future-weather-row future-weather-item-weekday">
@@ -299,7 +314,6 @@ export function FutureWeatherModal(props: IProps) {
         className="future-weather-close"
         onClick={onClose}
       ></Button>
-
       <FutureWeather {...props} source={selectValue}></FutureWeather>
       <div className="future-weather-segmented">
         <Segmented<{ label: string; value: string }>

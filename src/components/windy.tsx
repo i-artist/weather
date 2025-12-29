@@ -72,8 +72,9 @@ export function Windy() {
         .setLatLng([marker.coordinates[1], marker.coordinates[0]])
         .setContent(`名称：${marker.label} `)
         .openOn(windyRef.current?.map);
-      console.log('显示弹窗：', baseInfo, marker, baseInfo[marker.id]);
       const item = baseInfo[marker.id] || {};
+      console.log('显示弹窗：', baseInfo, marker, baseInfo[marker.id], item);
+
       // const content = marker.label?.includes('风')
       //   ? `
       //             <div>地面10米风U分量：${u10m ? u10m?.toFixed(2) : '0'}m/s</div>
@@ -84,7 +85,7 @@ export function Windy() {
         marker.type === '风电'
           ? `
               <div>平均风速: <span class="popup-content">${
-                item?.sn_top_TrendWindSpeed_wf?.toFixed(2) || '0'
+                toFixed(item?.sn_top_TrendWindSpeed_wf) || '0'
               }m/s</span></div>
               <div>有功功率: <span class="popup-content">${
                 toRealNumber(item?.sn_top_ActivePower_wf) || '0'
@@ -92,7 +93,7 @@ export function Windy() {
          `
           : ` 
                <div>平均辐照度: <span class="popup-content">${
-                 item?.sn_top_TrendAvgIrradiance_pvf?.toFixed(2) || '0'
+                 toFixed(item?.sn_top_TrendAvgIrradiance_pvf) || '0'
                }W/m²</span></div>
                <div>有功功率: <span class="popup-content">${
                  toRealNumber(item?.sn_top_ActivePower_pvf) || '0'
@@ -139,8 +140,8 @@ export function Windy() {
       });
 
       const electricIcon = leaflet.icon({
-        iconUrl: 'electric.png',
-        iconSize: [36, 36],
+        iconUrl: 'location.svg',
+        iconSize: [42, 42],
         iconAnchor: [12, 12],
         popupAnchor: [0, 0],
       });
@@ -344,3 +345,11 @@ const toRealNumber = (value: any) => {
   }
   return (val / 1000).toFixed(2);
 };
+
+function toFixed(value: any, fixed = 2) {
+  const val = Number(value);
+  if (isNaN(val)) {
+    return '0';
+  }
+  return val.toFixed(fixed);
+}
