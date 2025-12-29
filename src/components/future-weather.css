@@ -137,11 +137,16 @@
     transition: background-color 0.2s ease;
 }
 
+.future-weather-row span {
+    padding: 4px 0;
+    display: inline-block;
+    width: 36px;
+}
 .temp-value {
     font-weight: 600;
     font-size: 15px;
     transition: color 0.2s ease;
-    padding: 4px 6px;
+    padding: 4px 0;
     border-radius: 4px;
 }
 

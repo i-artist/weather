@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useRequest } from 'ahooks';
 import { Select } from 'antd';
-import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import geojson from '../assets/geojson.json';
 import { DayProgress } from './day-progress';
 import { FutureWeatherModal } from './future-weather';
 import './leaflet.ChineseTmsProviders';
-import { useRequest } from 'ahooks';
 
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
@@ -54,7 +53,11 @@ export function Windy() {
     async () => {
       const res = await fetch('https://demo.theonly.vip:16666/api/baseinfo');
       const json = await res.json();
-      console.log('获取基础信息：', json, json?.data?.cli?.dps?.ModelData || {});
+      console.log(
+        '获取基础信息：',
+        json,
+        json?.data?.cli?.dps?.ModelData || {},
+      );
       setBaseInfo(json?.data?.cli?.dps?.ModelData || {});
     },
     {
@@ -63,45 +66,57 @@ export function Windy() {
     },
   );
 
-  const onShowPopup = useCallback((marker: any) => {
-    (window as any).L.popup()
-      .setLatLng([marker.coordinates[1], marker.coordinates[0]])
-      .setContent(`名称：${marker.label} `)
-      .openOn(windyRef.current?.map);
-    console.log('显示弹窗：', baseInfo, marker, baseInfo[marker.id]);
-    const item = baseInfo[marker.id] || {}
-    // const content = marker.label?.includes('风')
-    //   ? `
-    //             <div>地面10米风U分量：${u10m ? u10m?.toFixed(2) : '0'}m/s</div>
-    //             <div>地面10米风V分量：${v10m ? v10m?.toFixed(2) : '0'}m/s</div>
-    //       `
-    //   : ` <div>平均辐照度：${ssrd ? ssrd.toFixed(2) : '0'}W/m²</div>`;
-    const content = marker.type === '风电'
-      ? `
-              <div>平均风速: <span class="popup-content">${item?.sn_top_TrendWindSpeed_wf || '0'}m/s</span></div>
-              <div>有功功率: <span class="popup-content">${toRealNumber(item?.sn_top_ActivePower_wf) || '0'}MW</span></div>
+  const onShowPopup = useCallback(
+    (marker: any) => {
+      (window as any).L.popup()
+        .setLatLng([marker.coordinates[1], marker.coordinates[0]])
+        .setContent(`名称：${marker.label} `)
+        .openOn(windyRef.current?.map);
+      console.log('显示弹窗：', baseInfo, marker, baseInfo[marker.id]);
+      const item = baseInfo[marker.id] || {};
+      // const content = marker.label?.includes('风')
+      //   ? `
+      //             <div>地面10米风U分量：${u10m ? u10m?.toFixed(2) : '0'}m/s</div>
+      //             <div>地面10米风V分量：${v10m ? v10m?.toFixed(2) : '0'}m/s</div>
+      //       `
+      //   : ` <div>平均辐照度：${ssrd ? ssrd.toFixed(2) : '0'}W/m²</div>`;
+      const content =
+        marker.type === '风电'
+          ? `
+              <div>平均风速: <span class="popup-content">${
+                item?.sn_top_TrendWindSpeed_wf?.toFixed(2) || '0'
+              }m/s</span></div>
+              <div>有功功率: <span class="popup-content">${
+                toRealNumber(item?.sn_top_ActivePower_wf) || '0'
+              }MW</span></div>
          `
-      : ` 
-               <div>平均辐照度: <span class="popup-content">${item?.sn_top_TrendAvgIrradiance_pvf || '0'}W/m²</span></div>
-               <div>有功功率: <span class="popup-content">${toRealNumber(item?.sn_top_ActivePower_pvf) || '0'}MW</span></div>
-         ` ;
-    const popup = (window as any).L.popup()
-      .setLatLng([marker.coordinates[1], marker.coordinates[0]])
-      .setContent(
-        `名称：${marker.label}
+          : ` 
+               <div>平均辐照度: <span class="popup-content">${
+                 item?.sn_top_TrendAvgIrradiance_pvf?.toFixed(2) || '0'
+               }W/m²</span></div>
+               <div>有功功率: <span class="popup-content">${
+                 toRealNumber(item?.sn_top_ActivePower_pvf) || '0'
+               }MW</span></div>
+         `;
+      const popup = (window as any).L.popup()
+        .setLatLng([marker.coordinates[1], marker.coordinates[0]])
+        .setContent(
+          `名称：${marker.label}
                ${content}
                
             `,
-      )
-      .openOn(windyRef.current?.map);
-    popup._marker = marker;
-  }, [baseInfo]);
+        )
+        .openOn(windyRef.current?.map);
+      popup._marker = marker;
+    },
+    [baseInfo],
+  );
   console.log('currentPopup:', currentPopup);
   useEffect(() => {
     if (currentPopup && baseInfo && windyRef.current) {
       onShowPopup(currentPopup);
     }
-  }, [baseInfo, currentPopup])
+  }, [baseInfo, currentPopup]);
 
   const tryInit = useCallback(
     (json: any) => {
@@ -142,13 +157,12 @@ export function Windy() {
         map.on('popupclose', (e: any) => {
           setCurrentPopup(null);
           console.log('弹窗关闭了');
-        })
+        });
         map.on('popupopen', (e: any) => {
           setTimeout(() => {
             setCurrentPopup(e.popup._marker);
             console.log('弹窗打开了：', e, e.popup._marker);
-          }, 0)
-
+          }, 0);
         });
         map.on('click', (e: any) => {
           const { lat, lng } = e.latlng;
@@ -228,11 +242,14 @@ export function Windy() {
           marker.on('mouseover', () => {
             onShowPopup({ label: wfname, id, type, coordinates: [lon, lat] });
             setTimeout(() => {
-              console.log('鼠标移上去了：', wfname)
-              setCurrentPopup(() => ({ label: wfname, id, type, coordinates: [lon, lat] }));
-            }, 0)
-
-
+              console.log('鼠标移上去了：', wfname);
+              setCurrentPopup(() => ({
+                label: wfname,
+                id,
+                type,
+                coordinates: [lon, lat],
+              }));
+            }, 0);
           });
           // leaflet.popup().setLatLng([lat, lon]).setContent(name).openOn(map);
         }
@@ -317,7 +334,6 @@ export function Windy() {
   );
 }
 
-
 const toRealNumber = (value: any) => {
   const val = Number(value);
   if (isNaN(val)) {
@@ -327,4 +343,4 @@ const toRealNumber = (value: any) => {
     return 0;
   }
   return (val / 1000).toFixed(2);
-}
+};

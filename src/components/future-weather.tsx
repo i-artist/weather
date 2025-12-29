@@ -11,8 +11,8 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import 'qweather-icons/font/qweather-icons.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import './future-weather.css';
 import ArrowsIcon from '../assets/arrows.svg';
+import './future-weather.css';
 // const renderData = groupByDateToArray({
 //     timestamp: data.data.timestamp,
 //     values: data.data.data[0].values,
@@ -224,7 +224,9 @@ export function FutureWeather({
                   </div>
                   <div className="future-weather-row future-weather-temp">
                     <span
-                      className={`temp-value ${getTempClass(timeItem.celsius)}`}
+                      className={`temp-value  ${getTempClass(
+                        timeItem.celsius,
+                      )}`}
                     >
                       {timeItem.celsius}°
                     </span>
@@ -263,7 +265,11 @@ export function FutureWeather({
                       }}
                       title={`${Math.round(timeItem.wd100m)}°`}
                     >
-                      <img style={{ width: '20px', height: '20px' }} src={ArrowsIcon} alt="arrow" />
+                      <img
+                        style={{ width: '20px', height: '20px' }}
+                        src={ArrowsIcon}
+                        alt="arrow"
+                      />
                     </div>
                   </div>
                 </div>
