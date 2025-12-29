@@ -103,7 +103,8 @@
     height: 160px;
     width: max-content;
     left: 0;
-    top: 3px;
+    top: 36px;
+    pointer-events: none;
 }
 .future-weather-column {
     max-width: 60px;

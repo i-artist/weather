@@ -6,8 +6,8 @@ interface Props {
 
 const GRADIENT_COLORS = {
   low: 'rgba(255, 255, 255, 0)', // 透明白
-  mid: 'rgba(0, 136, 255, 0.35)', // 蓝色
-  high: 'rgba(94, 239, 10, 0.45)', // 绿色
+  mid: 'rgba(0, 136, 255, 0.227)', // 蓝色
+  high: 'rgba(94, 239, 10, 0.32)', // 绿色
 };
 
 const TemperatureChart: React.FC<Props> = ({ data }) => {
