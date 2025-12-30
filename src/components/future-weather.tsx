@@ -439,14 +439,49 @@ function groupByDateToArray(data: {
       ...valueObj,
     });
   });
+
   let i = 0;
   return Array.from(map.entries())
     .map(([date, list]) => {
       i++;
-      const weather = list.filter((item) => [2, 8, 14, 20].includes(item.hour));
+
+      // 需要的小时数组，按顺序
+      const requiredHours = [2, 8, 14, 20];
+
+      // 创建一个Map，方便根据小时查找数据
+      const hourMap = new Map(list.map(item => [item.hour, item]));
+
+      // 按照顺序补充数据，缺失的小时使用默认值
+      const weather = requiredHours.map(hour => {
+        // 如果存在该小时的数据，直接使用
+        if (hourMap.has(hour)) {
+          return hourMap.get(hour);
+        }
+
+        // 如果不存在，创建一个包含默认值的条目
+        const defaultTime = `${date} ${hour.toString().padStart(2, '0')}:00:00`;
+        const defaultValueObj: Record<string, number> = {};
+
+        // 为所有mete_var设置默认值0
+        mete_var.forEach(key => {
+          defaultValueObj[key] = 0;
+        });
+
+        return {
+          datetime: defaultTime,
+          time: `${hour.toString().padStart(2, '0')}:00:00`,
+          hour,
+          speed: windSpeedToLevel(0),
+          celsius: Math.round(kelvinToCelsius(0)),
+          ...defaultValueObj,
+        };
+      });
+
+      // 保持原始逻辑：如果是第一天且有4条数据，移除第一条
       if (i === 1 && weather.length === 4) {
         weather.shift();
       }
+
       return {
         date,
         week: dayjs(date).format('ddd'),

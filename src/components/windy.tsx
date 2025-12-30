@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRequest } from 'ahooks';
-import { Select } from 'antd';
+import { FloatButton, Select } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import geojson from '../assets/geojson.json';
 import { DayProgress } from './day-progress';
 import { FutureWeatherModal } from './future-weather';
 import './leaflet.ChineseTmsProviders';
+import { CaretRightOutlined, FullscreenExitOutlined, FullscreenOutlined, PauseOutlined, PlayCircleOutlined } from '@ant-design/icons';
 
 const options = {
   key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
@@ -49,6 +50,19 @@ export function Windy() {
   const windyRef = useRef<WindyAPI>(null);
   const [baseInfo, setBaseInfo] = useState<any>({});
   const [currentPopup, setCurrentPopup] = useState<any>(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  // 添加轮播相关状态
+  const [isCarouselRunning, setIsCarouselRunning] = useState(false);
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+  const carouselTimerRef = useRef<number | null>(null);
+
+
+  useEffect(() => {
+    document.addEventListener('fullscreenchange', () => {
+      setIsFullScreen(Boolean(document.fullscreenElement));
+    });
+  }, []);
   useRequest(
     async () => {
       const res = await fetch('https://demo.theonly.vip:16666/api/baseinfo');
@@ -84,20 +98,16 @@ export function Windy() {
       const content =
         marker.type === '风电'
           ? `
-              <div>平均风速: <span class="popup-content">${
-                toFixed(item?.sn_top_TrendWindSpeed_wf) || '0'
-              }m/s</span></div>
-              <div>有功功率: <span class="popup-content">${
-                toRealNumber(item?.sn_top_ActivePower_wf) || '0'
-              }MW</span></div>
+              <div>平均风速: <span class="popup-content">${toFixed(item?.sn_top_TrendWindSpeed_wf) || '0'
+          }m/s</span></div>
+              <div>有功功率: <span class="popup-content">${toRealNumber(item?.sn_top_ActivePower_wf) || '0'
+          }MW</span></div>
          `
           : ` 
-               <div>平均辐照度: <span class="popup-content">${
-                 toFixed(item?.sn_top_TrendAvgIrradiance_pvf) || '0'
-               }W/m²</span></div>
-               <div>有功功率: <span class="popup-content">${
-                 toRealNumber(item?.sn_top_ActivePower_pvf) || '0'
-               }MW</span></div>
+               <div>平均辐照度: <span class="popup-content">${toFixed(item?.sn_top_TrendAvgIrradiance_pvf) || '0'
+          }W/m²</span></div>
+               <div>有功功率: <span class="popup-content">${toRealNumber(item?.sn_top_ActivePower_pvf) || '0'
+          }MW</span></div>
          `;
       const popup = (window as any).L.popup()
         .setLatLng([marker.coordinates[1], marker.coordinates[0]])
@@ -157,12 +167,10 @@ export function Windy() {
 
         map.on('popupclose', (e: any) => {
           setCurrentPopup(null);
-          console.log('弹窗关闭了');
         });
         map.on('popupopen', (e: any) => {
           setTimeout(() => {
             setCurrentPopup(e.popup._marker);
-            console.log('弹窗打开了：', e, e.popup._marker);
           }, 0);
         });
         map.on('click', (e: any) => {
@@ -301,6 +309,55 @@ export function Windy() {
         tryInit(json);
       });
   }, [tryInit]);
+
+  // 添加轮播控制函数
+  const toggleCarousel = () => {
+    if (isCarouselRunning) {
+      // 停止轮播
+      if (carouselTimerRef.current) {
+        clearInterval(carouselTimerRef.current);
+        carouselTimerRef.current = null;
+      }
+    } else {
+      // 开始轮播
+      startCarousel();
+    }
+    setIsCarouselRunning(!isCarouselRunning);
+  };
+
+  const startCarousel = () => {
+    // 清除可能存在的定时器
+    if (carouselTimerRef.current) {
+      clearInterval(carouselTimerRef.current);
+    }
+
+    // 立即执行一次当前站点的切换
+    const currentMarker = markers[currentCarouselIndex];
+    if (currentMarker) {
+      onSelectChange(currentMarker.value);
+    }
+
+    // 设置定时器，每5秒切换一次
+    carouselTimerRef.current = setInterval(() => {
+      setCurrentCarouselIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % markers.length;
+        const nextMarker = markers[nextIndex];
+        if (nextMarker) {
+          onSelectChange(nextMarker.value);
+        }
+        return nextIndex;
+      });
+    }, 5000);
+  };
+
+  // 组件卸载时清除定时器
+  useEffect(() => {
+    return () => {
+      if (carouselTimerRef.current) {
+        clearInterval(carouselTimerRef.current);
+      }
+    };
+  }, []);
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <div className="search-point">
@@ -314,6 +371,25 @@ export function Windy() {
           onChange={onSelectChange}
         ></Select>
       </div>
+      <FloatButton.Group>
+        <FloatButton
+          icon={isCarouselRunning ? <PauseOutlined /> : <CaretRightOutlined />}
+          onClick={toggleCarousel}
+          tooltip="站点轮播"
+        ></FloatButton>
+        <FloatButton
+          icon={
+            isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />
+          }
+          onClick={() => {
+            if (isFullScreen) {
+              document.exitFullscreen();
+            } else {
+              document.body?.requestFullscreen();
+            }
+          }}
+        />
+      </FloatButton.Group>
       <div
         id="windy"
         style={{
