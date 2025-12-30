@@ -53,7 +53,7 @@ export function Windy() {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   // 添加轮播相关状态
-  const [isCarouselRunning, setIsCarouselRunning] = useState(false);
+  const [isCarouselRunning, setIsCarouselRunning] = useState(Boolean(localStorage.getItem('isCarouselRunning')));
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
   const carouselTimerRef = useRef<number | null>(null);
 
@@ -122,7 +122,7 @@ export function Windy() {
     },
     [baseInfo],
   );
-  console.log('currentPopup:', currentPopup);
+
   useEffect(() => {
     if (currentPopup && baseInfo && windyRef.current) {
       onShowPopup(currentPopup);
@@ -322,6 +322,7 @@ export function Windy() {
       // 开始轮播
       startCarousel();
     }
+    localStorage.setItem('isCarouselRunning', isCarouselRunning ? 'true' : '');
     setIsCarouselRunning(!isCarouselRunning);
   };
 

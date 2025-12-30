@@ -283,6 +283,12 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    setInterval(() => {
+      window.location.reload();
+    }, 1000 * 60 * 120)
+  }, []);
+
   useRequest(
     async () => {
       const res = await fetch('https://demo.theonly.vip:16666/api/baseinfo');
