@@ -1,7 +1,6 @@
 /* eslint-disable no-constant-binary-expression */
-import { FullscreenExitOutlined, FullscreenOutlined } from "@ant-design/icons";
+
 import { useRequest } from "ahooks";
-import { FloatButton } from "antd";
 import type { EChartsOption, SeriesOption } from "echarts";
 import * as echarts from "echarts";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -228,6 +227,7 @@ export default function Dashboard() {
   const [themePanelOpen, setThemePanelOpen] = useState(false);
   const [clock, setClock] = useState({ time: "", date: "" });
   const [isFullScreen, setIsFullScreen] = useState(false);
+
   // const logoSrc = themeKey === 'dark' ? '/logo.png' : logoLight;
   const THEME = THEMES[themeKey];
   const [isWindy] = useState(true);
@@ -262,11 +262,6 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    document.addEventListener("fullscreenchange", () => {
-      setIsFullScreen(Boolean(document.fullscreenElement));
-    });
-  }, []);
-  useEffect(() => {
     const updateClock = () => {
       const now = new Date();
       const time = now.toLocaleTimeString("zh-CN", {
@@ -286,6 +281,12 @@ export default function Dashboard() {
     updateClock();
     const timer = setInterval(updateClock, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    setInterval(() => {
+      window.location.reload();
+    }, 1000 * 60 * 120);
   }, []);
 
   useRequest(
@@ -410,14 +411,14 @@ export default function Dashboard() {
     <div
       style={{
         height: "100vh",
-        overflow: "auto",
+        overflow: "hidden",
         background: THEME.pageBg,
       }}
     >
       <div
         style={{
           height: "100%",
-          minHeight: 500,
+          minHeight: 400,
           minWidth: 1200,
           display: "flex",
           flexDirection: "column",
@@ -611,20 +612,11 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <Windy isFullScreen={isFullScreen}></Windy>
+        <Windy
+          setIsFullScreen={setIsFullScreen}
+          isFullScreen={isFullScreen}
+        ></Windy>
 
-        <FloatButton
-          icon={
-            isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />
-          }
-          onClick={() => {
-            if (isFullScreen) {
-              document.exitFullscreen();
-            } else {
-              document.body?.requestFullscreen();
-            }
-          }}
-        />
         {false && (
           <>
             <div style={{ flex: 8, display: "flex" }}>
@@ -689,7 +681,14 @@ export default function Dashboard() {
                       "linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(241, 248, 255, 0.9) 60%, rgba(230, 242, 252, 0.84) 100%)",
                   }}
                 >
-                  {isWindy ? <Windy></Windy> : <WeatherMap></WeatherMap>}
+                  {isWindy ? (
+                    <Windy
+                      isFullScreen={isFullScreen}
+                      setIsFullScreen={setIsFullScreen}
+                    ></Windy>
+                  ) : (
+                    <WeatherMap></WeatherMap>
+                  )}
                 </div>
               </div>
               <div
