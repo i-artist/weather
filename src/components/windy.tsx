@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRequest } from 'ahooks';
-import { Select } from 'antd';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import geojson from '../assets/geojson.json';
-import { DayProgress } from './day-progress';
-import { FutureWeatherModal } from './future-weather';
-import './leaflet.ChineseTmsProviders';
+import { useRequest } from "ahooks";
+import { Select } from "antd";
+import { useCallback, useEffect, useRef, useState } from "react";
+import geojson from "../assets/geojson.json";
+import { DayProgress } from "./day-progress";
+import { FutureWeatherModal } from "./future-weather";
+import "./leaflet.ChineseTmsProviders";
 
 const options = {
-  key: 'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
+  key: "MJt519IvahtrHKWpiqosIqp8j0NgvvA2",
   verbose: true,
   lat: 34.4,
   lon: 113.5,
@@ -42,28 +42,29 @@ type WindyWindow = Window & {
 //   return Number((kelvin - 273.15).toFixed(decimal));
 // }
 
-export function Windy() {
+export function Windy(props: { isFullScreen?: boolean }) {
+  const { isFullScreen } = props;
   const initializedRef = useRef(false);
   const [markers, setMarkers] = useState<any[]>([]);
-  const [location, setLocation] = useState<string>('');
+  const [location, setLocation] = useState<string>("");
   const windyRef = useRef<WindyAPI>(null);
   const [baseInfo, setBaseInfo] = useState<any>({});
   const [currentPopup, setCurrentPopup] = useState<any>(null);
   useRequest(
     async () => {
-      const res = await fetch('https://demo.theonly.vip:16666/api/baseinfo');
+      const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
       const json = await res.json();
       console.log(
-        '获取基础信息：',
+        "获取基础信息：",
         json,
-        json?.data?.cli?.dps?.ModelData || {},
+        json?.data?.cli?.dps?.ModelData || {}
       );
       setBaseInfo(json?.data?.cli?.dps?.ModelData || {});
     },
     {
       pollingInterval: 3000,
       // ready: false,
-    },
+    }
   );
 
   const onShowPopup = useCallback(
@@ -73,7 +74,7 @@ export function Windy() {
         .setContent(`名称：${marker.label} `)
         .openOn(windyRef.current?.map);
       const item = baseInfo[marker.id] || {};
-      console.log('显示弹窗：', baseInfo, marker, baseInfo[marker.id], item);
+      console.log("显示弹窗：", baseInfo, marker, baseInfo[marker.id], item);
 
       // const content = marker.label?.includes('风')
       //   ? `
@@ -82,21 +83,21 @@ export function Windy() {
       //       `
       //   : ` <div>平均辐照度：${ssrd ? ssrd.toFixed(2) : '0'}W/m²</div>`;
       const content =
-        marker.type === '风电'
+        marker.type === "风电"
           ? `
               <div>平均风速: <span class="popup-content">${
-                toFixed(item?.sn_top_TrendWindSpeed_wf) || '0'
+                toFixed(item?.sn_top_TrendWindSpeed_wf) || "0"
               }m/s</span></div>
               <div>有功功率: <span class="popup-content">${
-                toRealNumber(item?.sn_top_ActivePower_wf) || '0'
+                toRealNumber(item?.sn_top_ActivePower_wf) || "0"
               }MW</span></div>
          `
           : ` 
                <div>平均辐照度: <span class="popup-content">${
-                 toFixed(item?.sn_top_TrendAvgIrradiance_pvf) || '0'
+                 toFixed(item?.sn_top_TrendAvgIrradiance_pvf) || "0"
                }W/m²</span></div>
                <div>有功功率: <span class="popup-content">${
-                 toRealNumber(item?.sn_top_ActivePower_pvf) || '0'
+                 toRealNumber(item?.sn_top_ActivePower_pvf) || "0"
                }MW</span></div>
          `;
       const popup = (window as any).L.popup()
@@ -105,14 +106,14 @@ export function Windy() {
           `名称：${marker.label}
                ${content}
                
-            `,
+            `
         )
         .openOn(windyRef.current?.map);
       popup._marker = marker;
     },
-    [baseInfo],
+    [baseInfo]
   );
-  console.log('currentPopup:', currentPopup);
+  console.log("currentPopup:", currentPopup);
   useEffect(() => {
     if (currentPopup && baseInfo && windyRef.current) {
       onShowPopup(currentPopup);
@@ -121,7 +122,7 @@ export function Windy() {
 
   const tryInit = useCallback(
     (json: any) => {
-      if (initializedRef.current || typeof window === 'undefined') {
+      if (initializedRef.current || typeof window === "undefined") {
         return;
       }
 
@@ -133,14 +134,14 @@ export function Windy() {
         return;
       }
       const windIcon = leaflet.icon({
-        iconUrl: 'wind.gif',
+        iconUrl: "wind.gif",
         iconSize: [36, 36],
         iconAnchor: [12, 12],
         popupAnchor: [0, 0],
       });
 
       const electricIcon = leaflet.icon({
-        iconUrl: 'location.svg',
+        iconUrl: "location.svg",
         iconSize: [42, 42],
         iconAnchor: [12, 12],
         popupAnchor: [0, 0],
@@ -155,19 +156,19 @@ export function Windy() {
           // }
         });
 
-        map.on('popupclose', (e: any) => {
+        map.on("popupclose", (e: any) => {
           setCurrentPopup(null);
-          console.log('弹窗关闭了');
+          console.log("弹窗关闭了");
         });
-        map.on('popupopen', (e: any) => {
+        map.on("popupopen", (e: any) => {
           setTimeout(() => {
             setCurrentPopup(e.popup._marker);
-            console.log('弹窗打开了：', e, e.popup._marker);
+            console.log("弹窗打开了：", e, e.popup._marker);
           }, 0);
         });
-        map.on('click', (e: any) => {
+        map.on("click", (e: any) => {
           const { lat, lng } = e.latlng;
-          console.log('点击位置：', lat, lng);
+          console.log("点击位置：", lat, lng);
           picker.open({ lat, lon: lng });
           // broadcast.once('redrawFinished', () => {
           //   // Opening of a picker (async)
@@ -181,7 +182,7 @@ export function Windy() {
         //   .addTo(map);
 
         leaflet.tileLayer
-          .chinaProvider('TianDiTu.Normal.Annotion', {
+          .chinaProvider("TianDiTu.Normal.Annotion", {
             maxZoom: 24,
             minZoom: 3,
           })
@@ -214,11 +215,11 @@ export function Windy() {
         leaflet
           .geoJSON(geojson, {
             style: function (feature) {
-              const name = feature.properties?.name || '';
-              if (name === '十段线' || name === '南海诸岛') {
-                return { color: 'rgba(227, 51, 51, 0.92)', weight: 1 };
+              const name = feature.properties?.name || "";
+              if (name === "十段线" || name === "南海诸岛") {
+                return { color: "rgba(227, 51, 51, 0.92)", weight: 1 };
               }
-              return { color: 'rgba(32, 77, 84, 0.92)', weight: 1 };
+              return { color: "rgba(32, 77, 84, 0.92)", weight: 1 };
             },
           })
           .addTo(map);
@@ -226,24 +227,24 @@ export function Windy() {
         for (const item of json.features) {
           const { geometry, properties } = item;
           const { coordinates } = geometry;
-          const { name: wfname = '', id, type } = properties;
+          const { name: wfname = "", id, type } = properties;
           const [lon, lat] = coordinates;
-          const icon = type === '风电' ? windIcon : electricIcon;
+          const icon = type === "风电" ? windIcon : electricIcon;
           const marker = leaflet
             .marker([lat, lon], {
               icon: icon,
             })
             .addTo(map);
           marker.bindPopup(wfname);
-          marker.on('click', () => {
+          marker.on("click", () => {
             onShowPopup({ label: wfname, id, type, coordinates: [lon, lat] });
             setLocation(`${lon},${lat}`);
           });
 
-          marker.on('mouseover', () => {
+          marker.on("mouseover", () => {
             onShowPopup({ label: wfname, id, type, coordinates: [lon, lat] });
             setTimeout(() => {
-              console.log('鼠标移上去了：', wfname);
+              console.log("鼠标移上去了：", wfname);
               setCurrentPopup(() => ({
                 label: wfname,
                 id,
@@ -256,7 +257,7 @@ export function Windy() {
         }
       });
     },
-    [onShowPopup],
+    [onShowPopup]
   );
 
   const onSelectChange = (value: any) => {
@@ -288,7 +289,7 @@ export function Windy() {
   };
 
   useEffect(() => {
-    fetch('/marker2.json')
+    fetch("/marker2.json")
       .then((res) => res.json())
       .then((json) => {
         const features = json.features;
@@ -302,7 +303,10 @@ export function Windy() {
       });
   }, [tryInit]);
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <div
+      className={isFullScreen ? "full-screen" : ""}
+      style={{ width: "100%", height: "100%", position: "relative" }}
+    >
       <div className="search-point">
         <Select
           style={{ width: 160 }}
@@ -317,9 +321,9 @@ export function Windy() {
       <div
         id="windy"
         style={{
-          width: '100%',
-          height: '100%',
-          borderRadius: '12px',
+          width: "100%",
+          height: "100%",
+          borderRadius: isFullScreen ? 0 : "12px",
           // overflow: 'hidden',
           // position: 'relative',
           // background: '#0f172a',
@@ -329,7 +333,7 @@ export function Windy() {
       <DayProgress></DayProgress>
       <FutureWeatherModal
         location={location}
-        onClose={() => setLocation('')}
+        onClose={() => setLocation("")}
       ></FutureWeatherModal>
     </div>
   );
@@ -349,7 +353,7 @@ const toRealNumber = (value: any) => {
 function toFixed(value: any, fixed = 2) {
   const val = Number(value);
   if (isNaN(val)) {
-    return '0';
+    return "0";
   }
   return val.toFixed(fixed);
 }
