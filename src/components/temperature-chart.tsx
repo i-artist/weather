@@ -11,7 +11,6 @@ const GRADIENT_COLORS = {
 };
 
 const TemperatureChart: React.FC<Props> = ({ data }) => {
-  console.log(data);
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 

@@ -283,13 +283,15 @@ export function Windy(props: {
   const onSelectChange = (value: any) => {
     const marker = markers.find((item: any) => item.value === value);
     if (marker) {
-      console.log(windyRef.current?.map?.flyTo);
-
-      windyRef.current?.map?.flyTo({
-        lat: marker.coordinates[1],
-        lon: marker.coordinates[0],
-      });
-      onShowPopup(marker);
+      try {
+        windyRef.current?.map?.flyTo({
+          lat: marker.coordinates[1],
+          lon: marker.coordinates[0],
+        });
+        onShowPopup(marker);
+      } catch (error) {
+        console.error("定位失败：", error);
+      }
 
       //   (windyRef.current?.map as any).flyTo({
       //     center: marker.coordinates,
@@ -335,7 +337,7 @@ export function Windy(props: {
       // 开始轮播
       startCarousel();
     }
-    localStorage.setItem("isCarouselRunning", isCarouselRunning ? "true" : "");
+    localStorage.setItem("isCarouselRunning", !isCarouselRunning ? "true" : "");
     setIsCarouselRunning(!isCarouselRunning);
   };
 
@@ -347,6 +349,7 @@ export function Windy(props: {
 
     // 立即执行一次当前站点的切换
     const currentMarker = markers[currentCarouselIndex];
+    console.log("启动轮播，当前站点：", currentMarker, currentCarouselIndex);
     if (currentMarker) {
       onSelectChange(currentMarker.value);
     }
@@ -366,12 +369,23 @@ export function Windy(props: {
 
   // 组件卸载时清除定时器
   useEffect(() => {
+    console.log(
+      "轮播状态：",
+      isCarouselRunning,
+      localStorage.getItem("isCarouselRunning")
+    );
+    if (
+      localStorage.getItem("isCarouselRunning") === "true" &&
+      markers.length > 0
+    ) {
+      startCarousel();
+    }
     return () => {
       if (carouselTimerRef.current) {
         clearInterval(carouselTimerRef.current);
       }
     };
-  }, []);
+  }, [markers]);
   return (
     <div
       className={isFullScreen ? "full-screen" : ""}
