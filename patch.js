@@ -1,4 +1,89 @@
-{
+import fs from "fs";
+const a = `长兴风电-20
+青草沙风电-48
+华港一期-19.50
+华港二期-48
+申欣风电-13.70
+临港海上一期-100
+临港海上二期-100.80
+临港海上6MW-12
+如东协鑫-200
+如东智鑫-150
+灌云永贯-98
+濉溪鑫风-50
+淮北绿金-15
+金寨光伏-30.00
+含山陶阳-49
+含山林阳-100
+宣城亭洋-100
+宣城洪永一期-40
+宣城洪永二期-60
+枞阳申华-80
+枣庄峄光-100
+灵宝湾驿-48
+汝州风电-29.90
+宝丰风电-20
+漯河恒洁-49.90
+南召冷风岈-100.00
+申峪风电-22.40
+四通沪周-26
+曹河申周-26
+西华平安-20
+淮阳清风-20
+宜城申宜-100
+宜城谭湾-70
+沙洋楚伏兴业-50
+沙洋楚伏雨霖-50
+天门风电-200
+天门光伏-50
+东田风电-48
+全南风电-100
+抚州科电-40
+抚州旭阳-40
+乌兰华扬-200
+乌兰润晟-100
+海南鑫源-50
+格尔木东恒-50
+格尔木清脉-50
+格尔木瑞鑫达-50
+木垒新科-49.50
+木垒华光-20
+哈密华光-50
+哈密新特-20
+克拉玛依新特-20
+吐鲁番新科-20
+耳林光伏-100
+洪善光伏-88.20
+榆林协合一期-50
+榆林协合二期-50
+榆林协鑫-50.35
+榆林申榆-20
+天风风电-30
+大漠布朗-48
+武川白山一期-100
+武川白山二期-50
+达茂一期-48
+达茂二期-49.50
+汉源风电场-100
+宋家沟一期-100
+宋家沟二期-120
+宋家沟三期-80
+尚义海润-20
+平泉丰合-20
+平泉仁辉-20
+宁东申创-41
+米康一期-50
+米康二期-50
+申丰光伏-50
+罗甸大亭-100
+关岭卓阳-200
+关岭卓申-40
+关岭申阳-150
+独山上司-80
+独山墨寨-50
+独山盖寨-70`;
+
+const marker = {
   "type": "FeatureCollection",
   "features": [
     {
@@ -6,8 +91,7 @@
       "properties": {
         "id": "101084",
         "name": "宋家沟三期",
-        "type": "光伏",
-        "capacity": 80
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -22,8 +106,7 @@
       "properties": {
         "id": "130734",
         "name": "尚义海润",
-        "type": "光伏",
-        "capacity": 20
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -38,8 +121,7 @@
       "properties": {
         "id": "130809",
         "name": "含山林阳",
-        "type": "光伏",
-        "capacity": 100
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -54,8 +136,7 @@
       "properties": {
         "id": "130837",
         "name": "平泉丰合",
-        "type": "光伏",
-        "capacity": 20
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -70,8 +151,7 @@
       "properties": {
         "id": "130838",
         "name": "平泉仁辉",
-        "type": "光伏",
-        "capacity": 20
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -86,8 +166,7 @@
       "properties": {
         "id": "140929",
         "name": "汉源风电场",
-        "type": "风电",
-        "capacity": 100
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -102,8 +181,7 @@
       "properties": {
         "id": "140938",
         "name": "宋家沟一期",
-        "type": "光伏",
-        "capacity": 100
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -118,8 +196,7 @@
       "properties": {
         "id": "140939",
         "name": "宋家沟二期",
-        "type": "光伏",
-        "capacity": 120
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -164,8 +241,7 @@
       "properties": {
         "id": "150842",
         "name": "大漠布朗",
-        "type": "风电",
-        "capacity": 48
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -180,8 +256,7 @@
       "properties": {
         "id": "152202",
         "name": "乌兰华扬",
-        "type": "风电",
-        "capacity": 200
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -196,8 +271,7 @@
       "properties": {
         "id": "152541",
         "name": "乌兰润晟",
-        "type": "风电",
-        "capacity": 100
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -212,8 +286,7 @@
       "properties": {
         "id": "152925",
         "name": "天风风电",
-        "type": "风电",
-        "capacity": 30
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -228,8 +301,7 @@
       "properties": {
         "id": "310115",
         "name": "申欣风电",
-        "type": "风电",
-        "capacity": 13.7
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -244,8 +316,7 @@
       "properties": {
         "id": "310116",
         "name": "华港一期",
-        "type": "风电",
-        "capacity": 19.5
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -260,8 +331,7 @@
       "properties": {
         "id": "310117",
         "name": "华港二期",
-        "type": "风电",
-        "capacity": 48
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -276,8 +346,7 @@
       "properties": {
         "id": "310118",
         "name": "长兴风电",
-        "type": "风电",
-        "capacity": 20
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -292,8 +361,7 @@
       "properties": {
         "id": "310119",
         "name": "青草沙风电",
-        "type": "风电",
-        "capacity": 48
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -323,8 +391,7 @@
       "properties": {
         "id": "310123",
         "name": "临港海上二期",
-        "type": "风电",
-        "capacity": 100.8
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -339,8 +406,7 @@
       "properties": {
         "id": "320645",
         "name": "如东智鑫",
-        "type": "风电",
-        "capacity": 150
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -355,8 +421,7 @@
       "properties": {
         "id": "320646",
         "name": "如东协鑫",
-        "type": "风电",
-        "capacity": 200
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -371,8 +436,7 @@
       "properties": {
         "id": "320707",
         "name": "灌云永贯",
-        "type": "光伏",
-        "capacity": 98
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -387,8 +451,7 @@
       "properties": {
         "id": "340602",
         "name": "濉溪鑫风",
-        "type": "风电",
-        "capacity": 50
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -403,8 +466,7 @@
       "properties": {
         "id": "341525",
         "name": "金寨光伏",
-        "type": "光伏",
-        "capacity": 30
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -419,8 +481,7 @@
       "properties": {
         "id": "341606",
         "name": "淮北绿金",
-        "type": "风电",
-        "capacity": 15
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -435,8 +496,7 @@
       "properties": {
         "id": "341823",
         "name": "宣城洪永一期",
-        "type": "光伏",
-        "capacity": 40
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -466,8 +526,7 @@
       "properties": {
         "id": "370325",
         "name": "枞阳申华",
-        "type": "光伏",
-        "capacity": 80
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -482,8 +541,7 @@
       "properties": {
         "id": "370404",
         "name": "枣庄峄光",
-        "type": "光伏",
-        "capacity": 100
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -498,8 +556,7 @@
       "properties": {
         "id": "410410",
         "name": "宝丰风电",
-        "type": "风电",
-        "capacity": 20
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -514,8 +571,7 @@
       "properties": {
         "id": "410486",
         "name": "汝州风电",
-        "type": "风电",
-        "capacity": 29.9
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -530,8 +586,7 @@
       "properties": {
         "id": "411121",
         "name": "漯河恒洁",
-        "type": "风电",
-        "capacity": 49.9
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -546,8 +601,7 @@
       "properties": {
         "id": "411208",
         "name": "灵宝湾驿",
-        "type": "风电",
-        "capacity": 48
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -562,8 +616,7 @@
       "properties": {
         "id": "411209",
         "name": "宣城亭洋",
-        "type": "光伏",
-        "capacity": 100
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -578,8 +631,7 @@
       "properties": {
         "id": "411312",
         "name": "南召冷风岈",
-        "type": "风电",
-        "capacity": 100
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -594,8 +646,7 @@
       "properties": {
         "id": "411623",
         "name": "西华平安",
-        "type": "风电",
-        "capacity": 20
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -610,8 +661,7 @@
       "properties": {
         "id": "411626",
         "name": "淮阳清风",
-        "type": "风电",
-        "capacity": 20
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -626,8 +676,7 @@
       "properties": {
         "id": "411648",
         "name": "四通沪周",
-        "type": "风电",
-        "capacity": 26
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -642,8 +691,7 @@
       "properties": {
         "id": "411649",
         "name": "曹河申周",
-        "type": "风电",
-        "capacity": 26
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -658,8 +706,7 @@
       "properties": {
         "id": "420602",
         "name": "宜城申宜",
-        "type": "光伏",
-        "capacity": 100
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -674,8 +721,7 @@
       "properties": {
         "id": "420603",
         "name": "宜城谭湾",
-        "type": "光伏",
-        "capacity": 70
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -705,8 +751,7 @@
       "properties": {
         "id": "429008",
         "name": "天门光伏",
-        "type": "光伏",
-        "capacity": 50
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -721,8 +766,7 @@
       "properties": {
         "id": "429009",
         "name": "天门风电",
-        "type": "风电",
-        "capacity": 200
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -737,8 +781,7 @@
       "properties": {
         "id": "431103",
         "name": "东田风电",
-        "type": "风电",
-        "capacity": 48
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -753,8 +796,7 @@
       "properties": {
         "id": "450704",
         "name": "申丰光伏",
-        "type": "光伏",
-        "capacity": 50
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -784,8 +826,7 @@
       "properties": {
         "id": "520309",
         "name": "独山上司",
-        "type": "光伏",
-        "capacity": 80
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -815,8 +856,7 @@
       "properties": {
         "id": "520428",
         "name": "关岭申阳",
-        "type": "光伏",
-        "capacity": 150
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -831,8 +871,7 @@
       "properties": {
         "id": "522726",
         "name": "独山盖寨",
-        "type": "光伏",
-        "capacity": 70
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -847,8 +886,7 @@
       "properties": {
         "id": "522727",
         "name": "独山墨寨",
-        "type": "光伏",
-        "capacity": 50
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -863,8 +901,7 @@
       "properties": {
         "id": "610000",
         "name": "榆林申榆",
-        "type": "风电",
-        "capacity": 20
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -894,8 +931,7 @@
       "properties": {
         "id": "610860",
         "name": "含山陶阳",
-        "type": "光伏",
-        "capacity": 49
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -910,8 +946,7 @@
       "properties": {
         "id": "610886",
         "name": "榆林协鑫",
-        "type": "风电",
-        "capacity": 50.35
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -926,8 +961,7 @@
       "properties": {
         "id": "612202",
         "name": "耳林光伏",
-        "type": "光伏",
-        "capacity": 100
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -942,8 +976,7 @@
       "properties": {
         "id": "612247",
         "name": "洪善光伏",
-        "type": "光伏",
-        "capacity": 88.2
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -958,8 +991,7 @@
       "properties": {
         "id": "632548",
         "name": "海南鑫源",
-        "type": "风电",
-        "capacity": 50
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -974,8 +1006,7 @@
       "properties": {
         "id": "632897",
         "name": "格尔木东恒",
-        "type": "风电",
-        "capacity": 50
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -990,8 +1021,7 @@
       "properties": {
         "id": "632898",
         "name": "格尔木清脉",
-        "type": "风电",
-        "capacity": 50
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -1006,8 +1036,7 @@
       "properties": {
         "id": "632900",
         "name": "格尔木瑞鑫达",
-        "type": "风电",
-        "capacity": 50
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -1022,8 +1051,7 @@
       "properties": {
         "id": "640127",
         "name": "宁东申创",
-        "type": "光伏",
-        "capacity": 41
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -1038,8 +1066,7 @@
       "properties": {
         "id": "652307",
         "name": "木垒新科",
-        "type": "风电",
-        "capacity": 49.5
+        "type": "风电"
       },
       "geometry": {
         "type": "Point",
@@ -1054,8 +1081,7 @@
       "properties": {
         "id": "653189",
         "name": "吐鲁番新科",
-        "type": "光伏",
-        "capacity": 20
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -1070,8 +1096,7 @@
       "properties": {
         "id": "653203",
         "name": "木垒华光",
-        "type": "光伏",
-        "capacity": 20
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -1086,8 +1111,7 @@
       "properties": {
         "id": "653205",
         "name": "哈密新特",
-        "type": "光伏",
-        "capacity": 20
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -1102,8 +1126,7 @@
       "properties": {
         "id": "653221",
         "name": "哈密华光",
-        "type": "光伏",
-        "capacity": 50
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -1118,8 +1141,7 @@
       "properties": {
         "id": "653223",
         "name": "克拉玛依新特",
-        "type": "光伏",
-        "capacity": 20
+        "type": "光伏"
       },
       "geometry": {
         "type": "Point",
@@ -1130,4 +1152,18 @@
       }
     }
   ]
-}
+} 
+const results = {};
+a.split("\n").forEach(line => {
+  const [name, capacity] = line.split("-");
+  results[name.trim()] = parseFloat(capacity);
+//   console.log(`{ name: "${name}", capacity: ${capacity} },`);
+});
+
+marker.features.forEach(feature => {
+  const name = feature.properties.name;
+  feature.properties.capacity = results[name];
+});
+
+console.log(JSON.stringify(marker, null, 2));
+fs.writeFileSync("marker.json", JSON.stringify(marker, null, 2));
