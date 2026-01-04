@@ -615,6 +615,7 @@ export default function Dashboard() {
         <Windy
           setIsFullScreen={setIsFullScreen}
           isFullScreen={isFullScreen}
+          theme={THEME}
         ></Windy>
 
         {false && (

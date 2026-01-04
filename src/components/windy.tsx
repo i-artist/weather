@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRequest } from "ahooks";
-import { FloatButton, Select } from "antd";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Button, FloatButton, Select } from "antd";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import geojson from "../assets/geojson.json";
 import { DayProgress } from "./day-progress";
 import { FutureWeatherModal } from "./future-weather";
@@ -12,6 +12,7 @@ import {
   FullscreenOutlined,
   PauseOutlined,
   PlayCircleOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 
 const options = {
@@ -52,15 +53,26 @@ type WindyWindow = Window & {
 export function Windy(props: {
   isFullScreen?: boolean;
   setIsFullScreen: (v: boolean) => void;
+  theme?: any;
 }) {
-  const { isFullScreen, setIsFullScreen } = props;
+  const { isFullScreen, setIsFullScreen, theme } = props;
   const initializedRef = useRef(false);
   const [markers, setMarkers] = useState<any[]>([]);
   const [location, setLocation] = useState<string>("");
   const windyRef = useRef<WindyAPI>(null);
-  const [baseInfo, setBaseInfo] = useState<any>({});
+  // 从localStorage读取初始值
+  const [baseInfo, setBaseInfo] = useState<any>(() => {
+    const saved = localStorage.getItem('windy_baseInfo');
+    return saved ? JSON.parse(saved) : {};
+  });
   const [currentPopup, setCurrentPopup] = useState<any>(null);
-
+  // 从localStorage读取初始值
+  const [totalPower, setTotalPower] = useState<number>(() => {
+    const saved = localStorage.getItem('windy_totalPower');
+    return saved ? Number(saved) : 0;
+  });
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [showSearchInput, setShowSearchInput] = useState(false);
   // 添加轮播相关状态
   const [isCarouselRunning, setIsCarouselRunning] = useState(
     Boolean(localStorage.getItem("isCarouselRunning"))
@@ -73,6 +85,21 @@ export function Windy(props: {
       setIsFullScreen(Boolean(document.fullscreenElement));
     });
   }, []);
+
+  // 当baseInfo变化时保存到localStorage
+  useEffect(() => {
+    if (Object.keys(baseInfo).length > 0) {
+      localStorage.setItem('windy_baseInfo', JSON.stringify(baseInfo));
+    }
+  }, [baseInfo]);
+
+  // 当totalPower变化时保存到localStorage
+  useEffect(() => {
+    if (totalPower > 0) {
+      localStorage.setItem('windy_totalPower', totalPower.toString());
+    }
+  }, [totalPower]);
+
   useRequest(
     async () => {
       const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
@@ -83,6 +110,13 @@ export function Windy(props: {
         json?.data?.cli?.dps?.ModelData || {}
       );
       setBaseInfo((prev: any) => json?.data?.cli?.dps?.ModelData || prev || {});
+      const data = json?.data?.cli?.dps?.ModelData?.["00"];
+      const sn_top_CurrentPower = (data?.sn_top_CurrentPower || 0) / 1000; // 总有功
+      setTotalPower((v) => sn_top_CurrentPower || v);
+
+      if (data && isFirstLoad) {
+        setIsFirstLoad(false);
+      }
     },
     {
       pollingInterval: 5000,
@@ -105,19 +139,20 @@ export function Windy(props: {
       //             <div>地面10米风V分量：${v10m ? v10m?.toFixed(2) : '0'}m/s</div>
       //       `
       //   : ` <div>平均辐照度：${ssrd ? ssrd.toFixed(2) : '0'}W/m²</div>`;
+      const className = isFirstLoad ? "popup-content-backup" : "";
       const content =
         marker.type === "风电"
           ? `
-              <div>平均风速: <span class="popup-content">${toFixed(item?.sn_top_TrendWindSpeed_wf) || "0"
+              <div>平均风速: <span class="popup-content ${className}">${toFixed(item?.sn_top_TrendWindSpeed_wf) || "0"
           }m/s</span></div>
-              <div>有功功率: <span class="popup-content">${toRealNumber(item?.sn_top_ActivePower_wf) || "0"
+              <div>有功功率: <span class="popup-content ${className}">${toRealNumber(item?.sn_top_ActivePower_wf) || "0"
           }MW</span></div>
          `
           : ` 
               
-               <div>平均辐照度: <span class="popup-content">${toFixed(item?.sn_top_TrendAvgIrradiance_pvf) || "0"
+               <div>平均辐照度: <span class="popup-content ${className}">${toFixed(item?.sn_top_TrendAvgIrradiance_pvf) || "0"
           }W/m²</span></div>
-               <div>有功功率: <span class="popup-content">${toRealNumber(item?.sn_top_ActivePower_pvf) || "0"
+               <div>有功功率: <span class="popup-content ${className}">${toRealNumber(item?.sn_top_ActivePower_pvf) || "0"
           }MW</span></div>
          `;
       const popup = (window as any).L.popup()
@@ -132,7 +167,7 @@ export function Windy(props: {
         .openOn(windyRef.current?.map);
       popup._marker = marker;
     },
-    [baseInfo]
+    [baseInfo, isFirstLoad]
   );
   useEffect(() => {
     if (currentPopup && baseInfo && windyRef.current) {
@@ -268,7 +303,7 @@ export function Windy(props: {
                 id,
                 type,
                 capacity,
-                coordinates: [lon, lat],
+                coordinates: [lon, lat]
               }));
             }, 0);
           });
@@ -389,15 +424,27 @@ export function Windy(props: {
       style={{ width: "100%", height: "100%", position: "relative" }}
     >
       <div className="search-point">
-        <Select
+        {!showSearchInput ? (
+          <Button
+            onClick={() => setShowSearchInput(true)}
+            style={{ marginRight: 8 }}
+            icon={<SearchOutlined />}
+            shape="circle"
+            ghost
+          >
+          </Button>
+        ) : <Select
           style={{ width: 160 }}
           options={markers}
           showSearch={{
             filterOption: (inputValue, option: any) =>
               option?.label?.indexOf(inputValue) !== -1,
           }}
+          autoFocus
           onChange={onSelectChange}
-        ></Select>
+          onBlur={() => setShowSearchInput(false)}
+        ></Select>}
+
       </div>
       <FloatButton.Group>
         <FloatButton
@@ -435,6 +482,10 @@ export function Windy(props: {
         location={location}
         onClose={() => setLocation("")}
       ></FutureWeatherModal>
+
+      <div className="right-card-container">
+        <Card title="总有功" unit="kW" value={toFixed(totalPower)} theme={theme}></Card>
+      </div>
     </div>
   );
 }
@@ -456,4 +507,62 @@ function toFixed(value: any, fixed = 2) {
     return "0";
   }
   return val.toFixed(fixed);
+}
+
+
+
+function Card(props: {
+  title: string;
+  unit: string;
+  value: ReactNode;
+  style?: React.CSSProperties;
+  theme?: any;
+}) {
+  const { title, unit, value, style, theme } = props;
+  return (
+    <div
+      style={{
+        background: theme.cardBg,
+        display: "flex",
+        minHeight: 100,
+        flexDirection: "column",
+        marginBottom: 16,
+        flex: 1,
+        borderRadius: theme.radius,
+        overflow: "hidden",
+        boxShadow: theme.shadow,
+        ...style,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 16,
+          padding: "4px 16px",
+          background: theme.cardHeaderBg,
+          borderBottom: theme.cardBorder,
+        }}
+      >
+        <span style={{ color: theme.textPrimary, fontWeight: "bold" }}>
+          {title}
+        </span>
+        &nbsp;&nbsp;
+        <span style={{ color: theme.muted }}>{unit}</span>
+      </div>
+      <div
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          padding: "4px 16px",
+          color: theme.accent,
+          height: 0,
+          // background: "rgba(255,255,255,0.6)",
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
 }

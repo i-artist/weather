@@ -134,7 +134,8 @@
       "properties": {
         "id": "150133",
         "name": "武川白山一期+二期",
-        "type": "风电"
+        "type": "风电",
+        "capacity": 150
       },
       "geometry": {
         "type": "Point",
@@ -149,7 +150,8 @@
       "properties": {
         "id": "150213",
         "name": "达茂一期+二期",
-        "type": "风电"
+        "type": "风电",
+        "capacity": 97.5
       },
       "geometry": {
         "type": "Point",
@@ -234,8 +236,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.8975,
-          30.853889
+          121.7975,
+          30.873889
         ]
       }
     },
@@ -308,7 +310,8 @@
       "properties": {
         "id": "310122",
         "name": "临港海上一期+6MW",
-        "type": "风电"
+        "type": "风电",
+        "capacity": 112
       },
       "geometry": {
         "type": "Point",
@@ -451,7 +454,8 @@
       "properties": {
         "id": "361002",
         "name": "抚州科电+旭阳",
-        "type": "光伏"
+        "type": "光伏",
+        "capacity": 80
       },
       "geometry": {
         "type": "Point",
@@ -690,7 +694,8 @@
       "properties": {
         "id": "420807",
         "name": "沙洋楚伏兴业+雨霖",
-        "type": "光伏"
+        "type": "光伏",
+        "capacity": 100
       },
       "geometry": {
         "type": "Point",
@@ -769,7 +774,8 @@
       "properties": {
         "id": "451422",
         "name": "米康风电场一期+二期",
-        "type": "风电"
+        "type": "风电",
+        "capacity": 100
       },
       "geometry": {
         "type": "Point",
@@ -800,7 +806,8 @@
       "properties": {
         "id": "520425",
         "name": "关岭卓阳+卓申",
-        "type": "光伏"
+        "type": "光伏",
+        "capacity": 240
       },
       "geometry": {
         "type": "Point",
@@ -879,7 +886,8 @@
       "properties": {
         "id": "610809",
         "name": "榆林协合一期+二期",
-        "type": "风电"
+        "type": "风电",
+        "capacity": 100
       },
       "geometry": {
         "type": "Point",
