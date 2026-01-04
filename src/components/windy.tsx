@@ -287,7 +287,6 @@ export function Windy(props: {
           lat: marker.coordinates[1],
           lon: marker.coordinates[0],
         });
-        console.log(marker, value, '--------select change');
         onShowPopup(marker);
       } catch (error) {
         console.error("定位失败：", error);
@@ -351,7 +350,6 @@ export function Windy(props: {
 
     // 立即执行一次当前站点的切换
     const currentMarker = markers[currentCarouselIndex];
-    console.log("启动轮播，当前站点：", currentMarker, currentCarouselIndex);
     if (currentMarker) {
       onSelectChange(currentMarker.value);
     }
@@ -371,11 +369,6 @@ export function Windy(props: {
 
   // 组件卸载时清除定时器
   useEffect(() => {
-    console.log(
-      "轮播状态：",
-      isCarouselRunning,
-      localStorage.getItem("isCarouselRunning")
-    );
     if (
       localStorage.getItem("isCarouselRunning") === "true" &&
       markers.length > 0
@@ -388,6 +381,7 @@ export function Windy(props: {
       }
     };
   }, [markers]);
+
   return (
     <div
       className={isFullScreen ? "full-screen" : ""}

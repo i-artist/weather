@@ -226,8 +226,8 @@ export default function Dashboard() {
   );
   const [themePanelOpen, setThemePanelOpen] = useState(false);
   const [clock, setClock] = useState({ time: "", date: "" });
+  // const [_isFullScreen, _setIsFullScreen] = useState(true);
   const [isFullScreen, setIsFullScreen] = useState(false);
-
   // const logoSrc = themeKey === 'dark' ? '/logo.png' : logoLight;
   const THEME = THEMES[themeKey];
   const [isWindy] = useState(true);
@@ -406,6 +406,7 @@ export default function Dashboard() {
       ready: false,
     }
   );
+
 
   return (
     <div
