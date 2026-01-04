@@ -335,8 +335,7 @@ export default function Dashboard() {
       });
     },
     {
-      pollingInterval: 3000,
-      // ready: false,
+      ready: false,
     }
   );
 
@@ -431,18 +430,18 @@ export default function Dashboard() {
         {/* 顶部头部区域 */}
         <div
           style={{
-            position: isFullScreen ? "absolute" : "relative",
-            zIndex: isFullScreen ? 1 : "auto",
-            width: isFullScreen ? "99%" : "auto",
-            flex: "0 0 80px",
-            padding: isFullScreen ? 0 : "0px 32px 0px",
+            position: true ? "absolute" : "relative",
+            zIndex: true ? 1 : "auto",
+            width: true ? "99%" : "auto",
+            flex: "0 0 70px",
+            padding: true ? 0 : "0px 32px 0px",
             display: "grid",
             gridTemplateColumns: "1fr auto 1fr",
             alignItems: "center",
             backgroundImage: `url(${centerBg})`,
             backgroundRepeat: "no-repeat",
             backgroundSize: "700px",
-            backgroundPosition: "center",
+            backgroundPosition: "top center",
           }}
         >
           {/* 左侧天气信息 */}

@@ -85,7 +85,7 @@ export function Windy(props: {
       setBaseInfo((prev: any) => json?.data?.cli?.dps?.ModelData || prev || {});
     },
     {
-      pollingInterval: 3000,
+      pollingInterval: 5000,
       // ready: false,
     }
   );
@@ -365,7 +365,7 @@ export function Windy(props: {
         }
         return nextIndex;
       });
-    }, 10000);
+    }, 6000);
   };
 
   // 组件卸载时清除定时器
@@ -385,7 +385,7 @@ export function Windy(props: {
 
   return (
     <div
-      className={isFullScreen ? "full-screen" : ""}
+      className={true ? "full-screen" : ""}
       style={{ width: "100%", height: "100%", position: "relative" }}
     >
       <div className="search-point">
@@ -423,7 +423,7 @@ export function Windy(props: {
         style={{
           width: "100%",
           height: "100%",
-          borderRadius: isFullScreen ? 0 : "12px",
+          borderRadius: true ? 0 : "12px",
           // overflow: 'hidden',
           // position: 'relative',
           // background: '#0f172a',
