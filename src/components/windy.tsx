@@ -287,6 +287,7 @@ export function Windy(props: {
           lat: marker.coordinates[1],
           lon: marker.coordinates[0],
         });
+        console.log(marker, value, '--------select change');
         onShowPopup(marker);
       } catch (error) {
         console.error("定位失败：", error);
@@ -317,6 +318,8 @@ export function Windy(props: {
         const options = features.map((item: any) => ({
           label: item.properties.name,
           value: item.properties.id,
+          type: item.properties.type,
+          capacity: item.properties.capacity,
           coordinates: item.geometry.coordinates,
         }));
         setMarkers(options);
