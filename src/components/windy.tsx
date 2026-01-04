@@ -364,7 +364,7 @@ export function Windy(props: {
         }
         return nextIndex;
       });
-    }, 5000);
+    }, 10000);
   };
 
   // 组件卸载时清除定时器
