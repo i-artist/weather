@@ -96,7 +96,7 @@ export function Windy(props: {
         .setLatLng([marker.coordinates[1], marker.coordinates[0]])
         .setContent(`名称：${marker.label} `)
         .openOn(windyRef.current?.map);
-      const item = baseInfo[marker.id] || {};
+      const item = baseInfo[marker.id || marker.value] || {};
       console.log("显示弹窗：", baseInfo, marker, baseInfo[marker.id], item);
 
       // const content = marker.label?.includes('风')
@@ -320,6 +320,7 @@ export function Windy(props: {
           type: item.properties.type,
           capacity: item.properties.capacity,
           coordinates: item.geometry.coordinates,
+          id: item.properties.id,
         }));
         setMarkers(options);
         tryInit(json);
