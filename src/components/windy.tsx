@@ -82,7 +82,7 @@ export function Windy(props: {
         json,
         json?.data?.cli?.dps?.ModelData || {}
       );
-      setBaseInfo(json?.data?.cli?.dps?.ModelData || {});
+      setBaseInfo((prev: any) => json?.data?.cli?.dps?.ModelData || prev || {});
     },
     {
       pollingInterval: 3000,
