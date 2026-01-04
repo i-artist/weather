@@ -222,7 +222,7 @@ const createLineOption = (
 
 export default function Dashboard() {
   const [themeKey, setThemeKey] = useState<"mid" | "light" | "sky" | "dark">(
-    "sky"
+    "dark"
   );
   const [themePanelOpen, setThemePanelOpen] = useState(false);
   const [clock, setClock] = useState({ time: "", date: "" });

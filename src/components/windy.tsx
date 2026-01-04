@@ -67,9 +67,9 @@ export function Windy(props: {
   });
   const [currentPopup, setCurrentPopup] = useState<any>(null);
   // 从localStorage读取初始值
-  const [totalPower, setTotalPower] = useState<number>(() => {
+  const [totalPowerObj, setTotalPowerObj] = useState<{ pvfs: number, wfs: number }>(() => {
     const saved = localStorage.getItem('windy_totalPower');
-    return saved ? Number(saved) : 0;
+    return saved ? JSON.parse(saved) : { pvfs: 0, wfs: 0 };
   });
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showSearchInput, setShowSearchInput] = useState(false);
@@ -95,10 +95,10 @@ export function Windy(props: {
 
   // 当totalPower变化时保存到localStorage
   useEffect(() => {
-    if (totalPower > 0) {
-      localStorage.setItem('windy_totalPower', totalPower.toString());
+    if (totalPowerObj.pvfs > 0 || totalPowerObj.wfs > 0) {
+      localStorage.setItem('windy_totalPower', JSON.stringify(totalPowerObj));
     }
-  }, [totalPower]);
+  }, [totalPowerObj]);
 
   useRequest(
     async () => {
@@ -110,9 +110,10 @@ export function Windy(props: {
         json?.data?.cli?.dps?.ModelData || {}
       );
       setBaseInfo((prev: any) => json?.data?.cli?.dps?.ModelData || prev || {});
-      const data = json?.data?.cli?.dps?.ModelData?.["00"];
-      const sn_top_CurrentPower = (data?.sn_top_CurrentPower || 0) / 1000; // 总有功
-      setTotalPower((v) => sn_top_CurrentPower || v);
+      const data = json?.data?.cli?.dps?.ModelData;
+      const sn_top_CurrentPower_pvfs = (data?.['pvfsIndex']?.sn_top_CurrentPower_pvfs || 0) / 1000; // 总有功
+      const sn_top_CurrentPower_wfs = (data?.['wfsIndex']?.sn_top_CurrentPower_wfs || 0) / 1000; // 总有功
+      setTotalPowerObj((v: any) => ({ pvfs: sn_top_CurrentPower_pvfs || v.pvfs, wfs: sn_top_CurrentPower_wfs || v.wfs }));
 
       if (data && isFirstLoad) {
         setIsFirstLoad(false);
@@ -484,7 +485,9 @@ export function Windy(props: {
       ></FutureWeatherModal>
 
       <div className="right-card-container">
-        <Card title="总有功" unit="kW" value={toFixed(totalPower)} theme={theme}></Card>
+        <Card title="总光伏实有功" unit="MW" value={toFixed(totalPowerObj.pvfs)} theme={theme}></Card>
+        <br />
+        <Card title="总风力实有功" unit="MW" value={toFixed(totalPowerObj.wfs)} theme={theme}></Card>
       </div>
     </div>
   );
