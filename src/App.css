@@ -49,3 +49,7 @@ code {
   font-weight: 600;
   color: #13ac93;
 }
+
+.leaflet-popup {
+  width: 188px
+}
