@@ -267,6 +267,7 @@ export function Windy(props: {
                 label: wfname,
                 id,
                 type,
+                capacity,
                 coordinates: [lon, lat],
               }));
             }, 0);
