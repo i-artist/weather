@@ -315,14 +315,17 @@ export function Windy(props: {
     [onShowPopup]
   );
 
-  const onSelectChange = (value: any) => {
+  const onSelectChange = (value: any, focus = true) => {
     const marker = markers.find((item: any) => item.value === value);
     if (marker) {
       try {
-        windyRef.current?.map?.flyTo({
-          lat: marker.coordinates[1],
-          lon: marker.coordinates[0],
-        });
+        if (focus) {
+          windyRef.current?.map?.flyTo({
+            lat: marker.coordinates[1],
+            lon: marker.coordinates[0],
+          });
+        }
+
         onShowPopup(marker);
       } catch (error) {
         console.error("定位失败：", error);
@@ -388,7 +391,7 @@ export function Windy(props: {
     // 立即执行一次当前站点的切换
     const currentMarker = markers[currentCarouselIndex];
     if (currentMarker) {
-      onSelectChange(currentMarker.value);
+      onSelectChange(currentMarker.value, false);
     }
 
     // 设置定时器，每5秒切换一次
@@ -397,7 +400,7 @@ export function Windy(props: {
         const nextIndex = (prevIndex + 1) % markers.length;
         const nextMarker = markers[nextIndex];
         if (nextMarker) {
-          onSelectChange(nextMarker.value);
+          onSelectChange(nextMarker.value, false);
         }
         return nextIndex;
       });
