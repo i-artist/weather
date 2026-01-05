@@ -485,9 +485,9 @@ export function Windy(props: {
       ></FutureWeatherModal>
 
       <div className="right-card-container">
-        <Card title="总光伏" unit="MW" value={toFixed(totalPowerObj.pvfs)} theme={theme}></Card>
+        <Card title="总光伏发电功率" unit="" value={toFixed(totalPowerObj.pvfs) + "MW"} theme={theme}></Card>
         <br />
-        <Card title="总风力" unit="MW" value={toFixed(totalPowerObj.wfs)} theme={theme}></Card>
+        <Card title="总风机发电功率" unit="" value={toFixed(totalPowerObj.wfs) + "MW"} theme={theme}></Card>
       </div>
     </div>
   );
@@ -540,7 +540,7 @@ function Card(props: {
       <div
         style={{
           fontSize: 16,
-          padding: "4px 16px",
+          padding: "4px 10px",
           background: theme.cardHeaderBg,
           borderBottom: theme.cardBorder,
         }}
@@ -558,7 +558,7 @@ function Card(props: {
           flex: 1,
           display: "flex",
           alignItems: "center",
-          padding: "4px 16px",
+          padding: "4px 10px",
           color: theme.accent,
           height: 0,
           // background: "rgba(255,255,255,0.6)",
