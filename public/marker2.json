@@ -1136,6 +1136,70 @@
           45.54
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "x1",
+        "name": "罗甸大亭",
+        "type": "光伏",
+        "capacity": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.95,
+          25.29
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "x2",
+        "name": "申峪风电",
+        "type": "风电",
+        "capacity": 2.24
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.28,
+          35.05
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "x3",
+        "name": "公铺储能",
+        "type": "光伏",
+        "capacity": 5
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.33,
+          32.18
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "x4",
+        "name": "全南风电",
+        "type": "风电",
+        "capacity": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.76,
+          25.01
+        ]
+      }
     }
   ]
 }
