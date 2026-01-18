@@ -1142,7 +1142,7 @@
       "properties": {
         "id": "x1",
         "name": "罗甸大亭",
-        "type": "光伏",
+        "type": "风电",
         "capacity": 10
       },
       "geometry": {
@@ -1174,7 +1174,7 @@
       "properties": {
         "id": "x3",
         "name": "公铺储能",
-        "type": "光伏",
+        "type": "储能",
         "capacity": 5
       },
       "geometry": {

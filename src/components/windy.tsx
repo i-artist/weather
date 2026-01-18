@@ -202,6 +202,13 @@ export function Windy(props: {
         iconAnchor: [12, 12],
         popupAnchor: [0, 0],
       });
+
+      const storedIcon = leaflet.icon({
+        iconUrl: "stored.gif",
+        iconSize: [38, 46],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, 0],
+      });
       initializedRef.current = true;
 
       windyInitFn(options, (windyAPI: WindyAPI) => {
@@ -283,7 +290,7 @@ export function Windy(props: {
           const { coordinates } = geometry;
           const { name: wfname = "", id, type, capacity } = properties;
           const [lon, lat] = coordinates;
-          const icon = type === "风电" ? windIcon : electricIcon;
+          const icon = type === "风电" ? windIcon : type === "储能" ? storedIcon : electricIcon;
           const marker = leaflet
             .marker([lat, lon], {
               icon: icon,
