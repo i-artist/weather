@@ -192,21 +192,21 @@ export function Windy(props: {
       const windIcon = leaflet.icon({
         iconUrl: "wind.gif",
         iconSize: [36, 36],
-        iconAnchor: [12, 12],
+        iconAnchor: [18, 36],
         popupAnchor: [0, 0],
       });
 
       const electricIcon = leaflet.icon({
         iconUrl: "location.svg",
         iconSize: [42, 42],
-        iconAnchor: [12, 12],
+        iconAnchor: [21, 38],
         popupAnchor: [0, 0],
       });
 
       const storedIcon = leaflet.icon({
         iconUrl: "stored.gif",
         iconSize: [38, 46],
-        iconAnchor: [12, 12],
+        iconAnchor: [19, 44],
         popupAnchor: [0, 0],
       });
       initializedRef.current = true;
