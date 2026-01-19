@@ -65,3 +65,8 @@ code {
 .popup-content-backup {
   color: rgba(97, 98, 96, 0.918);
 }
+
+.leaflet-zoom-animated {
+  position: relative;
+  bottom: 8px !important;
+}
