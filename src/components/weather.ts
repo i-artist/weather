@@ -36,7 +36,7 @@ export class Weather {
 
     }
     init() {
-        config.apiKey = 'lUrJ4YNOW1rB4GnQJ7GJ';
+        config.apiKey = 'G4x76YUokVT2laj5u8iavAyjKFybnoCL';
         const map = ((window as any).map = new Map({
             container: 'map', // container's id or the HTML element to render the map
             style: MapStyle.BASE_V4,

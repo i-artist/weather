@@ -16,7 +16,8 @@ import {
 } from "@ant-design/icons";
 
 const options = {
-  key: "MJt519IvahtrHKWpiqosIqp8j0NgvvA2",
+  key: "G4x76YUokVT2laj5u8iavAyjKFybnoCL",
+  // key:'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
   verbose: true,
   lat: 34.4,
   lon: 113.5,
