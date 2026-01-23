@@ -70,3 +70,9 @@ code {
   position: relative;
   bottom: 8px !important;
 }
+
+.ui-switch.noselect.notap {
+  position: relative;
+  bottom: 10px;
+  left: 38px;
+}

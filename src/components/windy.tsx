@@ -56,6 +56,8 @@ export function Windy(props: {
   setIsFullScreen: (v: boolean) => void;
   theme?: any;
 }) {
+
+  const [weekDayBar, setWeekDayBar] = useState<boolean>(true);
   const { isFullScreen, setIsFullScreen, theme } = props;
   const initializedRef = useRef(false);
   const [markers, setMarkers] = useState<any[]>([]);
@@ -105,11 +107,11 @@ export function Windy(props: {
     async () => {
       const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
       const json = await res.json();
-      console.log(
-        "获取基础信息：",
-        json,
-        json?.data?.cli?.dps?.ModelData || {}
-      );
+      // console.log(
+      //   "获取基础信息：",
+      //   json,
+      //   json?.data?.cli?.dps?.ModelData || {}
+      // );
       setBaseInfo((prev: any) => json?.data?.cli?.dps?.ModelData || prev || {});
       const data = json?.data?.cli?.dps?.ModelData;
       const sn_top_CurrentPower_pvfs = (data?.['pvfsIndex']?.sn_top_CurrentPower_pvfs || 0) / 1000; // 总有功
@@ -133,7 +135,7 @@ export function Windy(props: {
         .setContent(`名称：${marker.label} `)
         .openOn(windyRef.current?.map);
       const item = baseInfo[marker.id || marker.value] || {};
-      console.log("显示弹窗：", baseInfo, marker, baseInfo[marker.id], item);
+      // console.log("显示弹窗：", baseInfo, marker, baseInfo[marker.id], item);
 
       // const content = marker.label?.includes('风')
       //   ? `
@@ -213,12 +215,21 @@ export function Windy(props: {
       initializedRef.current = true;
 
       windyInitFn(options, (windyAPI: WindyAPI) => {
-        const { map, picker } = windyAPI as any;
+        const { map, picker, broadcast } = windyAPI as any;
         map.eachLayer((layer: any) => {
           // if (layer.options && layer.options.attribution?.includes('Windy')) {
           map.removeLayer(layer);
           // }
         });
+
+        // broadcast.on('paramsChanged',(e:any)=>{
+        //   console.log(e)
+        //   if(['rainAccu','snowAccu'].includes(e.overlay)){
+        //     // setWeekDayBar(false);
+        //   }else{
+        //     setWeekDayBar(true);
+        //   }
+        // });
 
         map.on("popupclose", (e: any) => {
           setCurrentPopup(null);
@@ -230,7 +241,7 @@ export function Windy(props: {
         });
         map.on("click", (e: any) => {
           const { lat, lng } = e.latlng;
-          console.log("点击位置：", lat, lng);
+          // console.log("点击位置：", lat, lng);
           picker.open({ lat, lon: lng });
           // broadcast.once('redrawFinished', () => {
           //   // Opening of a picker (async)
@@ -306,7 +317,7 @@ export function Windy(props: {
           marker.on("mouseover", () => {
             onShowPopup({ label: wfname, id, type, capacity, coordinates: [lon, lat] });
             setTimeout(() => {
-              console.log("鼠标移上去了：", wfname);
+              // console.log("鼠标移上去了：", wfname);
               setCurrentPopup(() => ({
                 label: wfname,
                 id,
@@ -489,7 +500,7 @@ export function Windy(props: {
           // boxShadow: '0 10px 25px rgba(15, 23, 42, 0.6)',
         }}
       ></div>
-      <DayProgress></DayProgress>
+      {weekDayBar && <DayProgress></DayProgress>}
       <FutureWeatherModal
         location={location}
         onClose={() => setLocation("")}
