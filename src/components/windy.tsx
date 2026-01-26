@@ -14,6 +14,7 @@ import {
   PlayCircleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import { WeatherButtons } from "./weather-buttons";
 
 const options = {
   key: "G4x76YUokVT2laj5u8iavAyjKFybnoCL",
@@ -26,6 +27,7 @@ const options = {
 
 type WindyAPI = {
   map: any;
+  store: any;
 };
 
 type LeafletPopup = {
@@ -45,6 +47,7 @@ type LeafletLike = {
 type WindyWindow = Window & {
   windyInit?: (opts: typeof options, callback: (api: WindyAPI) => void) => void;
   L?: LeafletLike;
+  store?: any;
 };
 
 // function kelvinToCelsius(kelvin: number, decimal = 1) {
@@ -441,11 +444,20 @@ export function Windy(props: {
     };
   }, [markers]);
 
+    // 切换图层
+  const handleLayerChange = (layerId: string) => {
+    if (windyRef.current && windyRef.current.store) {
+      windyRef.current.store.set("overlay", layerId);
+      console.log("图层已切换为:", layerId);
+    }
+  };
+
   return (
     <div
       className={true ? "full-screen" : ""}
       style={{ width: "100%", height: "100%", position: "relative" }}
     >
+      <WeatherButtons onClick={handleLayerChange}></WeatherButtons>
       <div className="search-point">
         {!showSearchInput ? (
           <Button

@@ -535,7 +535,7 @@ export default function Dashboard() {
             </div>
 
             {/* 折叠主题按钮 */}
-            <div style={{ position: "relative" }}>
+            <div style={{ position: "relative", display: "none" }}>
               <button
                 onClick={() => setThemePanelOpen((v) => !v)}
                 style={{

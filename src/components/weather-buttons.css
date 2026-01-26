@@ -1,0 +1,46 @@
+.weather-buttons{
+/* 关键：给容器一个固定高度 */
+  height: 80vh;
+  position: fixed;
+  right: 31px;
+  top: 150px; 
+  text-align: right;
+  /* 关键：设置每一列的宽度，浏览器会自动根据高度增加列数 */
+  column-width: 150px; 
+  
+  /* 可选：设置列与列之间的间距 */
+  column-gap: 20px;
+  z-index: 2;
+  
+  /* 强制容器在水平方向扩展（如果内容很多） */
+  width: max-content;
+}
+
+.weather-button {
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.weather-button .title {
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.18);
+    font-size: 12px;
+    color: #fff3e1;
+    padding-left: 8px;
+    padding-right: 28px;
+}
+.weather-button img {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 100%;
+    right: 0;
+    top: -3px;
+}
+
+.weather-button:hover .title {
+    background-color: rgba(0, 0, 0, 0.35);
+}
