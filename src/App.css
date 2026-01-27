@@ -31,13 +31,13 @@ code {
 
 
 #legend-mobile > span:first-of-type {
-  font-size: 0;
+  /* font-size: 0; */
 }
 
 #legend-mobile > span:first-of-type::after {
-  content:"m/s";
+  /* content:"m/s"; */
   font-size: 12px;
-  color: #fff;
+  /* color: #fff; */
 }
 
 .App {
