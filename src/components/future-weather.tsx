@@ -324,7 +324,7 @@ export function FutureWeatherModal(props: IProps) {
           }}
         />
         &nbsp;&nbsp;
-        <Tag color={'orange'} variant="solid" onClick={() => setDiffVisible(true)}>
+        <Tag color={'orange'} variant="solid" onClick={() => setDiffVisible(true)} style={{ cursor: 'pointer' }}>
           对比
         </Tag>
         {/* <Button
@@ -442,12 +442,14 @@ function groupByDateToArray(data: {
       ...valueObj,
     });
   });
-
+  console.log(map, values, mete_var, timestamp)
   let i = 0;
+  let firstItem: any = null
   return Array.from(map.entries())
     .map(([date, list]) => {
       i++;
 
+      firstItem = list[0] || firstItem
       // 需要的小时数组，按顺序
       const requiredHours = [2, 8, 14, 20];
 
@@ -475,7 +477,7 @@ function groupByDateToArray(data: {
           time: `${hour.toString().padStart(2, '0')}:00:00`,
           hour,
           speed: windSpeedToLevel(0),
-          celsius: Math.round(kelvinToCelsius(0)),
+          celsius: Math.round(kelvinToCelsius(firstItem?.skt || firstItem?.t2m || 273.15)),
           ...defaultValueObj,
         };
       });
@@ -535,6 +537,7 @@ function windSpeedToLevel(speed: number): number {
 }
 
 function kelvinToCelsius(k: number): number {
+  if (!k) return 0;
   return k - 273.15;
 }
 
