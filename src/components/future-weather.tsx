@@ -6,7 +6,7 @@ import {
   CloseOutlined,
   CloudOutlined,
 } from '@ant-design/icons';
-import { Button, Segmented, Spin } from 'antd';
+import { Button, Segmented, Spin, Tag } from 'antd';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import 'qweather-icons/font/qweather-icons.css';
@@ -323,15 +323,18 @@ export function FutureWeatherModal(props: IProps) {
             setSelectValue(value as unknown as string);
           }}
         />
-
-        <Button
+        &nbsp;&nbsp;
+        <Tag color={'orange'} variant="solid" onClick={() => setDiffVisible(true)}>
+          对比
+        </Tag>
+        {/* <Button
           onClick={() => setDiffVisible(true)}
           type="primary"
           className="future-weather-diff-btn"
           size="small"
         >
           对比
-        </Button>
+        </Button> */}
       </div>
       {diffVisible && (
         <FutureWeatherDiff

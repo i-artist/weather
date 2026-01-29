@@ -25,6 +25,7 @@
 
 .future-weather-segmented {
     padding: 2px 4px;
+    background: rgba(104, 168, 238, 0.2);
 }
 
 .future-weather-diff-title {
@@ -81,9 +82,11 @@
 
 .future-weather-item-weekday {
     text-align: center;
-    border-right: 1px solid #9c9a9a4d;
+    border-right: 1px solid #9c9a9a1d; 
     line-height: 22px;
     min-width: 60px;
+    color: #272727;
+    font-size: 14px;
 }
 
 .future-weather-cbody {
@@ -98,6 +101,26 @@
     position: relative;
 }
 
+.future-weather-scrollable::-webkit-scrollbar
+{
+  width: 6px;
+  height: 6px;
+  background-color: #fff;
+}
+
+.future-weather-scrollable::-webkit-scrollbar-track{
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+.future-weather-scrollable::-webkit-scrollbar-thumb
+{
+border-radius: 10px;
+-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+background-color: #d9dadb;
+}
+
+
 .future-weather-chart {
     position: absolute;
     height: 160px;
@@ -110,7 +133,7 @@
     max-width: 60px;
     /* padding: 0 8px; */
     font-size: 14px;
-    border: 1px solid #9c9a9a4d;
+    border: 1px solid #9c9a9a1d;
     border-left: 0;
 }
 

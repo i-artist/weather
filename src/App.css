@@ -76,3 +76,24 @@ code {
   bottom: 10px;
   left: 38px;
 }
+
+#embed-zoom {
+  display: none;
+}
+
+#mobile-ovr-select {
+  padding: 0 !important;
+  font-size: 36px;
+}
+#mobile-ovr-select span {
+  display: none;
+}
+
+#mobile-ovr-select::before {
+  content: "菜单" !important;
+  height: 68px !important;
+  width: 68px !important;
+  line-height: 68px !important;
+  font-weight: 900 !important;
+  background: #9d0300 !important;
+}

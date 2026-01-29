@@ -163,6 +163,11 @@
     top: 110px !important;
   }
   .search-point {
-    top: 80px;
+    top: 90px;
   }
+}
+
+.search-point button:hover {
+    border: 1px solid #fff !important;
+    color: #fff !important;
 }
