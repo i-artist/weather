@@ -15,6 +15,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { WeatherButtons } from "./weather-buttons";
+import { fetchRealTimeData } from "../service";
 
 const options = {
   key: "G4x76YUokVT2laj5u8iavAyjKFybnoCL",
@@ -108,15 +109,19 @@ export function Windy(props: {
 
   useRequest(
     async () => {
-      const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
-      const json = await res.json();
+      // const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
+      // const json = await res.json();
+
+      const json = await fetchRealTimeData();
+      console.log("获取实时数据：", json);
       // console.log(
       //   "获取基础信息：",
       //   json,
       //   json?.data?.cli?.dps?.ModelData || {}
       // );
-      setBaseInfo((prev: any) => json?.data?.cli?.dps?.ModelData || prev || {});
-      const data = json?.data?.cli?.dps?.ModelData;
+      const data = json;
+      setBaseInfo((prev: any) => data || prev || {});
+      // const data = json?.data?.cli?.dps?.ModelData;
       const sn_top_CurrentPower_pvfs = (data?.['pvfsIndex']?.sn_top_CurrentPower_pvfs || 0) / 1000; // 总有功
       const sn_top_CurrentPower_wfs = (data?.['wfsIndex']?.sn_top_CurrentPower_wfs || 0) / 1000; // 总有功
       setTotalPowerObj((v: any) => ({ pvfs: sn_top_CurrentPower_pvfs || v.pvfs, wfs: sn_top_CurrentPower_wfs || v.wfs }));
