@@ -109,19 +109,21 @@ export function Windy(props: {
 
   useRequest(
     async () => {
-      // const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
-      // const json = await res.json();
+      const href = window.location.href;
+      const isIntranet = !href.includes("localhost") && !href.includes("theonly.vip")
+      let data: any = null;
+      if (isIntranet) {
+        const json = await fetchRealTimeData();
+        data = json
+      } else {
+        const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
+        const json = await res.json();
+        data = json?.data?.cli?.dps?.ModelData;
+      }
 
-      const json = await fetchRealTimeData();
-      console.log("获取实时数据：", json);
-      // console.log(
-      //   "获取基础信息：",
-      //   json,
-      //   json?.data?.cli?.dps?.ModelData || {}
-      // );
-      const data = json;
+
       setBaseInfo((prev: any) => data || prev || {});
-      // const data = json?.data?.cli?.dps?.ModelData;
+      // const 
       const sn_top_CurrentPower_pvfs = (data?.['pvfsIndex']?.sn_top_CurrentPower_pvfs || 0) / 1000; // 总有功
       const sn_top_CurrentPower_wfs = (data?.['wfsIndex']?.sn_top_CurrentPower_wfs || 0) / 1000; // 总有功
       setTotalPowerObj((v: any) => ({ pvfs: sn_top_CurrentPower_pvfs || v.pvfs, wfs: sn_top_CurrentPower_wfs || v.wfs }));
