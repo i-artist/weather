@@ -125,7 +125,7 @@
     width: var(--drawer-width);
     max-width: 360px;
     min-width: 360px;
-    height: 100vh;
+    height: calc(100vh - 20px);
     background: rgba(0, 0, 0, 0.55);
     color: rgb(255, 243, 225);
     border-top-left-radius: 10px;
