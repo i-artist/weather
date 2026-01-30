@@ -1,46 +1,72 @@
-.weather-buttons{
-/* 关键：给容器一个固定高度 */
+.weather-buttons {
   height: 80vh;
   position: fixed;
-  right: 31px;
+  right: 10px;
   top: 150px; 
   text-align: right;
-  /* 关键：设置每一列的宽度，浏览器会自动根据高度增加列数 */
   column-width: 150px; 
-  
-  /* 可选：设置列与列之间的间距 */
   column-gap: 20px;
   z-index: 2;
-  
-  /* 强制容器在水平方向扩展（如果内容很多） */
   width: max-content;
+  pointer-events: none;
 }
 
 .weather-button {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end; 
+    align-items: center;      
     position: relative;
     margin-bottom: 12px;
     cursor: pointer;
+    pointer-events: auto;   
+    padding-right: 20px; 
 }
 
 .weather-button .title {
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.18);
     font-size: 14px;
-    color: #fff3e1;
-    padding-left: 8px;
-    padding-right: 28px;
+    color: rgb(255, 243, 225);
+    background-color: rgba(0, 0, 0, 0.18);
+    
+    padding-top: 2.86px;
+    padding-bottom: 2.86px;
+    padding-left: 10.01px;
+    padding-right: 20.02px; 
+    
+    border-top-left-radius: 20.02px;
+    border-bottom-left-radius: 20.02px;
+    border-top-right-radius: 20.02px; 
+    border-bottom-right-radius: 20.02px;
+
+    white-space: nowrap; 
+    transition: background-color 0.3s ease; 
 }
+
 .weather-button img {
+    width: 33px;
+    height: 33px;
+    
+    border-radius: 50%; 
+    box-shadow: 0px 0px 4px 0px rgb(0, 0, 0);
+    
     position: absolute;
-    width: 26px;
-    height: 26px;
-    border-radius: 100%;
     right: 0;
-    top: -3px;
+    top: 50%;
+    transform: translateY(-50%); 
+    z-index: 10; 
 }
 
 .weather-button:hover .title {
-    background-color: rgba(0, 0, 0, 0.35);
+    background-color: rgba(0, 0, 0, 0.35); 
+}
+
+.weather-button.active .title {
+    background-color: rgb(77, 77, 77); 
+    color: rgb(255, 243, 225);         
+}
+
+.menu-toggle-icon {
+    width: 44px; 
+    height: 44px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 4px 0px rgb(0, 0, 0);
 }
