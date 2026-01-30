@@ -8,6 +8,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+  --drawer-width: 360px;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -19,9 +23,14 @@ code {
 .search-point {
     position: absolute;
     top: 10px;
-    right: 90px;
+    right: 15px;
     z-index: 1;
     opacity: 0.8;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.drawer-open .search-point {
+  transform: translateX(calc(-1 * var(--drawer-width) - 12px));
 }
 
 #windy #logo-wrapper {
@@ -81,19 +90,9 @@ code {
   display: none;
 }
 
-#mobile-ovr-select {
-  padding: 0 !important;
-  font-size: 36px;
-}
-#mobile-ovr-select span {
-  display: none;
-}
-
-#mobile-ovr-select::before {
-  content: "菜单" !important;
-  height: 68px !important;
-  width: 68px !important;
-  line-height: 68px !important;
-  font-weight: 900 !important;
-  background: #9d0300 !important;
+#windy #mobile-ovr-select,
+#windy #menu,
+#windy .menu,
+#windy #overlay-menu {
+  display: none !important;
 }

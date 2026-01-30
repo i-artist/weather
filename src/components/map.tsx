@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 // import * as maptilersdk from '@maptiler/sdk';
-import { Popup } from '@maptiler/sdk';
-import '@maptiler/sdk/dist/maptiler-sdk.css';
-import { Select } from 'antd';
-import './map.css';
-import { Weather } from './weather';
+import { Popup } from "@maptiler/sdk";
+import "@maptiler/sdk/dist/maptiler-sdk.css";
+import { Select } from "antd";
+import "./map.css";
+import { Weather } from "./weather";
 
 export default function WeatherMap() {
   const weather = useRef(null as any);
@@ -19,7 +19,7 @@ export default function WeatherMap() {
     const _weather = new Weather();
     weather.current = _weather;
 
-    fetch('marker.json')
+    fetch("marker.json")
       .then((res) => res.json())
       .then((data) => {
         const features = data.features;
