@@ -94,5 +94,5 @@ body.drawer-open .search-point {
 #windy #menu,
 #windy .menu,
 #windy #overlay-menu {
-  display: none !important;
+  /* display: none !important; */
 }

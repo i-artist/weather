@@ -5,11 +5,11 @@ import react from '@vitejs/plugin-react-swc'
 export default defineConfig({
   server: {
     proxy: {
-      '/we': {
-        target: 'https://pb4nmtv3tm.re.qweatherapi.com',
+      '/api': {
+        target: 'https://weather.sh-newenergy.com',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/we/, ''),
+        // rewrite: (path) => path.replace(/^\/we/, ''),
       },
     },
   },
