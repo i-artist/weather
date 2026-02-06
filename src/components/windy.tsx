@@ -62,6 +62,7 @@ export function Windy(props: {
 }) {
 
   const [weekDayBar, setWeekDayBar] = useState<boolean>(true);
+  const [layerId, setLayerId] = useState<string>("wind");
   const { isFullScreen, setIsFullScreen, theme } = props;
   const initializedRef = useRef(false);
   const [markers, setMarkers] = useState<any[]>([]);
@@ -456,12 +457,13 @@ export function Windy(props: {
     if (windyRef.current && windyRef.current.store) {
       windyRef.current.store.set("overlay", layerId);
       console.log("图层已切换为:", layerId);
+      setLayerId(layerId);
     }
   };
-
+  const classnames = layerId === "wind" ? "custom-windy" : "";
   return (
     <div
-      className={true ? "full-screen" : ""}
+      className={true ? "full-screen " + classnames : ""}
       style={{ width: "100%", height: "100%", position: "relative" }}
     >
       <WeatherButtons onClick={handleLayerChange}></WeatherButtons>
