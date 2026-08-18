@@ -1156,7 +1156,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "x2",
+        "id": "410881",
         "name": "申峪风电",
         "type": "风电",
         "capacity": 2.24
@@ -1198,6 +1198,22 @@
         "coordinates": [
           114.76,
           25.01
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "460401",
+        "name": "海南CZ2",
+        "type": "风电",
+        "capacity": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.31374,
+          19.902531
         ]
       }
     }

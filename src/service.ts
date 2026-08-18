@@ -3,17 +3,16 @@ import axios from 'axios';
 
 // ==================== 1. 配置区域 ====================
 
-// 接口地址 (根据实际情况修改，如果是本地调试可能需要 http://localhost:3001)
-const API_URL = '/api/realtime'; 
+const REALTIME_API = '/api/realtime';
 
-// 风电 ID 列表 (38个)
+// 风电 ID 列表
 const WIND_IDS = [
   "140929", "150133", "150213", "150842", "152202", "152541", "152925",
   "310115", "310116", "310117", "310118", "310119", "310122", "310123",
   "320645", "320646", "340602", "341606", "410410", "410486", "411121",
-  "411208", "411312", "411623", "411626", "411648", "411649", "429009",
+  "411208", "410881", "411312", "411623", "411626", "411648", "411649", "429009",
   "431103", "451422", "610000", "610809", "610886", "632548", "632897",
-  "632898", "632900", "652307"
+  "632898", "632900", "652307", "460401"
 ];
 
 // 光伏 ID 列表 (33个，包含 361002)
@@ -27,29 +26,79 @@ const PV_IDS = [
 
 // ==================== 2. 请求函数 ====================
 
+const postPowerApi = async (
+  url: string,
+  extraPayload: Record<string, unknown> = {},
+) => {
+  const response = await axios.post(url, {
+    remotePort: '8102',
+    windIds: WIND_IDS,
+    pvIds: PV_IDS,
+    ...extraPayload,
+  }, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    timeout: 30000,
+  });
+
+  if (response.status === 200) {
+    return response.data;
+  }
+  console.error('API Error:', response.status);
+  return null;
+};
+
 /**
- * 获取实时发电数据
- * @param {string} remotePort - 天润接口端口，默认 '8102'
- * @returns {Promise<Object>} - 返回清洗后的 Map 数据
+ * 统一解析 ModelData
+ */
+export const normalizeModelData = (json: any) => {
+  if (!json) return null;
+  return json?.data?.cli?.dps?.ModelData ?? json?.data ?? json;
+};
+
+/**
+ * 获取实时发电数据（地图点位、弹窗等）
+ * 请求体会带 remotePort / windIds / pvIds，后端按这些场站返回数据。
  */
 export const fetchRealTimeData = async () => {
   try {
-    const response = await axios.post(API_URL, {
-      windIds: WIND_IDS,
-      pvIds: PV_IDS
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      timeout: 30000 // 后端超时是30s，前端建议设置一致或略长
+    const raw = await postPowerApi(REALTIME_API, {
+      purpose: 'stationDetail',
     });
+    return normalizeModelData(raw);
+  } catch (error) {
+    console.error('Request Failed:', error);
+    throw error;
+  }
+};
 
-    if (response.status === 200) {
-      return response.data;
-    } else {
-      console.error('API Error:', response.status);
-      return null;
-    }
+/** kW 转 MW，保留两位小数 */
+const kwToMw = (value: unknown): number => {
+  const num = Number(value);
+  if (isNaN(num) || num <= 0) {
+    return 0;
+  }
+  return Number((num / 1000).toFixed(2));
+};
+
+export const extractTotalPower = (data: any) => ({
+  pvfs: kwToMw(data?.pvfsIndex?.sn_top_CurrentPower_pvfs),
+  wfs: kwToMw(data?.wfsIndex?.sn_top_CurrentPower_wfs),
+});
+
+/**
+ * 获取总光伏发电功率、总风机发电功率
+ * 走天润实时接口，后端按 windIds/pvIds 汇总。
+ */
+export const fetchTotalPowerData = async () => {
+  try {
+    const data = normalizeModelData(await postPowerApi(REALTIME_API, {
+      purpose: 'totalPower',
+      allowStale: false,
+    }));
+    if (!data) return null;
+    return extractTotalPower(data);
   } catch (error) {
     console.error('Request Failed:', error);
     throw error;

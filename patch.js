@@ -584,6 +584,21 @@ const marker = {
     {
       "type": "Feature",
       "properties": {
+        "id": "410881",
+        "name": "申峪风电",
+        "type": "风电"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.28,
+          35.05
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "id": "411121",
         "name": "漯河恒洁",
         "type": "风电"

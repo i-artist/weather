@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://weather.sh-newenergy.com',
+        target: 'http://127.0.0.1:8182',
         changeOrigin: true,
         secure: false,
         // rewrite: (path) => path.replace(/^\/we/, ''),

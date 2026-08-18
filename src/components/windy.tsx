@@ -11,11 +11,10 @@ import {
   FullscreenExitOutlined,
   FullscreenOutlined,
   PauseOutlined,
-  PlayCircleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { WeatherButtons } from "./weather-buttons";
-import { fetchRealTimeData } from "../service";
+import { fetchRealTimeData, fetchTotalPowerData } from "../service";
 
 const options = {
   key: "G4x76YUokVT2laj5u8iavAyjKFybnoCL",
@@ -74,11 +73,7 @@ export function Windy(props: {
     return saved ? JSON.parse(saved) : {};
   });
   const [currentPopup, setCurrentPopup] = useState<any>(null);
-  // 从localStorage读取初始值
-  const [totalPowerObj, setTotalPowerObj] = useState<{ pvfs: number, wfs: number }>(() => {
-    const saved = localStorage.getItem('windy_totalPower');
-    return saved ? JSON.parse(saved) : { pvfs: 0, wfs: 0 };
-  });
+  const [totalPowerObj, setTotalPowerObj] = useState<{ pvfs: number, wfs: number }>({ pvfs: 0, wfs: 0 });
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showSearchInput, setShowSearchInput] = useState(false);
   // 添加轮播相关状态
@@ -101,41 +96,33 @@ export function Windy(props: {
     }
   }, [baseInfo]);
 
-  // 当totalPower变化时保存到localStorage
-  useEffect(() => {
-    if (totalPowerObj.pvfs > 0 || totalPowerObj.wfs > 0) {
-      localStorage.setItem('windy_totalPower', JSON.stringify(totalPowerObj));
+  useRequest(
+    async () => {
+      try {
+        const totalPower = await fetchTotalPowerData();
+        setTotalPowerObj(totalPower || { pvfs: 0, wfs: 0 });
+      } catch (error) {
+        console.error("Total power request failed:", error);
+        setTotalPowerObj({ pvfs: 0, wfs: 0 });
+      }
+    },
+    {
+      pollingInterval: 1000,
     }
-  }, [totalPowerObj]);
+  );
 
   useRequest(
     async () => {
-      const href = window.location.href;
-      const isIntranet = !href.includes("localhost") && !href.includes("theonly.vip")
-      let data: any = null;
-      if (isIntranet) {
-        const json = await fetchRealTimeData();
-        data = json
-      } else {
-        const res = await fetch("https://demo.theonly.vip:16666/api/baseinfo");
-        const json = await res.json();
-        data = json?.data?.cli?.dps?.ModelData;
-      }
+      const data = await fetchRealTimeData();
+      if (!data) return;
+      setBaseInfo(data);
 
-
-      setBaseInfo((prev: any) => data || prev || {});
-      // const 
-      const sn_top_CurrentPower_pvfs = (data?.['pvfsIndex']?.sn_top_CurrentPower_pvfs || 0) / 1000; // 总有功
-      const sn_top_CurrentPower_wfs = (data?.['wfsIndex']?.sn_top_CurrentPower_wfs || 0) / 1000; // 总有功
-      setTotalPowerObj((v: any) => ({ pvfs: sn_top_CurrentPower_pvfs || v.pvfs, wfs: sn_top_CurrentPower_wfs || v.wfs }));
-
-      if (data && isFirstLoad) {
+      if (isFirstLoad) {
         setIsFirstLoad(false);
       }
     },
     {
       pollingInterval: 5000,
-      // ready: false,
     }
   );
 
@@ -379,7 +366,7 @@ export function Windy(props: {
   };
 
   useEffect(() => {
-    fetch("/marker2.json")
+    fetch(`/marker2.json?t=${Date.now()}`)
       .then((res) => res.json())
       .then((json) => {
         const features = json.features;
@@ -536,21 +523,35 @@ export function Windy(props: {
   );
 }
 
-const toRealNumber = (value: any) => {
+const isInvalidValue = (value: unknown) =>
+  value === null ||
+  value === undefined ||
+  value === '' ||
+  value === '--' ||
+  value === 'null' ||
+  value === 'undefined';
+
+const toRealNumber = (value: unknown) => {
+  if (isInvalidValue(value)) {
+    return '0';
+  }
   const val = Number(value);
   if (isNaN(val)) {
-    return 0;
+    return '0';
   }
   if (val < 0) {
-    return 0;
+    return '0';
   }
   return (val / 1000).toFixed(2);
 };
 
-function toFixed(value: any, fixed = 2) {
+function toFixed(value: unknown, fixed = 2) {
+  if (isInvalidValue(value)) {
+    return '0';
+  }
   const val = Number(value);
   if (isNaN(val)) {
-    return "0";
+    return '0';
   }
   return val.toFixed(fixed);
 }
