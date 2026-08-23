@@ -54,6 +54,9 @@ an ARM Mac. Override the image name or output file when needed:
 make package-amd64 IMAGE=weather-pro:v1 PACKAGE_OUTPUT=release/weather-pro-v1.tar
 ```
 
+The packaging script uses Docker image mirrors by default. Override them with
+`NODE_IMAGE` and `NGINX_IMAGE` when the build environment has its own registry.
+
 The browser continues to use same-origin `/windy/*` URLs. Nginx inside the
 container forwards those requests to `WINDY_PROXY_UPSTREAM`, so the intranet
 only needs outbound access to that one origin and no browser CORS changes. Add

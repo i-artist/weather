@@ -1,4 +1,7 @@
-FROM node:22-alpine AS frontend-build
+ARG NODE_IMAGE="node:22-alpine"
+ARG NGINX_IMAGE="nginx:alpine"
+
+FROM ${NODE_IMAGE} AS frontend-build
 
 WORKDIR /app
 
@@ -20,7 +23,7 @@ ARG VITE_MAPTILER_API_KEY=""
 ENV VITE_MAPTILER_API_KEY=${VITE_MAPTILER_API_KEY}
 RUN npm run build
 
-FROM nginx:alpine
+FROM ${NGINX_IMAGE}
 
 ARG ALPINE_MIRROR="https://mirrors.aliyun.com/alpine"
 ARG PIP_INDEX_URL="https://mirrors.aliyun.com/pypi/simple"

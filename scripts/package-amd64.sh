@@ -5,13 +5,27 @@ set -eu
 project_dir=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
 image=${IMAGE:-weather-pro:latest}
 output=${OUTPUT:-dist/weather-pro-linux-amd64.tar}
+node_image=${NODE_IMAGE:-docker.m.daocloud.io/library/node:22-alpine}
+nginx_image=${NGINX_IMAGE:-docker.m.daocloud.io/library/nginx:alpine}
+
+if command -v docker >/dev/null 2>&1; then
+    docker_cli=$(command -v docker)
+elif [ -x /Applications/Docker.app/Contents/Resources/bin/docker ]; then
+    docker_bin=/Applications/Docker.app/Contents/Resources/bin
+    PATH="$docker_bin:$PATH"
+    export PATH
+    docker_cli="$docker_bin/docker"
+else
+    echo "Docker CLI was not found. Install or start Docker Desktop first." >&2
+    exit 1
+fi
 
 case "$output" in
     /*) ;;
     *) output="$project_dir/$output" ;;
 esac
 
-if ! docker buildx version >/dev/null 2>&1; then
+if ! "$docker_cli" buildx version >/dev/null 2>&1; then
     echo "Docker Buildx is required to package a linux/amd64 image." >&2
     exit 1
 fi
@@ -25,10 +39,12 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-set -- docker buildx build \
+set -- "$docker_cli" buildx build \
     --platform linux/amd64 \
     --tag "$image" \
-    --load
+    --load \
+    --build-arg "NODE_IMAGE=$node_image" \
+    --build-arg "NGINX_IMAGE=$nginx_image"
 
 if [ -n "${VITE_MAPTILER_API_KEY:-}" ]; then
     set -- "$@" --build-arg "VITE_MAPTILER_API_KEY=$VITE_MAPTILER_API_KEY"
@@ -45,13 +61,13 @@ fi
 
 "$@" "$project_dir"
 
-platform=$(docker image inspect "$image" --format '{{.Os}}/{{.Architecture}}')
+platform=$("$docker_cli" image inspect "$image" --format '{{.Os}}/{{.Architecture}}')
 if [ "$platform" != "linux/amd64" ]; then
     echo "Expected linux/amd64 image, got: $platform" >&2
     exit 1
 fi
 
-docker save --output "$temporary" "$image"
+"$docker_cli" save --output "$temporary" "$image"
 mv "$temporary" "$output"
 trap - EXIT INT TERM
 
