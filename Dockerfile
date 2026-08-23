@@ -24,6 +24,8 @@ FROM nginx:alpine
 
 ARG ALPINE_MIRROR="https://mirrors.aliyun.com/alpine"
 ARG PIP_INDEX_URL="https://mirrors.aliyun.com/pypi/simple"
+ENV WINDY_PROXY_UPSTREAM="http://windy-proxy:3002" \
+    NGINX_ENVSUBST_FILTER="^WINDY_PROXY_UPSTREAM$"
 RUN sed -i "s#https://dl-cdn.alpinelinux.org/alpine#${ALPINE_MIRROR%/}#g" /etc/apk/repositories \
     && apk add --no-cache python3 py3-pip supervisor \
     && python3 -m venv /opt/venv \
@@ -34,8 +36,11 @@ RUN /opt/venv/bin/pip install --no-cache-dir --index-url "${PIP_INDEX_URL}" -r /
 
 COPY server.py /app/server.py
 COPY --from=frontend-build /app/dist/ /usr/share/nginx/html/
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY docker/19-validate-windy-proxy-upstream.sh /docker-entrypoint.d/19-validate-windy-proxy-upstream.sh
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN chmod +x /docker-entrypoint.d/19-validate-windy-proxy-upstream.sh
 
 EXPOSE 80
 

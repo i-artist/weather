@@ -9,6 +9,8 @@ services:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
     ports:
       - "${WEATHER_PORT:-8080}:80"
+    environment:
+      WINDY_PROXY_UPSTREAM: ${WINDY_PROXY_UPSTREAM:-http://windy-proxy:3002}
     depends_on:
       windy-proxy:
         condition: service_healthy

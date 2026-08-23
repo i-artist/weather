@@ -35,6 +35,23 @@ exposed on `WEATHER_PORT` (port `8080` by default). Use `make logs`, `make ps`,
 The default npm, Alpine, and PyPI registries use mirrors reachable from mainland
 China and can be overridden in `.env` when required.
 
+For an intranet deployment, build the application image once and configure the
+external Windy proxy when the container starts:
+
+```bash
+docker build -t weather-pro:latest .
+docker run -d --name weather-pro --restart unless-stopped \
+  -p 8080:80 \
+  -e WINDY_PROXY_UPSTREAM=https://weather-proxy.theonly.vip:16666 \
+  weather-pro:latest
+```
+
+The browser continues to use same-origin `/windy/*` URLs. Nginx inside the
+container forwards those requests to `WINDY_PROXY_UPSTREAM`, so the intranet
+only needs outbound access to that one origin and no browser CORS changes. Add
+the intranet frontend hostname to `WINDY_ALLOWED_APP_HOSTS` on the external
+proxy before starting the intranet container.
+
 To run only the standalone Windy proxy without the dashboard or Python API:
 
 ```bash
