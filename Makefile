@@ -28,6 +28,12 @@ check-env:
 		test -n "$$key" && test "$$key" != "replace-with-your-windy-map-api-key" || { \
 			echo "WINDY_API_KEY is not configured in $(ENV_FILE)."; exit 1; \
 		}
+	@port="$$(sed -n 's/^WEATHER_PORT=//p' "$(ENV_FILE)" | tail -n 1)"; \
+		port="$${port:-8080}"; \
+		case "$$port" in *[!0-9]*) echo "WEATHER_PORT must be an integer from 1 to 65535, got: $$port"; exit 1;; esac; \
+		if [ "$$port" -lt 1 ] || [ "$$port" -gt 65535 ]; then \
+			echo "WEATHER_PORT must be between 1 and 65535, got: $$port"; exit 1; \
+		fi
 
 up: check-env
 	$(COMPOSE_CMD) up --build -d --remove-orphans
