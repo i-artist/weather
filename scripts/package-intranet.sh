@@ -39,7 +39,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-tar -czf "$temporary" -C "$image_dir" \
+COPYFILE_DISABLE=1 tar --no-xattrs -czf "$temporary" -C "$image_dir" \
     "$image_name" \
     "$image_name.sha256" \
     docker-compose.intranet.yml \
