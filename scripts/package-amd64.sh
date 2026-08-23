@@ -28,7 +28,7 @@ trap cleanup EXIT INT TERM
 set -- docker buildx build \
     --platform linux/amd64 \
     --tag "$image" \
-    --output "type=docker,dest=$temporary"
+    --load
 
 if [ -n "${VITE_MAPTILER_API_KEY:-}" ]; then
     set -- "$@" --build-arg "VITE_MAPTILER_API_KEY=$VITE_MAPTILER_API_KEY"
@@ -44,6 +44,14 @@ if [ -n "${PIP_INDEX_URL:-}" ]; then
 fi
 
 "$@" "$project_dir"
+
+platform=$(docker image inspect "$image" --format '{{.Os}}/{{.Architecture}}')
+if [ "$platform" != "linux/amd64" ]; then
+    echo "Expected linux/amd64 image, got: $platform" >&2
+    exit 1
+fi
+
+docker save --output "$temporary" "$image"
 mv "$temporary" "$output"
 trap - EXIT INT TERM
 
