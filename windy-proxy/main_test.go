@@ -104,14 +104,39 @@ func TestRootRedirectsToProxiedWindy(t *testing.T) {
 	}
 }
 
-func TestUnknownRootPathReturnsNotFound(t *testing.T) {
+func TestUnknownWindyPathReturnsNotFound(t *testing.T) {
 	proxy := testProxyServer(t, "http://127.0.0.1:1")
-	request := httptest.NewRequest(http.MethodGet, "/missing", nil)
+	request := httptest.NewRequest(http.MethodGet, "/windy/missing", nil)
 	response := httptest.NewRecorder()
 	proxy.routes().ServeHTTP(response, request)
 
 	if response.Code != http.StatusNotFound {
 		t.Fatalf("expected 404, got %d", response.Code)
+	}
+}
+
+func TestRootAssetPathIsProxiedToWindyWebsite(t *testing.T) {
+	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/v/app.js" {
+			t.Fatalf("unexpected upstream path: %s", r.URL.Path)
+		}
+		_, _ = io.WriteString(w, "windy-asset")
+	}))
+	defer upstreamServer.Close()
+
+	proxy := testProxyServer(t, "http://127.0.0.1:1")
+	base, err := url.Parse(upstreamServer.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	proxy.upstreams["www"] = upstream{alias: "www", origin: upstreamServer.URL, base: base}
+
+	request := httptest.NewRequest(http.MethodGet, "/v/app.js", nil)
+	response := httptest.NewRecorder()
+	proxy.routes().ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK || response.Body.String() != "windy-asset" {
+		t.Fatalf("unexpected asset response: status=%d body=%s", response.Code, response.Body.String())
 	}
 }
 
