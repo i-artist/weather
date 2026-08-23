@@ -90,14 +90,17 @@ func TestUnknownUpstreamIsRejected(t *testing.T) {
 	}
 }
 
-func TestRootReturnsProxyHealth(t *testing.T) {
+func TestRootRedirectsToProxiedWindy(t *testing.T) {
 	proxy := testProxyServer(t, "http://127.0.0.1:1")
 	request := httptest.NewRequest(http.MethodGet, "/", nil)
 	response := httptest.NewRecorder()
 	proxy.routes().ServeHTTP(response, request)
 
-	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"keyConfigured":true`) {
-		t.Fatalf("unexpected root response: status=%d body=%s", response.Code, response.Body.String())
+	if response.Code != http.StatusFound {
+		t.Fatalf("expected redirect, got %d", response.Code)
+	}
+	if location := response.Header().Get("Location"); location != "/windy/upstream/www/" {
+		t.Fatalf("unexpected redirect location: %q", location)
 	}
 }
 

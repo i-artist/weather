@@ -182,7 +182,7 @@ func (p *proxyServer) handleRoot(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	p.handleHealth(w, r)
+	http.Redirect(w, r, p.prefix+"/upstream/www/", http.StatusFound)
 }
 
 func (p *proxyServer) handleHealth(w http.ResponseWriter, _ *http.Request) {
