@@ -39,9 +39,11 @@ For an intranet deployment, build the application image once and configure the
 external Windy proxy when the container starts:
 
 ```bash
-make package-amd64
-docker load -i dist/weather-pro-linux-amd64.tar
-cd dist
+make package-intranet
+mkdir -p dist/intranet
+tar -xzf dist/weather-pro-intranet-linux-amd64.tar.gz -C dist/intranet
+cd dist/intranet
+docker load -i weather-pro-linux-amd64.tar
 cp .env.intranet.example .env
 docker compose --env-file .env -f docker-compose.intranet.yml up -d
 ```
@@ -57,6 +59,8 @@ The packaging script uses Docker image mirrors by default. Override them with
 `NODE_IMAGE` and `NGINX_IMAGE` when the build environment has its own registry.
 It also copies `docker-compose.intranet.yml` and `.env.intranet.example` into
 the output directory so the intranet deployment does not need the source tree.
+`make package-intranet` wraps all four deployment files into one archive for
+transfer into the intranet.
 
 The browser continues to use same-origin `/windy/*` URLs. Nginx inside the
 container forwards those requests to `WINDY_PROXY_UPSTREAM`, so the intranet
