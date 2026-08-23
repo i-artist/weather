@@ -15,6 +15,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+!.env.intranet.example
 __pycache__/
 *.py[cod]
 *_map_box_amd64.tar

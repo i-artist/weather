@@ -1,0 +1,13 @@
+services:
+  weather:
+    image: ${WEATHER_IMAGE:-weather-pro:latest}
+    ports:
+      - "${WEATHER_PORT:-8080}:80"
+    environment:
+      WINDY_PROXY_UPSTREAM: ${WINDY_PROXY_UPSTREAM:?WINDY_PROXY_UPSTREAM is required}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 3s
+      retries: 5

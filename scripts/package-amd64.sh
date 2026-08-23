@@ -78,7 +78,11 @@ else
     (cd "$output_dir" && shasum -a 256 "$output_name" > "$output_name.sha256")
 fi
 chmod 0644 "$output" "$output.sha256"
+cp "$project_dir/docker-compose.intranet.yml" "$output_dir/docker-compose.intranet.yml"
+cp "$project_dir/.env.intranet.example" "$output_dir/.env.intranet.example"
 
 echo "Created linux/amd64 image: $output"
 echo "Checksum: $output.sha256"
+echo "Compose file: $output_dir/docker-compose.intranet.yml"
+echo "Environment template: $output_dir/.env.intranet.example"
 echo "Load it with: docker load -i $output"

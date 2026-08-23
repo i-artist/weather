@@ -41,10 +41,9 @@ external Windy proxy when the container starts:
 ```bash
 make package-amd64
 docker load -i dist/weather-pro-linux-amd64.tar
-docker run -d --name weather-pro --restart unless-stopped \
-  -p 8080:80 \
-  -e WINDY_PROXY_UPSTREAM=https://weather-proxy.theonly.vip:16666 \
-  weather-pro:latest
+cd dist
+cp .env.intranet.example .env
+docker compose --env-file .env -f docker-compose.intranet.yml up -d
 ```
 
 `make package-amd64` always builds for `linux/amd64`, including when it runs on
@@ -56,6 +55,8 @@ make package-amd64 IMAGE=weather-pro:v1 PACKAGE_OUTPUT=release/weather-pro-v1.ta
 
 The packaging script uses Docker image mirrors by default. Override them with
 `NODE_IMAGE` and `NGINX_IMAGE` when the build environment has its own registry.
+It also copies `docker-compose.intranet.yml` and `.env.intranet.example` into
+the output directory so the intranet deployment does not need the source tree.
 
 The browser continues to use same-origin `/windy/*` URLs. Nginx inside the
 container forwards those requests to `WINDY_PROXY_UPSTREAM`, so the intranet
