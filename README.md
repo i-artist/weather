@@ -32,6 +32,8 @@ No host Node.js, Go, or Python installation is required. The application is
 exposed on `WEATHER_PORT` (port `8080` by default). Use `make logs`, `make ps`,
 `make health`, and `make down` for routine operations. See
 [`windy-proxy/README.md`](windy-proxy/README.md) for proxy configuration.
+The default npm, Alpine, and PyPI registries use mirrors reachable from mainland
+China and can be overridden in `.env` when required.
 
 ## Frontend development
 
