@@ -8,12 +8,17 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.venv/
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
 __pycache__/
 *.py[cod]
 *_map_box_amd64.tar
+/windy-proxy/windy-proxy
 
 # Editor directories and files
 .vscode/*

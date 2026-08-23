@@ -1,4 +1,37 @@
-# React + TypeScript + Vite
+# Weather Pro
+
+React weather dashboard with a Python realtime-data service and a standalone
+Windy reverse proxy.
+
+## Windy proxy
+
+The browser loads Windy through the same-origin `/windy` route. The standalone
+proxy injects `WINDY_API_KEY` during authentication, rewrites Windy's SDK and
+runtime resource URLs, streams binary tiles, and rejects non-allowlisted
+upstream hosts.
+
+For local development, start the three processes separately:
+
+```bash
+(cd windy-proxy && WINDY_API_KEY=your-key \
+  WINDY_ALLOWED_APP_HOSTS=localhost,127.0.0.1 go run .)
+PORT=8182 .venv/bin/python server.py
+npm run dev -- --host 127.0.0.1
+```
+
+For container deployment, build the frontend first and then use Compose:
+
+```bash
+npm run build
+cp .env.example .env
+# Set the licensed Windy key and application hostnames in .env.
+docker compose up --build -d
+```
+
+The application is exposed on port `8080`. See
+[`windy-proxy/README.md`](windy-proxy/README.md) for proxy configuration.
+
+## Frontend development
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

@@ -11,6 +11,10 @@ export default defineConfig({
         secure: false,
         // rewrite: (path) => path.replace(/^\/we/, ''),
       },
+      '/windy': {
+        target: process.env.WINDY_PROXY_URL || 'http://127.0.0.1:3002',
+        changeOrigin: false,
+      },
     },
   },
   plugins: [react()],

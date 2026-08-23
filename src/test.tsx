@@ -50,8 +50,7 @@ export default function Test() {
       const windyWindow = window as WindyWindow;
       if (windyWindow.windyInit && windyWindow.L) {
         const options = {
-          // 使用项目中的 API key
-          key: "G4x76YUokVT2laj5u8iavAyjKFybnoCL", // 项目中的 Windy API key
+          key: "proxy-managed",
           verbose: true,
           lat: 50.4,
           lon: 14.3,

@@ -17,8 +17,8 @@ import { WeatherButtons } from "./weather-buttons";
 import { fetchRealTimeData, fetchTotalPowerData } from "../service";
 
 const options = {
-  key: "G4x76YUokVT2laj5u8iavAyjKFybnoCL",
-  // key:'MJt519IvahtrHKWpiqosIqp8j0NgvvA2',
+  // The proxy replaces this placeholder with WINDY_API_KEY during authentication.
+  key: "proxy-managed",
   verbose: true,
   lat: 34.4,
   lon: 113.5,
@@ -266,11 +266,6 @@ export function Windy(props: {
         //   })
         //   .addTo(map);
 
-        // leaflet
-        //   .tileLayer(
-        //     'https://tiles-s.windy.com/tiles/v10.0/darkmap/{z}/{x}/{y}.png',
-        //   )
-        //   .addTo(map);
         windyRef.current = windyAPI;
 
         // const imageUrl = './taiwan.png',
