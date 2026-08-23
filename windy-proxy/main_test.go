@@ -90,6 +90,28 @@ func TestUnknownUpstreamIsRejected(t *testing.T) {
 	}
 }
 
+func TestRootReturnsProxyHealth(t *testing.T) {
+	proxy := testProxyServer(t, "http://127.0.0.1:1")
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	response := httptest.NewRecorder()
+	proxy.routes().ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"keyConfigured":true`) {
+		t.Fatalf("unexpected root response: status=%d body=%s", response.Code, response.Body.String())
+	}
+}
+
+func TestUnknownRootPathReturnsNotFound(t *testing.T) {
+	proxy := testProxyServer(t, "http://127.0.0.1:1")
+	request := httptest.NewRequest(http.MethodGet, "/missing", nil)
+	response := httptest.NewRecorder()
+	proxy.routes().ServeHTTP(response, request)
+
+	if response.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d", response.Code)
+	}
+}
+
 func TestOpaqueSessionIsTranslatedForDataRequests(t *testing.T) {
 	receivedAPI := ""
 	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

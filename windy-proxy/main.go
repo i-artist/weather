@@ -173,7 +173,16 @@ func (p *proxyServer) routes() http.Handler {
 	mux.HandleFunc(p.prefix+"/health", p.handleHealth)
 	mux.HandleFunc(p.prefix+"/libBoot.js", p.handleLibBoot)
 	mux.HandleFunc(p.prefix+"/upstream/", p.handleProxy)
+	mux.HandleFunc("/", p.handleRoot)
 	return p.withRequestLog(mux)
+}
+
+func (p *proxyServer) handleRoot(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	p.handleHealth(w, r)
 }
 
 func (p *proxyServer) handleHealth(w http.ResponseWriter, _ *http.Request) {
