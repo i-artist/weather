@@ -2,12 +2,14 @@ SHELL := /bin/sh
 
 COMPOSE ?= docker compose
 ENV_FILE ?= .env
+IMAGE ?= weather-pro:latest
+PACKAGE_OUTPUT ?= dist/weather-pro-linux-amd64.tar
 COMPOSE_CMD = $(COMPOSE) --env-file $(ENV_FILE)
 PROXY_COMPOSE_CMD = $(COMPOSE_CMD) -f docker-compose.yml -f docker-compose.proxy.yml
 
 .DEFAULT_GOAL := help
 
-.PHONY: help init check-windy-env check-env check-proxy-env up build pull down restart logs ps health proxy-up proxy-down proxy-logs proxy-health
+.PHONY: help init check-windy-env check-env check-proxy-env up build pull down restart logs ps health package-amd64 proxy-up proxy-down proxy-logs proxy-health
 
 help:
 	@echo "make init     Create .env from .env.example"
@@ -18,6 +20,7 @@ help:
 	@echo "make logs     Follow service logs"
 	@echo "make ps       Show service status"
 	@echo "make health   Check the public HTTP endpoint"
+	@echo "make package-amd64 Build a linux/amd64 Docker image tar"
 	@echo "make proxy-up Start only the Windy proxy service"
 	@echo "make proxy-down Stop the Windy proxy service"
 	@echo "make proxy-logs Follow Windy proxy logs"
@@ -79,6 +82,9 @@ health: check-env
 		port="$${port:-8080}"; \
 		curl --fail --silent --show-error "http://127.0.0.1:$$port/" >/dev/null; \
 		echo "weather service is healthy on port $$port"
+
+package-amd64:
+	IMAGE="$(IMAGE)" OUTPUT="$(PACKAGE_OUTPUT)" ./scripts/package-amd64.sh
 
 proxy-up: check-proxy-env
 	-$(COMPOSE_CMD) stop weather

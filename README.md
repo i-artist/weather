@@ -39,11 +39,19 @@ For an intranet deployment, build the application image once and configure the
 external Windy proxy when the container starts:
 
 ```bash
-docker build -t weather-pro:latest .
+make package-amd64
+docker load -i dist/weather-pro-linux-amd64.tar
 docker run -d --name weather-pro --restart unless-stopped \
   -p 8080:80 \
   -e WINDY_PROXY_UPSTREAM=https://weather-proxy.theonly.vip:16666 \
   weather-pro:latest
+```
+
+`make package-amd64` always builds for `linux/amd64`, including when it runs on
+an ARM Mac. Override the image name or output file when needed:
+
+```bash
+make package-amd64 IMAGE=weather-pro:v1 PACKAGE_OUTPUT=release/weather-pro-v1.tar
 ```
 
 The browser continues to use same-origin `/windy/*` URLs. Nginx inside the
