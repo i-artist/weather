@@ -19,9 +19,8 @@ COPY index.html vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.jso
 COPY public/ ./public/
 COPY src/ ./src/
 
-ARG VITE_MAPTILER_API_KEY=""
-ENV VITE_MAPTILER_API_KEY=${VITE_MAPTILER_API_KEY}
-RUN npm run build
+ARG MAPTILER_PUBLIC_VALUE=""
+RUN VITE_MAPTILER_API_KEY="$MAPTILER_PUBLIC_VALUE" npm run build
 
 FROM ${NGINX_IMAGE}
 

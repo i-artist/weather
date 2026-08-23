@@ -3,7 +3,7 @@ services:
     build:
       context: .
       args:
-        VITE_MAPTILER_API_KEY: ${VITE_MAPTILER_API_KEY:-}
+        MAPTILER_PUBLIC_VALUE: ${VITE_MAPTILER_API_KEY:-}
         NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmmirror.com}
         ALPINE_MIRROR: ${ALPINE_MIRROR:-https://mirrors.aliyun.com/alpine}
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}

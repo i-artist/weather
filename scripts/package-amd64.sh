@@ -47,7 +47,7 @@ set -- "$docker_cli" buildx build \
     --build-arg "NGINX_IMAGE=$nginx_image"
 
 if [ -n "${VITE_MAPTILER_API_KEY:-}" ]; then
-    set -- "$@" --build-arg "VITE_MAPTILER_API_KEY=$VITE_MAPTILER_API_KEY"
+    set -- "$@" --build-arg "MAPTILER_PUBLIC_VALUE=$VITE_MAPTILER_API_KEY"
 fi
 if [ -n "${NPM_REGISTRY:-}" ]; then
     set -- "$@" --build-arg "NPM_REGISTRY=$NPM_REGISTRY"
