@@ -24,8 +24,7 @@ FROM nginx:alpine
 
 ARG ALPINE_MIRROR="https://mirrors.aliyun.com/alpine"
 ARG PIP_INDEX_URL="https://mirrors.aliyun.com/pypi/simple"
-ENV WINDY_PROXY_UPSTREAM="http://windy-proxy:3002" \
-    NGINX_ENVSUBST_FILTER="^WINDY_PROXY_UPSTREAM$"
+ENV WINDY_PROXY_UPSTREAM="http://windy-proxy:3002"
 RUN sed -i "s#https://dl-cdn.alpinelinux.org/alpine#${ALPINE_MIRROR%/}#g" /etc/apk/repositories \
     && apk add --no-cache python3 py3-pip supervisor \
     && python3 -m venv /opt/venv \
@@ -37,14 +36,15 @@ RUN /opt/venv/bin/pip install --no-cache-dir --index-url "${PIP_INDEX_URL}" -r /
 COPY server.py /app/server.py
 COPY --from=frontend-build /app/dist/ /usr/share/nginx/html/
 COPY nginx.conf /etc/nginx/templates/default.conf.template
-COPY docker/19-validate-windy-proxy-upstream.sh /docker-entrypoint.d/19-validate-windy-proxy-upstream.sh
+COPY docker/start-weather.sh /usr/local/bin/start-weather
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN chmod +x /docker-entrypoint.d/19-validate-windy-proxy-upstream.sh
+RUN chmod +x /usr/local/bin/start-weather
 
 EXPOSE 80
 
 HEALTHCHECK --interval=15s --timeout=3s --retries=5 \
     CMD wget -q -O - http://127.0.0.1/ >/dev/null || exit 1
 
+ENTRYPOINT ["/usr/local/bin/start-weather"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
