@@ -114,22 +114,21 @@ func TestUnknownUpstreamIsRejected(t *testing.T) {
 	}
 }
 
-func TestRootDefaultsToWindyAPI(t *testing.T) {
-	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			t.Fatalf("unexpected upstream path: %s", r.URL.Path)
-		}
-		_, _ = io.WriteString(w, "windy-api")
-	}))
-	defer upstreamServer.Close()
-
-	proxy := testProxyServer(t, upstreamServer.URL)
+func TestRootReturnsProxyServiceInfo(t *testing.T) {
+	proxy := testProxyServer(t, "http://127.0.0.1:1")
 	request := httptest.NewRequest(http.MethodGet, "/", nil)
 	response := httptest.NewRecorder()
 	proxy.routes().ServeHTTP(response, request)
 
-	if response.Code != http.StatusOK || response.Body.String() != "windy-api" {
-		t.Fatalf("unexpected API response: status=%d body=%s", response.Code, response.Body.String())
+	if response.Code != http.StatusOK {
+		t.Fatalf("unexpected status: %d", response.Code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
+		t.Fatal(err)
+	}
+	if payload["service"] != "Windy API Proxy" || payload["apiBase"] != "/" || payload["health"] != "/windy/health" {
+		t.Fatalf("unexpected service info: %#v", payload)
 	}
 }
 

@@ -43,7 +43,8 @@ make proxy-health
 ```
 
 The proxy listens on `WINDY_PROXY_PORT` (port `8024` by default) and exposes
-unprefixed routes as direct Windy API forwards. It also exposes
+its own service information at `/`, with other unprefixed routes forwarded
+directly to the Windy API. It also exposes
 `/windy/libBoot.js`, `/windy/upstream/*`, and `/windy/health` for SDK traffic
 and health checks.
 

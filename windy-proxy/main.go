@@ -178,11 +178,29 @@ func (p *proxyServer) routes() http.Handler {
 }
 
 func (p *proxyServer) handleRoot(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/" {
+		p.handleServiceInfo(w)
+		return
+	}
 	if r.URL.Path == p.prefix || strings.HasPrefix(r.URL.Path, p.prefix+"/") {
 		http.NotFound(w, r)
 		return
 	}
 	p.proxy(w, r, p.upstreams["api"], r.URL.Path)
+}
+
+func (p *proxyServer) handleServiceInfo(w http.ResponseWriter) {
+	status := http.StatusOK
+	if p.apiKey == "" {
+		status = http.StatusServiceUnavailable
+	}
+	writeJSON(w, status, map[string]any{
+		"service":       "Windy API Proxy",
+		"status":        "ok",
+		"keyConfigured": p.apiKey != "",
+		"apiBase":       "/",
+		"health":        p.prefix + "/health",
+	})
 }
 
 func (p *proxyServer) handleHealth(w http.ResponseWriter, _ *http.Request) {
