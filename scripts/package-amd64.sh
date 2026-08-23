@@ -61,6 +61,7 @@ if command -v sha256sum >/dev/null 2>&1; then
 else
     (cd "$output_dir" && shasum -a 256 "$output_name" > "$output_name.sha256")
 fi
+chmod 0644 "$output" "$output.sha256"
 
 echo "Created linux/amd64 image: $output"
 echo "Checksum: $output.sha256"
