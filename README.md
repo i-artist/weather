@@ -35,6 +35,16 @@ exposed on `WEATHER_PORT` (port `8080` by default). Use `make logs`, `make ps`,
 The default npm, Alpine, and PyPI registries use mirrors reachable from mainland
 China and can be overridden in `.env` when required.
 
+To run only the standalone Windy proxy without the dashboard or Python API:
+
+```bash
+make proxy-up
+make proxy-health
+```
+
+The proxy listens on `WINDY_PROXY_PORT` (port `8024` by default) and exposes
+`/windy/libBoot.js`, `/windy/upstream/*`, and `/windy/health`.
+
 ## Frontend development
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

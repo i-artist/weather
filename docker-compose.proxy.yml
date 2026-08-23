@@ -1,0 +1,4 @@
+services:
+  windy-proxy:
+    ports:
+      - "${WINDY_PROXY_PORT:-8024}:3002"
