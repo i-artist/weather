@@ -158,6 +158,19 @@ func TestRewriteUsesForwardedPublicOrigin(t *testing.T) {
 	}
 }
 
+func TestRewritePreservesForwardedPublicPort(t *testing.T) {
+	proxy := testProxyServer(t, "http://127.0.0.1:1")
+	request := httptest.NewRequest(http.MethodGet, "/windy/libBoot.js", nil)
+	request.Header.Set("X-Forwarded-Proto", "https")
+	request.Header.Set("X-Forwarded-Host", "weather-proxy.theonly.vip:16666")
+
+	rewritten := proxy.rewrite(request, "https://node.windy.com/node/connection")
+	expected := "https://weather-proxy.theonly.vip:16666/windy/upstream/node/node/connection"
+	if rewritten != expected {
+		t.Fatalf("expected %q, got %q", expected, rewritten)
+	}
+}
+
 func TestAuthRejectsUnapprovedApplicationHost(t *testing.T) {
 	proxy := testProxyServer(t, "http://127.0.0.1:1")
 	request := httptest.NewRequest(http.MethodPost, "/windy/upstream/api/api/map-forecast/v2/auth", strings.NewReader(`{"hostname":"not-allowed.example"}`))
