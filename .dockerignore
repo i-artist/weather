@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+!.env.example
+.venv
+dist
+node_modules
+windy-proxy/windy-proxy
+*.log
+.DS_Store

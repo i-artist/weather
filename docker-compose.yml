@@ -1,12 +1,20 @@
 services:
   weather:
-    build: .
+    build:
+      context: .
+      args:
+        VITE_MAPTILER_API_KEY: ${VITE_MAPTILER_API_KEY:-}
     ports:
-      - "8080:80"
+      - "${WEATHER_PORT:-8080}:80"
     depends_on:
       windy-proxy:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
 
   windy-proxy:
     build: ./windy-proxy

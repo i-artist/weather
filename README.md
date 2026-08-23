@@ -19,16 +19,18 @@ PORT=8182 .venv/bin/python server.py
 npm run dev -- --host 127.0.0.1
 ```
 
-For container deployment, build the frontend first and then use Compose:
+For production deployment, the Docker image builds the frontend internally. The
+host only needs Docker, Docker Compose, and Make:
 
 ```bash
-npm run build
-cp .env.example .env
-# Set the licensed Windy key and application hostnames in .env.
-docker compose up --build -d
+make init
+# Set WINDY_API_KEY and the licensed production hostname in .env.
+make up
 ```
 
-The application is exposed on port `8080`. See
+No host Node.js, Go, or Python installation is required. The application is
+exposed on `WEATHER_PORT` (port `8080` by default). Use `make logs`, `make ps`,
+`make health`, and `make down` for routine operations. See
 [`windy-proxy/README.md`](windy-proxy/README.md) for proxy configuration.
 
 ## Frontend development
