@@ -80,6 +80,30 @@ func TestAuthRequestInjectsServerKeyAndRewritesResponse(t *testing.T) {
 	}
 }
 
+func TestUnprefixedAuthRequestInjectsServerKey(t *testing.T) {
+	var received map[string]any
+	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := json.NewDecoder(r.Body).Decode(&received); err != nil {
+			t.Fatal(err)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `{"auth":"windy-jwt","key":"server-side-key"}`)
+	}))
+	defer upstreamServer.Close()
+
+	proxy := testProxyServer(t, upstreamServer.URL)
+	request := httptest.NewRequest(http.MethodPost, "/api/map-forecast/v2/auth", strings.NewReader(`{"hostname":"localhost"}`))
+	response := httptest.NewRecorder()
+	proxy.routes().ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK || received["key"] != "server-side-key" {
+		t.Fatalf("server key was not injected: status=%d payload=%#v", response.Code, received)
+	}
+	if strings.Contains(response.Body.String(), "server-side-key") || strings.Contains(response.Body.String(), "windy-jwt") {
+		t.Fatalf("Windy credentials leaked to browser: %s", response.Body.String())
+	}
+}
+
 func TestUnknownUpstreamIsRejected(t *testing.T) {
 	proxy := testProxyServer(t, "http://127.0.0.1:1")
 	request := httptest.NewRequest(http.MethodGet, "/windy/upstream/example.com/path", nil)
@@ -90,17 +114,22 @@ func TestUnknownUpstreamIsRejected(t *testing.T) {
 	}
 }
 
-func TestRootRedirectsToProxiedWindy(t *testing.T) {
-	proxy := testProxyServer(t, "http://127.0.0.1:1")
+func TestRootDefaultsToWindyAPI(t *testing.T) {
+	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			t.Fatalf("unexpected upstream path: %s", r.URL.Path)
+		}
+		_, _ = io.WriteString(w, "windy-api")
+	}))
+	defer upstreamServer.Close()
+
+	proxy := testProxyServer(t, upstreamServer.URL)
 	request := httptest.NewRequest(http.MethodGet, "/", nil)
 	response := httptest.NewRecorder()
 	proxy.routes().ServeHTTP(response, request)
 
-	if response.Code != http.StatusFound {
-		t.Fatalf("expected redirect, got %d", response.Code)
-	}
-	if location := response.Header().Get("Location"); location != "/windy/upstream/www/" {
-		t.Fatalf("unexpected redirect location: %q", location)
+	if response.Code != http.StatusOK || response.Body.String() != "windy-api" {
+		t.Fatalf("unexpected API response: status=%d body=%s", response.Code, response.Body.String())
 	}
 }
 
@@ -115,28 +144,22 @@ func TestUnknownWindyPathReturnsNotFound(t *testing.T) {
 	}
 }
 
-func TestRootAssetPathIsProxiedToWindyWebsite(t *testing.T) {
+func TestUnprefixedPathIsProxiedToWindyAPI(t *testing.T) {
 	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/v/app.js" {
+		if r.URL.Path != "/forecast/tiles" {
 			t.Fatalf("unexpected upstream path: %s", r.URL.Path)
 		}
-		_, _ = io.WriteString(w, "windy-asset")
+		_, _ = io.WriteString(w, "forecast-data")
 	}))
 	defer upstreamServer.Close()
 
-	proxy := testProxyServer(t, "http://127.0.0.1:1")
-	base, err := url.Parse(upstreamServer.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	proxy.upstreams["www"] = upstream{alias: "www", origin: upstreamServer.URL, base: base}
-
-	request := httptest.NewRequest(http.MethodGet, "/v/app.js", nil)
+	proxy := testProxyServer(t, upstreamServer.URL)
+	request := httptest.NewRequest(http.MethodGet, "/forecast/tiles", nil)
 	response := httptest.NewRecorder()
 	proxy.routes().ServeHTTP(response, request)
 
-	if response.Code != http.StatusOK || response.Body.String() != "windy-asset" {
-		t.Fatalf("unexpected asset response: status=%d body=%s", response.Code, response.Body.String())
+	if response.Code != http.StatusOK || response.Body.String() != "forecast-data" {
+		t.Fatalf("unexpected API response: status=%d body=%s", response.Code, response.Body.String())
 	}
 }
 
