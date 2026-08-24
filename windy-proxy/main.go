@@ -625,7 +625,7 @@ func copyRequestHeaders(destination, source http.Header) {
 
 func copyResponseHeaders(destination, source http.Header) {
 	for name, values := range source {
-		if isHopByHopHeader(name) {
+		if isHopByHopHeader(name) || isCORSHeader(name) {
 			continue
 		}
 		for _, value := range values {
@@ -664,6 +664,10 @@ func isHopByHopHeader(name string) bool {
 	default:
 		return false
 	}
+}
+
+func isCORSHeader(name string) bool {
+	return strings.HasPrefix(strings.ToLower(name), "access-control-")
 }
 
 func parseAllowedHosts(value string) map[string]struct{} {

@@ -291,6 +291,30 @@ func TestCORSPreflightRejectsUnapprovedOrigin(t *testing.T) {
 	}
 }
 
+func TestProxyCORSHeadersOverrideUpstreamCORSHeaders(t *testing.T) {
+	upstreamServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `{"ok":true}`)
+	}))
+	defer upstreamServer.Close()
+
+	proxy := testProxyServer(t, upstreamServer.URL)
+	request := httptest.NewRequest(http.MethodGet, "/windy/upstream/api/status", nil)
+	request.Header.Set("Origin", "https://localhost")
+	response := httptest.NewRecorder()
+
+	proxy.routes().ServeHTTP(response, request)
+
+	if origins := response.Header().Values("Access-Control-Allow-Origin"); len(origins) != 1 || origins[0] != "https://localhost" {
+		t.Fatalf("unexpected CORS origins: %#v", origins)
+	}
+	if credentials := response.Header().Values("Access-Control-Allow-Credentials"); len(credentials) != 1 || credentials[0] != "true" {
+		t.Fatalf("unexpected CORS credentials: %#v", credentials)
+	}
+}
+
 func TestUnsafeForwardedHostIsIgnored(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/windy/libBoot.js", nil)
 	request.Host = "weather.example.com"
