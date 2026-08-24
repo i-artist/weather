@@ -2,12 +2,21 @@ services:
   weather:
     image: ${WEATHER_IMAGE:-weather-pro:latest}
     ports:
-      - "${WEATHER_PORT:-8080}:80"
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${TEST_PORT:-8890}:8890"
     environment:
       WINDY_PROXY_UPSTREAM: ${WINDY_PROXY_UPSTREAM:?WINDY_PROXY_UPSTREAM is required}
+      WINDY_BOOT_URL: ${WINDY_BOOT_URL:-}
+    volumes:
+      - ./nginx.intranet.conf:/etc/nginx/templates/default.conf.template:ro
+      - ./server.py:/app/server.py:ro
+      - ./certs:/etc/nginx/certs:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8890/"]
       interval: 15s
       timeout: 3s
       retries: 5

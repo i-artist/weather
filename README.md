@@ -41,15 +41,18 @@ external Windy proxy when the container starts:
 ```bash
 make package-intranet
 mkdir -p dist/intranet
-tar -xzf dist/weather-pro-intranet-linux-amd64.tar.gz -C dist/intranet
+tar -xzf dist/weather-pro-intranet-linux-amd64-YYYYMMDD-HHMMSS.tar.gz -C dist/intranet
 cd dist/intranet
-docker load -i weather-pro-linux-amd64.tar
+docker load -i weather-pro-linux-amd64-YYYYMMDD-HHMMSS.tar
 cp .env.intranet.example .env
+# Put sh-newenergy.com_bundle.crt and sh-newenergy.com.key in ./certs first.
 docker compose --env-file .env -f docker-compose.intranet.yml up -d
 ```
 
 `make package-amd64` always builds for `linux/amd64`, including when it runs on
-an ARM Mac. Override the image name or output file when needed:
+an ARM Mac. By default, one timestamp is used in the image tag and both package
+filenames, for example `weather-pro:latest-20260824-143000`. Override the image
+name or output file when needed:
 
 ```bash
 make package-amd64 IMAGE=weather-pro:v1 PACKAGE_OUTPUT=release/weather-pro-v1.tar
@@ -57,10 +60,11 @@ make package-amd64 IMAGE=weather-pro:v1 PACKAGE_OUTPUT=release/weather-pro-v1.ta
 
 The packaging script uses Docker image mirrors by default. Override them with
 `NODE_IMAGE` and `NGINX_IMAGE` when the build environment has its own registry.
-It also copies `docker-compose.intranet.yml` and `.env.intranet.example` into
-the output directory so the intranet deployment does not need the source tree.
-`make package-intranet` wraps all four deployment files into one archive for
-transfer into the intranet.
+It also copies `docker-compose.intranet.yml`, `.env.intranet.example`, the
+mounted Nginx configuration, and `server.py` into the output directory so the
+intranet deployment does not need the source tree. `make package-intranet`
+wraps the deployment into one archive for transfer into the intranet. The
+existing `./certs` directory is mounted at runtime and is never packaged.
 
 The browser continues to use same-origin `/windy/*` URLs. Nginx inside the
 container forwards those requests to `WINDY_PROXY_UPSTREAM`, so the intranet

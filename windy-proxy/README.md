@@ -9,7 +9,9 @@ session and translates it back only when forwarding data and refresh requests.
 ## Configuration
 
 - `WINDY_API_KEY` (required): injected into Windy's authentication request.
-- `WINDY_ALLOWED_APP_HOSTS` (recommended): comma-separated application
+- `WINDY_AUTH_HOSTNAME` (recommended for a public proxy): hostname sent to
+  Windy during authentication instead of the browser application's hostname.
+- `WINDY_ALLOWED_APP_HOSTS` (optional): comma-separated application
   hostnames accepted during Windy authentication. Leave empty to allow any app
   hostname.
 - `WINDY_PROXY_ADDR`: listen address, defaults to `:3002`.

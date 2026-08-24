@@ -24,6 +24,7 @@ func testProxyServer(t *testing.T, upstreamURL string) *proxyServer {
 	return &proxyServer{
 		prefix:          "/windy",
 		apiKey:          "server-side-key",
+		authHostname:    "proxy.example",
 		allowedAppHosts: map[string]struct{}{"localhost": {}},
 		upstreams:       targets,
 		client:          http.DefaultClient,
@@ -57,8 +58,8 @@ func TestAuthRequestInjectsServerKeyAndRewritesResponse(t *testing.T) {
 	if received["key"] != "server-side-key" {
 		t.Fatalf("server key was not injected: %#v", received)
 	}
-	if received["hostname"] != "localhost" {
-		t.Fatalf("hostname changed unexpectedly: %#v", received)
+	if received["hostname"] != "proxy.example" {
+		t.Fatalf("authentication hostname was not overridden: %#v", received)
 	}
 	if !strings.Contains(response.Body.String(), "http://example.com/windy/upstream/www/v/test.css") {
 		t.Fatalf("response URL was not rewritten: %s", response.Body.String())
@@ -250,6 +251,43 @@ func TestAuthRejectsUnapprovedApplicationHost(t *testing.T) {
 	proxy.routes().ServeHTTP(response, request)
 	if response.Code != http.StatusServiceUnavailable {
 		t.Fatalf("expected 503, got %d", response.Code)
+	}
+}
+
+func TestCORSPreflightIsHandledByProxy(t *testing.T) {
+	proxy := testProxyServer(t, "http://127.0.0.1:1")
+	request := httptest.NewRequest(http.MethodOptions, "/windy/upstream/api/api/map-forecast/v2/auth", nil)
+	request.Header.Set("Origin", "https://localhost")
+	request.Header.Set("Access-Control-Request-Method", "POST")
+	request.Header.Set("Access-Control-Request-Headers", "content-type")
+	response := httptest.NewRecorder()
+
+	proxy.routes().ServeHTTP(response, request)
+
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d: %s", response.Code, response.Body.String())
+	}
+	if response.Header().Get("Access-Control-Allow-Origin") != "https://localhost" {
+		t.Fatalf("CORS origin was not reflected: %#v", response.Header())
+	}
+	if response.Header().Get("Access-Control-Allow-Headers") != "content-type" {
+		t.Fatalf("CORS request headers were not reflected: %#v", response.Header())
+	}
+}
+
+func TestCORSPreflightRejectsUnapprovedOrigin(t *testing.T) {
+	proxy := testProxyServer(t, "http://127.0.0.1:1")
+	request := httptest.NewRequest(http.MethodOptions, "/windy/upstream/api/api/map-forecast/v2/auth", nil)
+	request.Header.Set("Origin", "https://not-allowed.example")
+	response := httptest.NewRecorder()
+
+	proxy.routes().ServeHTTP(response, request)
+
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d", response.Code)
+	}
+	if response.Header().Get("Access-Control-Allow-Origin") != "" {
+		t.Fatalf("unexpected CORS origin: %#v", response.Header())
 	}
 }
 

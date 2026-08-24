@@ -24,7 +24,9 @@ for required in \
     "$image_tar" \
     "$image_tar.sha256" \
     "$image_dir/docker-compose.intranet.yml" \
-    "$image_dir/.env.intranet.example"
+    "$image_dir/.env.intranet.example" \
+    "$image_dir/nginx.intranet.conf" \
+    "$image_dir/server.py"
 do
     if [ ! -f "$required" ]; then
         echo "Missing package file: $required" >&2
@@ -43,7 +45,9 @@ COPYFILE_DISABLE=1 tar --no-xattrs -czf "$temporary" -C "$image_dir" \
     "$image_name" \
     "$image_name.sha256" \
     docker-compose.intranet.yml \
-    .env.intranet.example
+    .env.intranet.example \
+    nginx.intranet.conf \
+    server.py
 
 mv "$temporary" "$bundle"
 trap - EXIT INT TERM

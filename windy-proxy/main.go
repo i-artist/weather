@@ -34,6 +34,7 @@ type upstream struct {
 type proxyServer struct {
 	prefix          string
 	apiKey          string
+	authHostname    string
 	allowedAppHosts map[string]struct{}
 	upstreams       map[string]upstream
 	client          *http.Client
@@ -90,6 +91,7 @@ func newProxyServer() (*proxyServer, error) {
 	return &proxyServer{
 		prefix:          prefix,
 		apiKey:          os.Getenv("WINDY_API_KEY"),
+		authHostname:    strings.TrimSpace(os.Getenv("WINDY_AUTH_HOSTNAME")),
 		allowedAppHosts: parseAllowedHosts(os.Getenv("WINDY_ALLOWED_APP_HOSTS")),
 		upstreams:       upstreams,
 		client: &http.Client{
@@ -174,7 +176,7 @@ func (p *proxyServer) routes() http.Handler {
 	mux.HandleFunc(p.prefix+"/libBoot.js", p.handleLibBoot)
 	mux.HandleFunc(p.prefix+"/upstream/", p.handleProxy)
 	mux.HandleFunc("/", p.handleRoot)
-	return p.withRequestLog(mux)
+	return p.withRequestLog(p.withCORS(mux))
 }
 
 func (p *proxyServer) handleRoot(w http.ResponseWriter, r *http.Request) {
@@ -187,6 +189,47 @@ func (p *proxyServer) handleRoot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	p.proxy(w, r, p.upstreams["api"], r.URL.Path)
+}
+
+func (p *proxyServer) withCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		p.setCORSHeaders(w.Header(), r)
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (p *proxyServer) setCORSHeaders(headers http.Header, request *http.Request) {
+	origin := strings.TrimSpace(request.Header.Get("Origin"))
+	if origin == "" || !p.isAllowedCORSOrigin(origin) {
+		return
+	}
+	headers.Set("Access-Control-Allow-Origin", origin)
+	headers.Set("Access-Control-Allow-Credentials", "true")
+	headers.Set("Access-Control-Allow-Methods", "GET, HEAD, POST, OPTIONS")
+	if requestedHeaders := strings.TrimSpace(request.Header.Get("Access-Control-Request-Headers")); requestedHeaders != "" {
+		headers.Set("Access-Control-Allow-Headers", requestedHeaders)
+	} else {
+		headers.Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type")
+	}
+	headers.Set("Access-Control-Max-Age", "600")
+	headers.Add("Vary", "Origin")
+}
+
+func (p *proxyServer) isAllowedCORSOrigin(origin string) bool {
+	parsed, err := url.Parse(origin)
+	if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.Host == "" || parsed.Path != "" {
+		return false
+	}
+	if len(p.allowedAppHosts) == 0 {
+		return isSafePublicHost(parsed.Host)
+	}
+	hostname := strings.ToLower(parsed.Hostname())
+	_, allowed := p.allowedAppHosts[hostname]
+	return allowed
 }
 
 func (p *proxyServer) handleServiceInfo(w http.ResponseWriter) {
@@ -353,6 +396,9 @@ func (p *proxyServer) injectAPIKey(request *http.Request) ([]byte, error) {
 		}
 	}
 	payload["key"] = p.apiKey
+	if p.authHostname != "" {
+		payload["hostname"] = p.authHostname
+	}
 	return json.Marshal(payload)
 }
 

@@ -2,9 +2,10 @@ SHELL := /bin/sh
 
 COMPOSE ?= docker compose
 ENV_FILE ?= .env
-IMAGE ?= weather-pro:latest
-PACKAGE_OUTPUT ?= dist/weather-pro-linux-amd64.tar
-BUNDLE_OUTPUT ?= dist/weather-pro-intranet-linux-amd64.tar.gz
+PACKAGE_VERSION := $(shell date +%Y%m%d-%H%M%S)
+IMAGE ?= weather-pro:latest-$(PACKAGE_VERSION)
+PACKAGE_OUTPUT ?= dist/weather-pro-linux-amd64-$(PACKAGE_VERSION).tar
+BUNDLE_OUTPUT ?= dist/weather-pro-intranet-linux-amd64-$(PACKAGE_VERSION).tar.gz
 COMPOSE_CMD = $(COMPOSE) --env-file $(ENV_FILE)
 PROXY_COMPOSE_CMD = $(COMPOSE_CMD) -f docker-compose.yml -f docker-compose.proxy.yml
 
@@ -21,8 +22,8 @@ help:
 	@echo "make logs     Follow service logs"
 	@echo "make ps       Show service status"
 	@echo "make health   Check the public HTTP endpoint"
-	@echo "make package-amd64 Build a linux/amd64 Docker image tar"
-	@echo "make package-intranet Build the complete intranet deployment bundle"
+	@echo "make package-amd64 Build a timestamped linux/amd64 Docker image tar"
+	@echo "make package-intranet Build a timestamped intranet deployment bundle"
 	@echo "make proxy-up Start only the Windy proxy service"
 	@echo "make proxy-down Stop the Windy proxy service"
 	@echo "make proxy-logs Follow Windy proxy logs"

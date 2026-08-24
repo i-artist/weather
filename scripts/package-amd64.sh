@@ -79,10 +79,16 @@ else
 fi
 chmod 0644 "$output" "$output.sha256"
 cp "$project_dir/docker-compose.intranet.yml" "$output_dir/docker-compose.intranet.yml"
-cp "$project_dir/.env.intranet.example" "$output_dir/.env.intranet.example"
+sed "s#^WEATHER_IMAGE=.*#WEATHER_IMAGE=$image#" \
+    "$project_dir/.env.intranet.example" > "$output_dir/.env.intranet.example"
+cp "$project_dir/nginx.intranet.conf" "$output_dir/nginx.intranet.conf"
+cp "$project_dir/server.py" "$output_dir/server.py"
 
 echo "Created linux/amd64 image: $output"
+echo "Image tag: $image"
 echo "Checksum: $output.sha256"
 echo "Compose file: $output_dir/docker-compose.intranet.yml"
+echo "Nginx config: $output_dir/nginx.intranet.conf"
+echo "Python API: $output_dir/server.py"
 echo "Environment template: $output_dir/.env.intranet.example"
 echo "Load it with: docker load -i $output"
