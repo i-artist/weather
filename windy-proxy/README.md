@@ -31,3 +31,31 @@ into `defaultUpstreams` are accepted.
 
 Opaque sessions are held in memory for 24 hours. Run one proxy replica, or use
 sticky routing if the service is scaled horizontally.
+
+## Failure email notifications
+
+Configure `ALERT_SMTP_HOST`, `ALERT_SMTP_PORT` (465 by default),
+`ALERT_SMTP_TLS` (`implicit` for SSL or `starttls` for STARTTLS),
+`ALERT_SMTP_USER`, `ALERT_SMTP_PASSWORD`, and `ALERT_MAIL_TO` (comma-separated).
+`ALERT_MAIL_FROM` defaults to the SMTP username. An empty SMTP host disables
+notifications; incomplete enabled configuration fails startup.
+
+Only failures send mail: upstream network/TLS/timeouts after existing retries,
+and HTTP 4xx/5xx except 404. Client cancellations do not notify. Healthy traffic
+and recovery never send email. No real email is sent by the test suite.
+Notifications run asynchronously with a bounded queue and SMTP deadlines.
+The same upstream/error is limited to one notification per
+`ALERT_COOLDOWN_SECONDS` (default 600); failed mail attempts are logged and use
+the same cooldown. Credentials, response bodies and URL query tokens are not
+included in emails. Throttling state resets when the proxy restarts.
+
+These alerts require incoming proxy requests; they are not a periodic probe.
+They cannot detect an unreachable/stopped proxy itself or an intranet client
+that cannot connect to the proxy. SMTP access is also required.
+
+Keep SMTP credentials in a private environment file, never source control.
+With Compose, pass it after the main environment file, for example:
+`docker compose --env-file .env --env-file .env.alerts -f docker-compose.yml -f docker-compose.proxy.yml up -d --build windy-proxy`.
+For systemd, add the variables to the service's existing EnvironmentFile and
+restart after installing the rebuilt binary. This feature belongs on the
+external proxy, not the intranet dashboard container.

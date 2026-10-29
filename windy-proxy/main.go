@@ -41,6 +41,7 @@ type proxyServer struct {
 	maxTextBody     int64
 	sessions        map[string]tokenSession
 	sessionMu       sync.RWMutex
+	alerts          *mailAlerts
 }
 
 type tokenSession struct {
@@ -87,6 +88,10 @@ func newProxyServer() (*proxyServer, error) {
 		}
 		maxTextBody = megabytes << 20
 	}
+	alerts, err := newMailAlerts()
+	if err != nil {
+		return nil, err
+	}
 
 	return &proxyServer{
 		prefix:          prefix,
@@ -114,6 +119,7 @@ func newProxyServer() (*proxyServer, error) {
 		},
 		maxTextBody: maxTextBody,
 		sessions:    make(map[string]tokenSession),
+		alerts:      alerts,
 	}, nil
 }
 
@@ -327,10 +333,17 @@ func (p *proxyServer) proxy(w http.ResponseWriter, incoming *http.Request, targe
 	response, err := p.doUpstream(request)
 	if err != nil {
 		log.Printf("upstream request failed alias=%s path=%s error=%v", target.alias, path, err)
+		if incoming.Context().Err() == nil {
+			// Do not include errors/URLs containing Windy tokens in email.
+			p.alerts.report(target.alias, "network", "上游连接、TLS 或响应超时；详细原因请查看代理日志")
+		}
 		writeJSON(w, http.StatusBadGateway, map[string]string{"error": "Windy upstream is unavailable"})
 		return
 	}
 	defer response.Body.Close()
+	if response.StatusCode >= 400 && response.StatusCode != http.StatusNotFound {
+		p.alerts.report(target.alias, strconv.Itoa(response.StatusCode), "上游返回 HTTP "+strconv.Itoa(response.StatusCode))
+	}
 
 	copyResponseHeaders(w.Header(), response.Header)
 	if location := response.Header.Get("Location"); location != "" {
