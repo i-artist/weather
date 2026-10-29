@@ -46,7 +46,7 @@ Configure `ALERT_SMTP_HOST`, `ALERT_SMTP_PORT` (465 by default),
 `ALERT_MAIL_FROM` defaults to the SMTP username. An empty SMTP host disables
 notifications; incomplete enabled configuration fails startup.
 
-The proxy actively downloads Windy's boot script once at startup and every hour, following
+The proxy actively downloads Windy's boot script once at startup and every 20 minutes (three times per hour), following
 allowlisted redirects with a 15-second timeout. It checks HTTP 200, JavaScript
 content type, minimum size, and the `windyInit` marker. Three consecutive failed
 probes trigger a notification; a successful probe resets the failure counter.
