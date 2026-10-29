@@ -34,6 +34,12 @@ sticky routing if the service is scaled horizontally.
 
 ## Failure email notifications
 
+Set `ALERT_FEISHU_WEBHOOK` to use a Feishu custom robot instead of email.
+When set, Feishu takes precedence over SMTP. The same failure-only and cooldown
+rules apply. Keep the webhook in a private `.env`, not an example or Git.
+HTTP success and the Feishu result code are both checked. No recovery or
+healthy-state messages are sent. Signed robots are not currently supported.
+
 Configure `ALERT_SMTP_HOST`, `ALERT_SMTP_PORT` (465 by default),
 `ALERT_SMTP_TLS` (`implicit` for SSL or `starttls` for STARTTLS),
 `ALERT_SMTP_USER`, `ALERT_SMTP_PASSWORD`, and `ALERT_MAIL_TO` (comma-separated).

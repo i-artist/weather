@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -78,6 +79,7 @@ func TestNetworkFailureAndCanceledRequest(t *testing.T) {
 }
 
 func TestMailConfiguration(t *testing.T) {
+	t.Setenv("ALERT_FEISHU_WEBHOOK", "")
 	t.Setenv("ALERT_SMTP_HOST", "")
 	a, err := newMailAlerts()
 	if err != nil || a != nil {
@@ -87,5 +89,33 @@ func TestMailConfiguration(t *testing.T) {
 	t.Setenv("ALERT_SMTP_USER", "")
 	if _, err := newMailAlerts(); err == nil {
 		t.Fatal("incomplete SMTP config accepted")
+	}
+}
+
+func TestFeishuResponseAndPayload(t *testing.T) {
+	for _, body := range []string{`{"code":0}`, `{"StatusCode":0}`, `{"code":19024}`, `{}`, `bad json`} {
+		t.Run(body, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				var payload struct {
+					MsgType string `json:"msg_type"`
+					Content struct {
+						Text string `json:"text"`
+					} `json:"content"`
+				}
+				if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+					t.Error(err)
+				}
+				if payload.MsgType != "text" || !strings.Contains(payload.Content.Text, "故障测试") {
+					t.Error("wrong payload")
+				}
+				w.Write([]byte(body))
+			}))
+			defer server.Close()
+			err := sendFeishuAlert(server.Client(), server.URL, "故障测试")
+			wantOK := body == `{"code":0}` || body == `{"StatusCode":0}`
+			if (err == nil) != wantOK {
+				t.Fatalf("unexpected result: %v", err)
+			}
+		})
 	}
 }

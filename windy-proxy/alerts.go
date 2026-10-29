@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"log"
 	"mime"
 	"net"
+	"net/http"
 	"net/mail"
 	"net/smtp"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -25,6 +29,21 @@ type mailAlerts struct {
 }
 
 func newMailAlerts() (*mailAlerts, error) {
+	if webhook := os.Getenv("ALERT_FEISHU_WEBHOOK"); webhook != "" {
+		u, err := url.Parse(webhook)
+		if err != nil || u.Scheme != "https" || u.Host != "open.feishu.cn" || !strings.HasPrefix(u.Path, "/open-apis/bot/v2/hook/") || u.User != nil || u.RawQuery != "" {
+			return nil, fmt.Errorf("invalid ALERT_FEISHU_WEBHOOK")
+		}
+		seconds, err := strconv.Atoi(envOrDefault("ALERT_COOLDOWN_SECONDS", "600"))
+		if err != nil || seconds < 1 {
+			return nil, fmt.Errorf("ALERT_COOLDOWN_SECONDS must be positive")
+		}
+		a := &mailAlerts{last: make(map[string]time.Time), cooldown: time.Duration(seconds) * time.Second, queue: make(chan string, 16)}
+		client := &http.Client{Timeout: 15 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+		a.send = func(body string) error { return sendFeishuAlert(client, webhook, body) }
+		a.start()
+		return a, nil
+	}
 	host := os.Getenv("ALERT_SMTP_HOST")
 	if host == "" {
 		return nil, nil
@@ -62,14 +81,48 @@ func newMailAlerts() (*mailAlerts, error) {
 	a.send = func(body string) error {
 		return sendAlertMail(host, port, mode, user, password, from.Address, to, body)
 	}
+	a.start()
+	return a, nil
+}
+
+func (a *mailAlerts) start() {
 	go func() {
 		for body := range a.queue {
 			if err := a.send(body); err != nil {
-				log.Printf("alert email delivery failed: %v", err)
+				// HTTP client errors may contain the private webhook URL.
+				log.Print("alert notification delivery failed; check notification network and configuration")
 			}
 		}
 	}()
-	return a, nil
+}
+
+func sendFeishuAlert(client *http.Client, webhook, body string) error {
+	payload, err := json.Marshal(map[string]any{"msg_type": "text", "content": map[string]string{"text": "【天气大屏告警】\n" + body}})
+	if err != nil {
+		return err
+	}
+	response, err := client.Post(webhook, "application/json", bytes.NewReader(payload))
+	if err != nil {
+		return fmt.Errorf("Feishu request failed")
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("Feishu HTTP %d", response.StatusCode)
+	}
+	var result struct {
+		Code       *int `json:"code"`
+		StatusCode *int `json:"StatusCode"`
+	}
+	if err := json.NewDecoder(response.Body).Decode(&result); err != nil {
+		return fmt.Errorf("invalid Feishu response")
+	}
+	if result.Code == nil && result.StatusCode == nil {
+		return fmt.Errorf("missing Feishu result code")
+	}
+	if result.Code != nil && *result.Code != 0 || result.StatusCode != nil && *result.StatusCode != 0 {
+		return fmt.Errorf("Feishu rejected notification")
+	}
+	return nil
 }
 
 func (a *mailAlerts) report(alias, kind, detail string) {
@@ -89,7 +142,7 @@ func (a *mailAlerts) report(alias, kind, detail string) {
 	case a.queue <- body:
 		a.last[key] = now
 	default:
-		log.Print("alert email queue full; skipping notification")
+		log.Print("alert notification queue full; skipping notification")
 	}
 }
 
