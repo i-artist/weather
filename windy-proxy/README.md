@@ -32,7 +32,7 @@ into `defaultUpstreams` are accepted.
 Opaque sessions are held in memory for 24 hours. Run one proxy replica, or use
 sticky routing if the service is scaled horizontally.
 
-## Failure email notifications
+## Windy connectivity notifications
 
 Set `ALERT_FEISHU_WEBHOOK` to use a Feishu custom robot instead of email.
 When set, Feishu takes precedence over SMTP. The same failure-only and cooldown
@@ -46,18 +46,25 @@ Configure `ALERT_SMTP_HOST`, `ALERT_SMTP_PORT` (465 by default),
 `ALERT_MAIL_FROM` defaults to the SMTP username. An empty SMTP host disables
 notifications; incomplete enabled configuration fails startup.
 
-Only failures send mail: upstream network/TLS/timeouts after existing retries,
-and HTTP 4xx/5xx except 404. Client cancellations do not notify. Healthy traffic
-and recovery never send email. No real email is sent by the test suite.
+The proxy actively downloads Windy's boot script every 30 seconds, following
+allowlisted redirects with a 15-second timeout. It checks HTTP 200, JavaScript
+content type, minimum size, and the `windyInit` marker. Three consecutive failed
+probes trigger a notification; a successful probe resets the failure counter.
+Business request failures (including refresh EOF, HTTP errors and canceled
+requests) never trigger notifications. Healthy probes and recovery send no
+messages. Tests use local servers and never send real notifications.
 Notifications run asynchronously with a bounded queue and SMTP deadlines.
 The same upstream/error is limited to one notification per
 `ALERT_COOLDOWN_SECONDS` (default 600); failed mail attempts are logged and use
 the same cooldown. Credentials, response bodies and URL query tokens are not
 included in emails. Throttling state resets when the proxy restarts.
 
-These alerts require incoming proxy requests; they are not a periodic probe.
-They cannot detect an unreachable/stopped proxy itself or an intranet client
-that cannot connect to the proxy. SMTP access is also required.
+Probes run independently of browser traffic when a notification channel is
+configured. They verify connectivity from the proxy to `api.windy.com` and the
+script's redirect destination (normally `www.windy.com`); they do not validate
+API-key authentication or every forecast/tile endpoint. They cannot detect a
+stopped proxy itself or an intranet client unable to connect to the proxy.
+The configured notification service must also be reachable.
 
 Keep SMTP credentials in a private environment file, never source control.
 With Compose, pass it after the main environment file, for example:

@@ -4,6 +4,7 @@ WORKDIR /src
 COPY go.mod ./
 COPY main.go ./
 COPY alerts.go ./
+COPY monitor.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/windy-proxy .
 
 FROM alpine:3.21

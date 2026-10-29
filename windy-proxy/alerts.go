@@ -137,7 +137,7 @@ func (a *mailAlerts) report(alias, kind, detail string) {
 		return
 	}
 	hostname, _ := os.Hostname()
-	body := fmt.Sprintf("Windy 代理请求异常\r\n服务器：%s\r\n上游：%s\r\n原因：%s\r\n时间：%s\r\n请检查代理日志和上游网络。\r\n", hostname, alias, detail, now.UTC().Format(time.RFC3339))
+	body := fmt.Sprintf("Windy 连通性检查异常\r\n服务器：%s\r\n上游：%s\r\n原因：%s\r\n时间：%s\r\n请检查代理日志和上游网络。\r\n", hostname, alias, detail, now.UTC().Format(time.RFC3339))
 	select {
 	case a.queue <- body:
 		a.last[key] = now
