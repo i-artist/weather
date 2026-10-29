@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const monitorInterval = 30 * time.Second
+const monitorInterval = time.Hour
 
 type connectivityMonitor struct {
 	failures int
@@ -30,7 +30,7 @@ func (m *connectivityMonitor) observe(err error) {
 	m.failures++
 	log.Printf("Windy connectivity probe failed consecutive=%d reason=%v", m.failures, err)
 	if m.failures >= 3 {
-		m.alerts.report("api/www", "connectivity", "Windy 主动连通性检查连续至少 3 次失败（每 30 秒检查一次），启动脚本无法正常加载；请检查代理到 Windy 的网络。")
+		m.alerts.report("api/www", "connectivity", "Windy 主动连通性检查连续至少 3 次失败（每小时检查一次），启动脚本无法正常加载；请检查代理到 Windy 的网络。")
 	}
 }
 
@@ -43,7 +43,7 @@ func (p *proxyServer) monitorWindy() {
 	m := &connectivityMonitor{alerts: p.alerts}
 	ticker := time.NewTicker(monitorInterval)
 	defer ticker.Stop()
-	log.Print("Windy connectivity monitor enabled: interval=30s threshold=3; business request errors do not alert")
+	log.Print("Windy connectivity monitor enabled: interval=1h threshold=3; business request errors do not alert")
 	for {
 		m.observe(probeWindy(context.Background(), client, endpoint))
 		<-ticker.C
