@@ -8,6 +8,17 @@ services:
     environment:
       WINDY_PROXY_UPSTREAM: ${WINDY_PROXY_UPSTREAM:?WINDY_PROXY_UPSTREAM is required}
       WINDY_BOOT_URL: ${WINDY_BOOT_URL:-}
+      SSO_ENABLED: ${SSO_ENABLED:-yes}
+      SHENNER_BASE_URL: ${SHENNER_BASE_URL:-https://fgcapi.shenergy.net.cn}
+      SHENNER_FGCAPI_HOST: ${SHENNER_FGCAPI_HOST:-https://fgcapi.shenergy.net.cn}
+      SHENNER_FGCAM_HOST: ${SHENNER_FGCAM_HOST:-https://fgcam.shenergy.net.cn}
+      SHENNER_USERNAME: ${SHENNER_USERNAME:-}
+      SHENNER_IOA_SECRET: ${SHENNER_IOA_SECRET:-}
+      SHENNER_JWT_SECRET: ${SHENNER_JWT_SECRET:-}
+      SHENNER_FGCAM_COOKIE: ${SHENNER_FGCAM_COOKIE:-}
+      SSO_TIMEOUT_SECONDS: ${SSO_TIMEOUT_SECONDS:-10}
+      AUTH_SECRET_KEY: ${AUTH_SECRET_KEY:-}
+      AUTH_SESSION_HOURS: ${AUTH_SESSION_HOURS:-8}
     volumes:
       - ./nginx.intranet.conf:/etc/nginx/templates/default.conf.template:ro
       - ./server.py:/app/server.py:ro

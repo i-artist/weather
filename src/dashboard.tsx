@@ -4,7 +4,9 @@ import type { EChartsOption, SeriesOption } from "echarts";
 import * as echarts from "echarts";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import centerBg from "./assets/center.svg";
+import type { AuthUser } from "./auth";
 import WeatherMap from "./components/map";
+import UserMenu from "./components/user-menu";
 import { Windy } from "./components/windy";
 
 const THEMES = {
@@ -219,7 +221,12 @@ const createLineOption = (
   return option;
 };
 
-export default function Dashboard() {
+interface DashboardProps {
+  user: AuthUser | null;
+  onLogout: () => Promise<void> | void;
+}
+
+export default function Dashboard({ user, onLogout }: DashboardProps) {
   const [themeKey, setThemeKey] = useState<"mid" | "light" | "sky" | "dark">(
     "dark"
   );
@@ -312,7 +319,7 @@ export default function Dashboard() {
         <div
           style={{
             position: true ? "absolute" : "relative",
-            zIndex: true ? 1 : "auto",
+            zIndex: true ? 1000 : "auto",
             width: true ? "99%" : "auto",
             flex: "0 0 70px",
             padding: true ? 0 : "0px 32px 0px",
@@ -323,9 +330,10 @@ export default function Dashboard() {
             backgroundRepeat: "no-repeat",
             backgroundSize: "700px",
             backgroundPosition: "top center",
+            pointerEvents: "none",
           }}
         >
-          {/* 左侧天气信息 */}
+          {/* 左侧用户菜单 */}
           <div
             style={{
               display: "flex",
@@ -334,18 +342,10 @@ export default function Dashboard() {
               minWidth: 180,
               justifySelf: "start",
               padding: 0,
+              pointerEvents: "auto",
             }}
           >
-            {/* <img src={logoSrc} alt="" style={{ height: 32 }} />
-            <span
-              style={{
-                fontSize: 26,
-                fontWeight: 800,
-                color: THEME.textPrimary,
-              }}
-            >
-              上海申能新能源
-            </span> */}
+            {user && <UserMenu user={user} onLogout={onLogout} />}
           </div>
 
           {/* 中间标题 */}

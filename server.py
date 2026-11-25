@@ -1,11 +1,18 @@
-import os
+import base64
+import hashlib
+import hmac
 import json
-import urllib3
-import requests
+import os
+import secrets
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
+from http.cookies import SimpleCookie
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
+
+import requests
+import urllib3
 
 # ==================== 配置区域 ====================
 
@@ -20,8 +27,343 @@ TERRAQT_TOKEN = os.environ.get("TERRAQT_TOKEN", "jBDMwQGZmNzM1ADMwEGMwQmNkBzYkVW
 TERRAQT_TIMEOUT = float(os.environ.get("TERRAQT_TIMEOUT", "3"))
 TERRAQT_CACHE_SECONDS = int(os.environ.get("TERRAQT_CACHE_SECONDS", "300"))
 
+# 申能单点登录（SSO）配置 — 与 device 项目保持一致
+SSO_ENABLED = os.environ.get("SSO_ENABLED", "yes")
+SHENNER_FGCAPI_HOST = os.environ.get("SHENNER_FGCAPI_HOST", "https://fgcapi.shenergy.net.cn")
+SHENNER_FGCAM_HOST = os.environ.get("SHENNER_FGCAM_HOST", "https://fgcam.shenergy.net.cn")
+SHENNER_BASE_URL = os.environ.get("SHENNER_BASE_URL", "")
+SHENNER_USERNAME = os.environ.get("SHENNER_USERNAME", "")
+SHENNER_IOA_SECRET = os.environ.get("SHENNER_IOA_SECRET", "")
+SHENNER_JWT_SECRET = os.environ.get("SHENNER_JWT_SECRET", "")
+SHENNER_FGCAM_COOKIE = os.environ.get("SHENNER_FGCAM_COOKIE", "")
+SHENNER_REQUEST_TIMEOUT_SECONDS = int(os.environ.get("SHENNER_REQUEST_TIMEOUT_SECONDS", "30"))
+SSO_TIMEOUT_SECONDS = int(os.environ.get("SSO_TIMEOUT_SECONDS", "10"))
+SSO_ANALYSIS_TOKEN_PATH = "/api/SsoTokenApi/analysisToken"
+SSO_GET_TOKEN_PATH = "/api/SsoTokenApi/getToken"
+SSO_TRANSIENT_STATUSES = {429, 500, 502, 503, 504}
+
+# 本系统会话 Cookie 配置（无状态 HMAC-SHA256 签名）
+AUTH_SESSION_COOKIE = "weather_session"
+AUTH_SESSION_HOURS = int(os.environ.get("AUTH_SESSION_HOURS", "8"))
+_FALLBACK_SESSION_SECRET = secrets.token_hex(32)
+
 # 禁用 SSL 证书警告
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# ==================== 申能单点登录（SSO）与会话签名 ====================
+
+class SsoLoginError(Exception):
+    pass
+
+def is_sso_enabled() -> bool:
+    raw = os.environ.get("SSO_ENABLED", SSO_ENABLED).strip().lower()
+    return raw not in {"no", "false", "0", "off"}
+
+def _b64url_encode(raw: bytes) -> str:
+    return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+
+def _b64url_decode(data: str) -> bytes:
+    padding = "=" * (-len(data) % 4)
+    return base64.urlsafe_b64decode(data + padding)
+
+def _get_session_secret() -> str:
+    return (
+        os.environ.get("AUTH_SECRET_KEY", "").strip()
+        or os.environ.get("SHENNER_JWT_SECRET", "").strip()
+        or SHENNER_JWT_SECRET.strip()
+        or _FALLBACK_SESSION_SECRET
+    )
+
+def sign_session_token(user: dict) -> str:
+    now = int(time.time())
+    payload = {
+        "username": user["username"],
+        "displayName": user["displayName"],
+        "roles": user.get("roles", []),
+        "iat": now,
+        "exp": now + AUTH_SESSION_HOURS * 3600,
+    }
+    payload_bytes = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    payload_b64 = _b64url_encode(payload_bytes)
+    sig = hmac.new(
+        _get_session_secret().encode("utf-8"),
+        payload_b64.encode("ascii"),
+        hashlib.sha256,
+    ).digest()
+    return f"{payload_b64}.{_b64url_encode(sig)}"
+
+def verify_session_token(token: str):
+    if not token or "." not in token:
+        return None
+    try:
+        payload_b64, sig_b64 = token.split(".", 1)
+        expected_sig = hmac.new(
+            _get_session_secret().encode("utf-8"),
+            payload_b64.encode("ascii"),
+            hashlib.sha256,
+        ).digest()
+        actual_sig = _b64url_decode(sig_b64)
+        if not hmac.compare_digest(actual_sig, expected_sig):
+            return None
+        payload = json.loads(_b64url_decode(payload_b64).decode("utf-8"))
+        if not isinstance(payload, dict):
+            return None
+        if int(payload.get("exp", 0)) <= int(time.time()):
+            return None
+        username = str(payload.get("username", "")).strip()
+        if not username:
+            return None
+        return {
+            "username": username,
+            "displayName": str(payload.get("displayName") or username),
+            "roles": payload.get("roles") if isinstance(payload.get("roles"), list) else [],
+        }
+    except Exception:
+        return None
+
+def _require_shenner_setting(value: str, name: str) -> str:
+    configured = (value or "").strip()
+    if not configured:
+        raise SsoLoginError(f"{name} 未配置，无法调用申能认证接口")
+    return configured
+
+def generate_ioa_auth_value(ioa_secret: str = None) -> str:
+    secret = _require_shenner_setting(
+        ioa_secret if ioa_secret is not None else os.environ.get("SHENNER_IOA_SECRET", SHENNER_IOA_SECRET),
+        "SHENNER_IOA_SECRET",
+    )
+    tm = int(time.time())
+    sign = hashlib.sha256(f"{secret}{tm}".encode("utf-8")).hexdigest()
+    auth_json_str = json.dumps({"tm": tm, "sign": sign}, separators=(",", ":"))
+    return base64.b64encode(auth_json_str.encode("utf-8")).decode("utf-8")
+
+def generate_shenner_jwt_token(username: str = None, jwt_secret: str = None) -> str:
+    user = _require_shenner_setting(
+        username if username is not None else os.environ.get("SHENNER_USERNAME", SHENNER_USERNAME),
+        "SHENNER_USERNAME",
+    )
+    secret = _require_shenner_setting(
+        jwt_secret if jwt_secret is not None else os.environ.get("SHENNER_JWT_SECRET", SHENNER_JWT_SECRET),
+        "SHENNER_JWT_SECRET",
+    )
+    now = int(time.time())
+    header = {"alg": "HS256", "typ": "JWT"}
+    payload = {
+        "name": user,
+        "iat": now,
+        "exp": now + 30 * 60,
+    }
+    header_b64 = _b64url_encode(json.dumps(header, separators=(",", ":")).encode("utf-8"))
+    payload_b64 = _b64url_encode(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+    signing_input = f"{header_b64}.{payload_b64}".encode("ascii")
+    signature = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha256).digest()
+    return f"{header_b64}.{payload_b64}.{_b64url_encode(signature)}"
+
+def fetch_shenner_system_token(session, base_url, headers, timeout):
+    url = base_url.rstrip("/") + SSO_GET_TOKEN_PATH
+    for attempt in range(3):
+        try:
+            response = session.get(
+                url=url,
+                params={"name": generate_shenner_jwt_token()},
+                headers=headers,
+                timeout=timeout,
+                allow_redirects=False,
+            )
+        except requests.exceptions.SSLError:
+            raise SsoLoginError("申能单点登录连接失败：TLS证书或握手异常，请检查网络和证书") from None
+        except (requests.Timeout, requests.ConnectionError):
+            if attempt < 2:
+                time.sleep(0.2 * (attempt + 1))
+                continue
+            raise SsoLoginError("申能单点登录服务暂不可用：连接失败或超时，请稍后重试") from None
+        except requests.RequestException:
+            raise SsoLoginError("申能单点登录请求失败，请检查源系统连接") from None
+
+        status = response.status_code
+        if status in SSO_TRANSIENT_STATUSES and attempt < 2:
+            time.sleep(0.2 * (attempt + 1))
+            continue
+        if status != 200:
+            raise SsoLoginError(f"申能单点登录接口返回HTTP {status}，请检查源系统访问或网络代理")
+        try:
+            payload = response.json()
+        except ValueError:
+            raise SsoLoginError("申能单点登录接口返回非JSON内容，请检查源系统或网络代理") from None
+        if not isinstance(payload, dict):
+            raise SsoLoginError("申能单点登录响应格式无效")
+        if (
+            "success" in payload
+            and payload["success"] is not True
+            or "code" in payload
+            and str(payload["code"]) not in {"0", "200"}
+        ):
+            raise SsoLoginError("申能单点登录被源系统拒绝，请核查接入账号及认证配置")
+        token = payload.get("data")
+        if not isinstance(token, str) or not token.strip():
+            raise SsoLoginError("申能单点登录未返回有效令牌，请核查源系统认证状态")
+        return token.strip()
+    raise SsoLoginError("申能单点登录重试次数已耗尽")
+
+def _sanitize_sso_error_message(value, *secrets_to_hide) -> str:
+    if not value:
+        return "SSO token 无效"
+    message = str(value).replace("\r", " ").replace("\n", " ").strip()[:200]
+    for secret in secrets_to_hide:
+        if secret:
+            message = message.replace(secret, "***")
+    return message or "SSO token 无效"
+
+def _is_sso_response_success(payload: dict) -> bool:
+    if "success" in payload:
+        return bool(payload.get("success"))
+    if "code" in payload:
+        return str(payload.get("code")) in {"0", "200"}
+    return True
+
+def _text_value(value) -> str:
+    if value is None:
+        return ""
+    return str(value).strip()
+
+def _first_text_value(data: dict, keys) -> str:
+    for key in keys:
+        val = _text_value(data.get(key))
+        if val:
+            return val
+    return ""
+
+def _extract_role_list(data: dict) -> list:
+    for key in ("userRoleList", "roleList", "roles", "roleNames", "authorities", "permissions"):
+        value = data.get(key)
+        if isinstance(value, str) and value.strip():
+            raw = value
+            for sep in ("，", "、", ";", "；", "|"):
+                raw = raw.replace(sep, ",")
+            return [item.strip() for item in raw.split(",") if item.strip()]
+        if isinstance(value, list):
+            roles = []
+            for item in value:
+                if isinstance(item, str) and item.strip():
+                    roles.append(item.strip())
+                elif isinstance(item, dict):
+                    name = _first_text_value(
+                        item,
+                        ("roleName", "name", "role", "role_name", "authority", "permission"),
+                    )
+                    if name:
+                        roles.append(name)
+            if roles:
+                return roles
+    single = _first_text_value(data, ("roleName", "role", "role_name", "userRole"))
+    if not single:
+        return []
+    for sep in ("，", "、", ";", "；", "|"):
+        single = single.replace(sep, ",")
+    return [item.strip() for item in single.split(",") if item.strip()]
+
+def _is_external_user_active(status) -> bool:
+    if status is None or status == "":
+        return True
+    return str(status).strip().lower() not in {"0", "false", "disabled", "inactive", "停用", "禁用"}
+
+def parse_sso_user_info_response(payload: dict) -> dict:
+    data = payload.get("data", payload)
+    if not isinstance(data, dict):
+        raise SsoLoginError("SSO 用户信息服务返回格式错误")
+
+    username = _first_text_value(
+        data,
+        ("userAccount", "username", "userName", "user_name", "loginName", "account", "name"),
+    )
+    if not username:
+        raise SsoLoginError("SSO 用户信息未返回有效用户账号")
+
+    status = _first_text_value(data, ("status", "userStatus", "enabled", "active")) or None
+    if not _is_external_user_active(status):
+        raise SsoLoginError("该账号已被禁用")
+
+    display_name = (
+        _first_text_value(
+            data,
+            ("realName", "real_name", "nickName", "nickname", "displayName", "userName", "name"),
+        )
+        or username
+    )
+    roles = _extract_role_list(data)
+    return {
+        "username": username,
+        "displayName": display_name,
+        "roles": roles,
+    }
+
+def resolve_sso_user(frontend_token: str) -> dict:
+    token = (frontend_token or "").strip()
+    if not token:
+        raise SsoLoginError("SSO token 不能为空")
+
+    fgcam_host = os.environ.get("SHENNER_FGCAM_HOST", SHENNER_FGCAM_HOST).strip().rstrip("/")
+    fgcapi_host = os.environ.get("SHENNER_FGCAPI_HOST", SHENNER_FGCAPI_HOST).strip().rstrip("/")
+    base_url = (os.environ.get("SHENNER_BASE_URL", SHENNER_BASE_URL).strip() or fgcapi_host).rstrip("/")
+    configured_cookie = os.environ.get("SHENNER_FGCAM_COOKIE", SHENNER_FGCAM_COOKIE).strip()
+
+    session = requests.Session()
+    headers = {
+        "Proxy-Authentication": generate_ioa_auth_value(),
+        "Web-Sign": "web",
+        "X-Requested-With": "XMLHttpRequest",
+    }
+
+    user_token = ""
+    if configured_cookie:
+        cookie_str = configured_cookie
+    else:
+        user_token = fetch_shenner_system_token(
+            session,
+            base_url,
+            headers,
+            SHENNER_REQUEST_TIMEOUT_SECONDS,
+        )
+        session_id = session.cookies.get("JSESSIONID") or session.cookies.get("SESSION")
+        cookie_str = (
+            f"JSESSIONID={session_id}; AM_CROSS_JWT={user_token};"
+            "i18n_browser_Lang=zh-cn; JEECGINDEXSTYLE=fineui; ZINDEXNUMBER=1990"
+        )
+
+    headers["cookie"] = cookie_str
+    headers["Origin"] = fgcam_host
+    headers["Referer"] = f"{fgcam_host}/"
+    headers["AM_CROSS_JWT"] = generate_ioa_auth_value()
+
+    url = urljoin(base_url + "/", SSO_ANALYSIS_TOKEN_PATH.lstrip("/"))
+    try:
+        response = session.post(
+            url,
+            json={"token": token},
+            headers=headers,
+            timeout=SSO_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            raise SsoLoginError("SSO 用户信息服务返回格式错误") from exc
+    except SsoLoginError:
+        raise
+    except requests.RequestException as exc:
+        resp = exc.response
+        if resp is None:
+            raise SsoLoginError(f"SSO 用户信息服务暂不可用: {exc.__class__.__name__}") from exc
+        raise SsoLoginError(f"SSO 用户信息服务请求失败: HTTP {resp.status_code}") from exc
+
+    if not isinstance(payload, dict):
+        raise SsoLoginError("SSO 用户信息服务返回格式错误")
+
+    if not _is_sso_response_success(payload):
+        raw_message = payload.get("message") or payload.get("msg")
+        raise SsoLoginError(_sanitize_sso_error_message(raw_message, token, user_token))
+
+    return parse_sso_user_info_response(payload)
 
 # ==================== 核心逻辑 ====================
 
@@ -53,12 +395,24 @@ def load_station_locations():
 
 STATION_LOCATIONS = load_station_locations()
 
-def send_json(handler, status_code, data):
+def send_json(handler, status_code, data, extra_headers=None):
+    payload = json.dumps(data, ensure_ascii=False).encode("utf-8")
     handler.send_response(status_code)
     handler.send_header("Content-Type", "application/json; charset=utf-8")
-    handler.send_header("Access-Control-Allow-Origin", "*")
+    handler.send_header("Content-Length", str(len(payload)))
+    handler.send_header("Cache-Control", "no-store")
+    origin = handler.headers.get("Origin")
+    if origin:
+        handler.send_header("Access-Control-Allow-Origin", origin)
+        handler.send_header("Access-Control-Allow-Credentials", "true")
+        handler.send_header("Vary", "Origin")
+    else:
+        handler.send_header("Access-Control-Allow-Origin", "*")
+    if extra_headers:
+        for header_name, header_value in extra_headers:
+            handler.send_header(header_name, header_value)
     handler.end_headers()
-    handler.wfile.write(json.dumps(data, ensure_ascii=False).encode("utf-8"))
+    handler.wfile.write(payload)
 
 def parse_metric_float(metric):
     unit = ""
@@ -312,35 +666,155 @@ def transform_to_map_style(raw_data, wind_ids_set, pv_ids_set, include_irradianc
 
 class APIHandler(BaseHTTPRequestHandler):
 
+    def read_json_body(self):
+        length = int(self.headers.get("Content-Length", 0))
+        if length <= 0:
+            return {}
+        body_str = self.rfile.read(length).decode("utf-8")
+        if not body_str.strip():
+            return {}
+        return json.loads(body_str)
+
+    def get_client_ip(self):
+        forwarded = self.headers.get("X-Forwarded-For", "")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+        real_ip = self.headers.get("X-Real-IP", "")
+        if real_ip:
+            return real_ip.strip()
+        return self.client_address[0] if self.client_address else ""
+
+    def is_https_request(self):
+        proto = self.headers.get("X-Forwarded-Proto", "").lower()
+        return proto == "https"
+
+    def build_session_cookie(self, token, max_age):
+        parts = [
+            f"{AUTH_SESSION_COOKIE}={token}",
+            "Path=/",
+            "HttpOnly",
+            "SameSite=Lax",
+            f"Max-Age={max_age}",
+        ]
+        if self.is_https_request():
+            parts.append("Secure")
+        return "; ".join(parts)
+
+    def extract_session_token(self):
+        auth_header = self.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:].strip()
+            if token:
+                return token
+        cookie_header = self.headers.get("Cookie", "")
+        if cookie_header:
+            cookie = SimpleCookie()
+            try:
+                cookie.load(cookie_header)
+                if AUTH_SESSION_COOKIE in cookie:
+                    return cookie[AUTH_SESSION_COOKIE].value
+            except Exception:
+                pass
+        return ""
+
+    def drain_request_body(self):
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except ValueError:
+            length = 0
+        if 0 < length <= 65536:
+            self.rfile.read(length)
+
+    def require_auth(self):
+        if not is_sso_enabled():
+            return {"username": "guest", "displayName": "访客", "roles": []}
+        token = self.extract_session_token()
+        user = verify_session_token(token)
+        if not user:
+            self.drain_request_body()
+            send_json(self, 401, {"error": "未登录或登录已过期，请重新通过单点登录进入"})
+            return None
+        return user
+
     def do_OPTIONS(self):
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
+        origin = self.headers.get("Origin")
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Access-Control-Allow-Credentials", "true")
+            self.send_header("Vary", "Origin")
+        else:
+            self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
         self.end_headers()
 
     def do_GET(self):
         path = urlparse(self.path).path
         if path == "/health":
             return send_json(self, 200, {"status": "ok"})
+        if path == "/api/auth/me":
+            if not is_sso_enabled():
+                return send_json(self, 200, {"authenticated": True, "ssoEnabled": False, "user": None})
+            user = self.require_auth()
+            if not user:
+                return
+            return send_json(self, 200, {"authenticated": True, "ssoEnabled": True, "user": user})
         send_json(self, 404, {"error": "Not Found"})
 
     def do_POST(self):
-        self.handle_tianrun_request()
+        path = urlparse(self.path).path
+        if path == "/api/auth/sso-login":
+            return self.handle_sso_login()
+        if path == "/api/auth/logout":
+            return self.handle_logout()
+        if path == "/api/realtime":
+            return self.handle_tianrun_request()
+        send_json(self, 404, {"error": "Not Found"})
+
+    def handle_sso_login(self):
+        try:
+            params = self.read_json_body()
+        except (ValueError, json.JSONDecodeError):
+            return send_json(self, 400, {"error": "请求格式无效"})
+
+        frontend_token = str(params.get("token", "")).strip()
+        if not frontend_token:
+            return send_json(self, 400, {"error": "缺少 SSO 登录凭证"})
+
+        try:
+            user = resolve_sso_user(frontend_token)
+        except SsoLoginError as exc:
+            return send_json(self, 403, {"error": str(exc)})
+
+        session_token = sign_session_token(user)
+        cookie_header = self.build_session_cookie(session_token, AUTH_SESSION_HOURS * 3600)
+        send_json(
+            self,
+            200,
+            {"authenticated": True, "user": user},
+            extra_headers=[("Set-Cookie", cookie_header)],
+        )
+
+    def handle_logout(self):
+        cookie_header = self.build_session_cookie("", 0)
+        send_json(
+            self,
+            200,
+            {"ok": True},
+            extra_headers=[("Set-Cookie", cookie_header)],
+        )
 
     def handle_tianrun_request(self):
-        if urlparse(self.path).path != "/api/realtime":
-            return send_json(self, 404, {"error": "Not Found"})
+        user = self.require_auth()
+        if not user:
+            return
 
         cache_key = None
         allow_stale = True
         try:
             # 1. 接收前端参数
-            params = {}
-            length = int(self.headers.get('Content-Length', 0))
-            if length > 0:
-                body_str = self.rfile.read(length).decode('utf-8')
-                params = json.loads(body_str)
+            params = self.read_json_body()
 
             # 2. 提取配置
             remote_port = str(params.get("remotePort", "8102"))
@@ -404,7 +878,7 @@ class APIHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     server = ThreadingHTTPServer(("0.0.0.0", PORT), APIHandler)
-    print(f"🚀 服务运行中: http://localhost:{PORT}")
+    print(f"🚀 服务运行中: http://localhost:{PORT} (申能 SSO 已启用)")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
